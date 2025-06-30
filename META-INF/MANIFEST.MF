@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Build-Jdk-Spec: 17
+Implementation-Version: 1.0.0
+Implementation-Title: MichiTuber
+Class-Path: lib/jnativehook-2.2.2.jar,lib/colorpicker-0.4.jar
+Main-Class: app.Main
+Built-By: Raúl N. Valdés
+Project-Url: https://gitlab.com/rnunovaldes/vtube-michi

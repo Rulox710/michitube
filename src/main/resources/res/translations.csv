@@ -1,0 +1,90 @@
+KEY,EN,ES
+demo_title,SheIsRaisa,SheIsRaisa
+gui_title,MichiTube,MichiTube
+
+button_start,Start Vtuber,Iniciar Vtuber
+button_edit,Edit Vtuber,Editar Vtuber
+
+chooser_img,Choose an image,Escoge una imagen
+chooser_svs,Choose a VTuber model save file,Escoge un archivo de guardado del modelo VTuber
+chooser_dir,Choose a default directory,Escoge un directorio predeterminado
+filechooser_open,
+filechooser_save,
+button_cancel,Cancel,Cancelar
+button_save,Save,Guardar
+button_open,Open,Abrir
+button_update,Update,Actualizar
+button_help,Help,Ayuda
+tooltip_open,Open selected file,Abrir archivo seleccionado
+tooltip_save,Save file,Guardar archivo
+tooltip_cancel,Cancel,Cancelar
+tooltip_update,Update directory listing,Actualizar listado
+tooltip_help,Help,Ayuda
+label_filename,File name,Nombre del archivo
+label_filetype,Files of type:,Tipo del archivo:
+label_lookin,Look in:,Buscar en:
+tooltip_upfolder,Up One Level,Subir un nivel
+tooltip_newfolder,Create New Folder,Crear nueva carpeta
+tooltip_home,Desktop,Escritorio
+tooltip_listview,List view,Vista de lista
+tooltip_detailsview,Details view,Vista detallada
+error_rename,Rename error,Error al renombrar
+error_filerename,Cannot rename file,No se pudo renombrar
+error_newdir,Error creating new folder,Error al crear la carpeta
+
+button_start_vtuber,Start Vtuber,Iniciar Vtuber
+
+menu_file,Files,Archivos
+menu_file_dir,Choose default directory,Escoger directorio predeterminado
+menu_file_load,Load VTuber,Cargar VTuber
+menu_file_save,Save VTuber,Guardar VTuber
+menu_file_saveh,As Hardlink,Como archivo
+menu_file_saves,As Softlink,Como enlace
+
+menu_language,🌐 Language aあ,🌐 Idioma aあ
+
+
+button_ok,Done,Aceptar
+button_cancel,Cancel,Cancelar
+
+label_height,Height,Altura
+label_width,Width,Anchura
+label_location,Initial location,Ubicación inicial
+
+title_handinput,Hands inputs,Entradas con manos
+label_mouse,Detect mouse,Detectar ratón
+label_keyboard,Detect keyboard,Detectar teclado
+
+title_microphone,Microphone settings,Configuración del micrófono
+label_microphone_detection,Detect microphone,Detectar micrófono
+label_microphone_channels,Microphone channels,Canales del micrófono
+label_microphone_channel_1,Mono,Mono
+label_microphone_channel_2,Stereo,Estéreo
+label_microphone_ups,Microphone updates,Actualizaciones del micrófono
+label_microphone_sensitivity,Microphone sensitivity,Sensibilidad del micrófono
+
+title_fps,FPS settings,Configuración de FPS
+label_fps,Frames per second,Cuadros por segundo
+
+
+button_select_image,Select image,Seleccionar imagen
+button_select_color,Select color,Seleccionar color
+
+
+label_layers,Layers,Capas
+label_body,Body,Cuerpo
+label_eyes,Eyes,Ojos
+label_mouth,Mouth,Boca
+label_rhand,Right hand,Mano derecha
+label_lhand,Left hand,Mano izquierda
+label_front,Front,Frente
+
+label_back,Background,Fondo
+info_back,The selected image will be used as the background for the Vtuber. That means it will be the first to be drawn.,La imagen seleccionada se usará como fondo para el Vtuber. Eso significa que será la primera en dibujarse.
+
+label_img,Select image,Seleccionar imagen
+type_img,Images only,Solo imágenes
+type_jpg,JPEG image,imagen JPEG
+type_png,PNG image,imagen PNG
+type_tif,TIFF image,imagen TIFF
+type_gif,Animated GIF,GIF animado
