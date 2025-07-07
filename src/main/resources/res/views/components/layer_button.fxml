@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.StackPane?>
+
+<StackPane fx:id="stackpaneContainer"
+           fx:controller="app.maker.controllers.components.LayerButton" 
+           xmlns="http://javafx.com/javafx/17.0.15" xmlns:fx="http://javafx.com/fxml/1">
+
+  <VBox fx:id="vboxButton"
+        alignment="TOP_CENTER" minHeight="130.0" maxHeight="130.0" HBox.hgrow="ALWAYS" >
+    
+    <Label fx:id="labelLayer" text="label_layers"/>
+    <HBox fx:id="imageContainer" VBox.vgrow="ALWAYS">
+      <children>
+        <ImageView fx:id="imagePreview"
+                   fitWidth="120" fitHeight="100" preserveRatio="true"/>
+      </children>
+    </HBox>
+
+  </VBox>
+
+</StackPane>

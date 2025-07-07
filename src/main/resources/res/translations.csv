@@ -32,8 +32,8 @@ error_rename,Rename error,Error al renombrar
 error_filerename,Cannot rename file,No se pudo renombrar
 error_newdir,Error creating new folder,Error al crear la carpeta
 
-button_start_vtuber,Start Vtuber,Iniciar Vtuber
-
+menu_start,▶ Start,▶ Iniciar
+menu_start_vtuber,Start VTuber,Iniciar VTuber
 menu_file,Files,Archivos
 menu_file_dir,Choose default directory,Escoger directorio predeterminado
 menu_file_load,Load VTuber,Cargar VTuber
@@ -51,17 +51,17 @@ label_height,Height,Altura
 label_width,Width,Anchura
 label_location,Initial location,Ubicación inicial
 
-title_handinput,Hands inputs,Entradas con manos
-label_mouse,Detect mouse,Detectar ratón
-label_keyboard,Detect keyboard,Detectar teclado
+title_handinput,Hands inputs,Entradas de manos
+label_mouse,Mouse,Ratón
+label_keyboard,Keyboard,Teclado
 
 title_microphone,Microphone settings,Configuración del micrófono
-label_microphone_detection,Detect microphone,Detectar micrófono
-label_microphone_channels,Microphone channels,Canales del micrófono
+label_microphone_detection,Microphone,Micrófono
+label_microphone_channels,# Channels,# Canales
 label_microphone_channel_1,Mono,Mono
 label_microphone_channel_2,Stereo,Estéreo
-label_microphone_ups,Microphone updates,Actualizaciones del micrófono
-label_microphone_sensitivity,Microphone sensitivity,Sensibilidad del micrófono
+label_microphone_ups,Updates/s,Actualizaciones/s
+label_microphone_sensitivity,Sensitivity,Sensibilidad
 
 title_fps,FPS settings,Configuración de FPS
 label_fps,Frames per second,Cuadros por segundo
@@ -79,12 +79,29 @@ label_rhand,Right hand,Mano derecha
 label_lhand,Left hand,Mano izquierda
 label_front,Front,Frente
 
-label_back,Background,Fondo
-info_back,The selected image will be used as the background for the Vtuber. That means it will be the first to be drawn.,La imagen seleccionada se usará como fondo para el Vtuber. Eso significa que será la primera en dibujarse.
+button_background,Background,Fondo
+title_background_image,Use an Image,Usar una imágen
+label_background_image,The chosen image will be used as the VTuber's background. That means it will be the first to be drawn.,La imagen seleccionada se usará como fondo para el VTuber. Eso significa que será la primera en dibujarse.
+button_background_image,Select Image,Seleccionar Imagen
+title_background_color,Use a Color,Usar un color
+label_background_color,The chosen color will be used as the VTuber's background. That means it gets painted first.,El color seleccionado se usará como fondo para el VTuber. Eso significa que es lo primero en pintarse.
+
+button_body,VTuber's body, Cuerpo del VTuber
+
+button_eyes,VTuber's eyes,Ojos del VTuber
+
+button_mouth,Vtuber's mouth,Boca del VTuber
+
+button_table,Table,Mesa
+
+button_mouse,Vtuber's hand & Mouse,Mano del VTuber & Ratón
+
+button_keyboard,Vtuber's hand & Keyboard,Mano del VTuber & Teclado
 
 label_img,Select image,Seleccionar imagen
 type_img,Images only,Solo imágenes
-type_jpg,JPEG image,imagen JPEG
-type_png,PNG image,imagen PNG
-type_tif,TIFF image,imagen TIFF
+type_jpg,JPEG image,Imagen JPEG
+type_png,PNG image,Imagen PNG
+type_tif,TIFF image,Imagen TIFF
 type_gif,Animated GIF,GIF animado
+type_svs,VTuber Model,Modelo VTuber

@@ -17,7 +17,7 @@ IF NOT EXIST ../bin (
     MKDIR ../bin
 )
 ECHO === Compilando código fuente ===
-javac -d ../bin -sourcepath %SRC_DIR% -cp ../lib/* %JAVA_PRIN%
+javac -d ../bin -sourcepath %SRC_DIR% --module-path "../lib/javafx-sdk-17.0.15/lib" --add-modules javafx.graphics,javafx.controls,javafx.fxml -cp ../lib/*;../lib/javafx-sdk-17.0.15/lib/* %JAVA_PRIN%
 
 ECHO === Copiando recursos ===
 XCOPY "%RES_DIR%\*" "../bin\" /E /I /Y
@@ -25,7 +25,7 @@ XCOPY "%RES_DIR%\*" "../bin\" /E /I /Y
 REM Ejecutar el programa compilado
 :EXE
 ECHO === Ejecutando el programa ===
-java -cp ../bin;../lib/* %EXEC%
+java -cp ../bin;../lib/*;../lib/javafx-sdk-17.0.15/lib/* --module-path "../lib/javafx-sdk-17.0.15/lib" --add-modules javafx.graphics,javafx.controls,javafx.fxml %EXEC%
 PAUSE
 
 EXIT

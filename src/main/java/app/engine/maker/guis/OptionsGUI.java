@@ -49,10 +49,6 @@ public class OptionsGUI extends Observable implements GenericGUI {
         panel.setSize(new Dimension(parentPanel.getWidth()-24, 500));
         int GAP = 20;
 
-        // languagePanel = getPanelLanguage();
-        // languagePanel.setBounds(2, 2, panel.getWidth()-GAP, 55);
-        // panel.add(languagePanel);
-
         handinputPanel = getPanelHandinput();
         handinputPanel.setBounds(2, 59, panel.getWidth()-GAP, 80);
         panel.add(handinputPanel);
@@ -80,36 +76,6 @@ public class OptionsGUI extends Observable implements GenericGUI {
         panel.revalidate();
         panel.repaint();
     }
-
-    // private JPanel getPanelLanguage() {
-    //     JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-    //     panel.setBorder(BorderFactory.createTitledBorder(
-    //         TranslationM.getTranslatedLabel("title_language"))
-    //     );
-
-    //     String[] optionsToChoose = Arrays.stream(TranslationM.LANGUAGES.values())
-    //                 .map(TranslationM.LANGUAGES::toString)
-    //                 .toArray(String[]::new);
-    //     JComboBox<String> jComboBox = new JComboBox<>(optionsToChoose);
-
-    //     jComboBox.setSelectedIndex(TranslationM.LANGUAGES.valueOf(
-    //         PropertiesM.getAppProperty("language")).getIndex()
-    //     );
-    //     //jComboBox.setBounds(80, 50, 140, 20);
-    //     languageOkButton = new JButton(TranslationM.getTranslatedLabel("button_ok"));
-    //     languageOkButton.setPreferredSize(new Dimension(75, 25));
-    //     panel.add(jComboBox);
-    //     panel.add(languageOkButton);
-
-    //     languageOkButton.addActionListener(new ActionListener() {
-    //         @Override
-    //         public void actionPerformed(ActionEvent e) {
-    //             notifyObservers('l', TranslationM.LANGUAGES.values()[jComboBox.getSelectedIndex()].name());
-    //         }
-    //     });
-
-    //     return panel;
-    // }
 
     private JPanel getPanelHandinput() {
         JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));

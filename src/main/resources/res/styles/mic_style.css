@@ -1,0 +1,9 @@
+.mic-sensitivity-slider {
+    -fx-pref-height: 20px;
+}
+
+.mic-sensitivity-overlay {
+    -fx-background-color: rgba(0, 128, 255, 0.5);
+    -fx-max-height: 10;
+    -fx-translate-y: 0;
+}

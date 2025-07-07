@@ -9,6 +9,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -22,10 +23,19 @@ import app.engine.DeltaTimeManager;
 import app.engine.maker.guis.MainGUI;
 import app.engine.readers.PropertiesM;
 import app.engine.readers.TranslationM;
+import app.maker.controllers.MainController;
 import app.vtuber.Window;
 import app.vtuber.detectors.Keyboard;
 import app.vtuber.detectors.Microphone;
 import app.vtuber.detectors.Mouse;
+import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.stage.Stage;
 
 /**
  * Esta clase representa la entrada principal del programa.
@@ -33,7 +43,33 @@ import app.vtuber.detectors.Mouse;
  * la ventana principal y la detección de dispositivos
  * (micrófono, teclado y ratón).
  */
-public class Main {
+public class Main extends Application {
+
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+        
+        // FXMLLoader loader = new FXMLLoader(getClass().getResource("/res/layouts/main_view.fxml"));
+        // BorderPane root = loader.load();
+
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/res/views/main_view.fxml"));
+        VBox root = loader.load();
+        
+        Scene scene = new Scene(root);
+
+        int taskbarHeight = Integer.parseInt(
+            PropertiesM.getVtuberProperty("windows_taskbar_height")
+        );
+
+        primaryStage.setTitle(TranslationM.getTranslatedLabel("gui_title"));
+        primaryStage.setScene(scene);
+        primaryStage.setMinWidth(700);
+        primaryStage.setMinHeight(680);
+        primaryStage.setWidth(Constants.FULLSCREEN_WIDTH);
+        primaryStage.setHeight(Constants.FULLSCREEN_HEIGHT-taskbarHeight);
+
+        
+        primaryStage.show();
+    }
 
     /**
      * El método principal que inicia el programa.
@@ -47,6 +83,21 @@ public class Main {
         TranslationM.load();
         PropertiesM.loadAppProperties();
         PropertiesM.loadVtuberProperties("String vtuberName");
+
+        String language = PropertiesM.getAppProperty("language");
+        Locale locale = Locale.ENGLISH;
+        switch(language) {
+            case "EN":
+                locale = Locale.ENGLISH;
+                break;
+            case "ES":
+                locale = new Locale(language);
+                break;
+            default:
+                locale = Locale.ENGLISH;
+                break;
+        }
+        Locale.setDefault(locale);
 
         // Font font = new Font("Arial", Font.PLAIN, 14);
         // for (Enumeration<Object> keys = UIManager.getDefaults().keys(); keys.hasMoreElements();) {
@@ -73,7 +124,9 @@ public class Main {
         // }
         // System.out.println(UIManager.getFont("Label.font"));
 
-        MainGUI configGui = new MainGUI();
+        //MainGUI configGui = new MainGUI();
+        launch(args);
+        
         // Window window = new Window();
 
         // Microphone micDetector = null;

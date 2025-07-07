@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.Spinner?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+
+<VBox fx:controller="app.maker.controllers.OptionsController"
+      minWidth="182.0" maxWidth="182.0" spacing="10.0" VBox.vgrow="ALWAYS"
+      xmlns="http://javafx.com/javafx/17.0.15" xmlns:fx="http://javafx.com/fxml/1">
+  
+  <TitledPane fx:id="titledPaneHandInput" text="title_handinput">
+    <HBox spacing="10">
+      <CheckBox fx:id="checkboxMouse" text="label_mouse" />
+      <CheckBox fx:id="checkboxKeyboard" text="label_keyboard" />
+    </HBox>
+  </TitledPane>
+
+
+  <TitledPane fx:id="titledPaneMicrophone" text="title_microphone">
+    <VBox spacing="10">
+
+      <HBox spacing="10">
+        <CheckBox fx:id="checkboxMicrophone" text="label_microphone_detection" />
+      </HBox>
+
+      <HBox alignment="CENTER_LEFT" spacing="10">
+        <Label fx:id="labelMicrophoneChannel"
+               maxWidth="Infinity" minWidth="-Infinity" text="label_microphone_channels" wrapText="false"/>
+        <Slider fx:id="sliderMicrophoneChannel"
+                blockIncrement="1" majorTickUnit="1" max="2" min="1" minorTickCount="0" showTickLabels="true" snapToTicks="true" value="1" HBox.hgrow="ALWAYS" />
+      </HBox>
+
+      <HBox alignment="CENTER_LEFT" spacing="10">
+        <Label fx:id="labelMicrophoneUpdate" text="label_microphone_ups" />
+        <Spinner fx:id="spinnerMicrophoneUpdate" prefWidth="70" />
+      </HBox>
+
+      <VBox spacing="5">
+        <Label fx:id="labelMicrophoneSensitivity" text="label_microphone_sensitivity" />
+        
+        <StackPane fx:id="micSensitivityStack" alignment="TOP_LEFT">
+          <Region fx:id="micLevelOverlay" styleClass="mic-sensitivity-overlay" />
+          <Slider fx:id="sliderMicrophoneSensitivity"
+                  majorTickUnit="50" max="100" min="0" minorTickCount="0" showTickLabels="true" showTickMarks="false" value="50" />
+        </StackPane>
+      </VBox>
+    </VBox>
+  </TitledPane>
+
+
+  <TitledPane fx:id="titledPaneFPS" text="title_fps">
+    <HBox alignment="CENTER_LEFT" spacing="10">
+      <Label fx:id="labelFPS" text="label_fps" />
+      <Spinner fx:id="fpsSpinner" prefWidth="70" />
+    </HBox>
+  </TitledPane>
+
+</VBox>

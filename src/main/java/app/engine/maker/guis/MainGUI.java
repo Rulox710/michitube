@@ -91,35 +91,6 @@ public class MainGUI extends JFrame implements Observer {
         sheetGUI = new SheetGUI(centerPanel);
         sheetGUI.addObserver(this);
         
-
-
-        // Panel derecho con botones
-        // int layers = 7;
-        // JPanel rightPanel = new JPanel();
-        // rightPanel.setLayout(new GridLayout(layers, 1, 5, 5)); 
-        // rightPanel.setBackground(Color.GRAY);
-        // rightPanel.setPreferredSize(new Dimension(FIFTH_WIDTH, Constants.FULLSCREEN_HEIGHT - taskbarHeight));
-        // rightPanel.setMaximumSize(rightPanel.getPreferredSize());
-        
-        // String[] labels_layers = {
-        //     "label_body",
-        //     "label_eyes",
-        //     "label_mouth",
-        //     "label_rhand",
-        //     "label_lhand",
-        //     "label_front",
-        //     "label_back",
-        // };
-        // for (int i = 0; i < layers; i++) {
-        //     LayerButton button = new LayerButton(
-        //         Constants.FULLSCREEN_WIDTH / 5,
-        //         Constants.FULLSCREEN_HEIGHT / layers, i,
-        //         labels_layers[i]
-        //     );
-        //     rightPanel.add(button);
-        //     layerButtons[i] = button;
-        // }
-        
         // Agregar paneles
         add(leftPanel);
         add(layerPanel);
