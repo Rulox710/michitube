@@ -4,6 +4,7 @@
 
 .mic-sensitivity-overlay {
     -fx-background-color: rgba(0, 128, 255, 0.5);
+    -fx-background-radius: 10 10 0 0;
     -fx-max-height: 10;
     -fx-translate-y: 0;
 }

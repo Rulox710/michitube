@@ -12,9 +12,9 @@
       fx:controller="app.maker.controllers.MainController"
       xmlns="http://javafx.com/javafx/17.0.15" xmlns:fx="http://javafx.com/fxml/1">
   <children>
-    
+
     <!-- <fx:include fx:id="menuBarInclude" source="menubar_view.fxml" /> -->
-    
+
     <HBox fx:id="mainHBox"
           HBox.hgrow="ALWAYS" maxWidth="Infinity" VBox.vgrow="ALWAYS" spacing="2.0">
       <children>
@@ -37,7 +37,7 @@
               </children>
             </AnchorPane>
 
-            <AnchorPane HBox.hgrow="ALWAYS" maxWidth="Infinity" minHeight="300.0" > 
+            <AnchorPane HBox.hgrow="ALWAYS" maxWidth="Infinity" minHeight="300.0" >
               <children>
                 <ScrollPane fx:id="scrollpaneLayerOptions"
                             AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0"
@@ -47,14 +47,14 @@
                     <!-- <fx:include fx:id="vboxBackgroundInclude" source="background_view.fxml" /> -->
                   </content>
                 </ScrollPane>
-              
+
 
               </children>
             </AnchorPane>
 
           </items>
         </SplitPane>
-        
+
         <ScrollPane minWidth="200.0" maxWidth="200.0"
                     AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0"
                     AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0"
@@ -63,7 +63,9 @@
 
             <VBox fx:id="scrollpaneLayers"
                   minWidth="182.0" maxWidth="182.0" spacing="10.0" VBox.vgrow="ALWAYS" >
-              <!-- <fx:include source="/res/views/LayerButton.fxml"/> -->
+              <children>
+                <!-- <fx:include source="/res/views/LayerButton.fxml"/> -->
+              </children>
             </VBox>
 
           </content>
@@ -83,6 +85,6 @@
 
       </children>
     </HBox>
-    
+
   </children>
 </VBox>

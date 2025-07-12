@@ -60,7 +60,7 @@ public class FXFileChooser {
     }
 
     public static FileChooser getSaveChooser() {
-        if (saveChooser == null) {
+        if(saveChooser == null) {
             saveChooser = new FileChooser();
             saveChooser.setTitle(TranslationM.getTranslatedLabel("chooser_svs"));
             saveChooser.setInitialDirectory(new File(PropertiesM.getAppProperty("default_dir")));
@@ -74,7 +74,7 @@ public class FXFileChooser {
     }
 
     public static DirectoryChooser getDirChooser() {
-        if (dirChooser == null) {
+        if(dirChooser == null) {
             dirChooser = new DirectoryChooser();
             dirChooser.setTitle(TranslationM.getTranslatedLabel("chooser_dir"));
             dirChooser.setInitialDirectory(new File(PropertiesM.getAppProperty("default_dir")));

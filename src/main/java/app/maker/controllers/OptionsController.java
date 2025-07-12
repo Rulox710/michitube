@@ -12,6 +12,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
+import javafx.scene.control.Spinner;
+import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
@@ -19,38 +21,36 @@ import javafx.util.StringConverter;
 
 public class OptionsController extends AbstractController  {
 
-    @FXML
-    private TitledPane titledPaneHandInput, titledPaneMicrophone, titledPaneFPS;
-    @FXML
-    private CheckBox checkboxMouse, checkboxKeyboard, checkboxMicrophone;
-    @FXML
-    private Label labelMicrophoneChannel, labelMicrophoneUpdate, labelMicrophoneSensitivity, labelFPS;
-    @FXML
-    private Slider sliderMicrophoneChannel, sliderMicrophoneSensitivity;
-    @FXML
-    private StackPane micSensitivityStack;
-    @FXML
-    private Region micLevelOverlay;
+    @FXML private TitledPane titledPaneHandInput, titledPaneMicrophone, titledPaneFPS;
+    @FXML private CheckBox checkboxMouse, checkboxKeyboard, checkboxMicrophone;
+    @FXML private Label labelMicrophoneChannel, labelMicrophoneUpdate, labelMicrophoneSensitivity, labelFPS, labelFPSSec;
+    @FXML private Slider sliderMicrophoneChannel, sliderMicrophoneSensitivity;
+    @FXML private StackPane micSensitivityStack;
+    @FXML private Region micLevelOverlay;
+    @FXML private Spinner<Integer> fpsSpinner;
 
     private int ups = 20;
     private TargetDataLine microphone;
 
     public OptionsController() {
-        try {
-            AudioFormat format = new AudioFormat(8000.0f, 8, 1, true, false);
-            DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
-            microphone = (TargetDataLine) AudioSystem.getLine(info);
-            microphone.open(format);
-        } catch(LineUnavailableException e) {
-            e.printStackTrace();
-            throw new RuntimeException("No se pudo inicializar la línea de datos del micrófono");
-        }
+        // try {
+        //     AudioFormat format = new AudioFormat(8000.0f, 8, 1, true, false);
+        //     DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
+        //     microphone = (TargetDataLine) AudioSystem.getLine(info);
+        //     microphone.open(format);
+        // } catch(LineUnavailableException e) {
+        //     e.printStackTrace();
+        //     throw new RuntimeException("No se pudo inicializar la línea de datos del micrófono");
+        // }
     }
- 
+
     @Override
     public void initialize() {
         updateLanguage();
-        startCapture();
+
+        fpsSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 120, 60));
+
+        //startCapture();
     }
 
     private void updateAmplitude(double amplitude) {
@@ -116,34 +116,35 @@ public class OptionsController extends AbstractController  {
     @Override
     public void updateLanguage() {
         Platform.runLater(() -> {
-            titledPaneHandInput.setText(TranslationM.getTranslatedLabel("title_handinput"));
-            checkboxMouse.setText(TranslationM.getTranslatedLabel("label_mouse"));
-            checkboxKeyboard.setText(TranslationM.getTranslatedLabel("label_keyboard"));
+            // titledPaneHandInput.setText(TranslationM.getTranslatedLabel("title_handinput"));
+            // checkboxMouse.setText(TranslationM.getTranslatedLabel("label_mouse"));
+            // checkboxKeyboard.setText(TranslationM.getTranslatedLabel("label_keyboard"));
 
-            titledPaneMicrophone.setText(TranslationM.getTranslatedLabel("title_microphone"));
-            checkboxMicrophone.setText(TranslationM.getTranslatedLabel("label_microphone_detection"));
-            labelMicrophoneChannel.setText(TranslationM.getTranslatedLabel("label_microphone_channels"));
-            sliderMicrophoneChannel.setLabelFormatter(new StringConverter<Double>() {
-                @Override
-                public String toString(Double value) {
-                    return switch (value.intValue()) {
-                        case 1 -> TranslationM.getTranslatedLabel("label_microphone_channel_1");
-                        case 2 -> TranslationM.getTranslatedLabel("label_microphone_channel_2");
-                        default -> "";
-                    };
-                }
-                @Override
-                public Double fromString(String string) {
-                    if(string.equals(TranslationM.getTranslatedLabel("label_microphone_channel_1"))) return 1.0;
-                    if(string.equals(TranslationM.getTranslatedLabel("label_microphone_channel_2"))) return 2.0;
-                    return 0.0;
-                }
-            });
-            labelMicrophoneUpdate.setText(TranslationM.getTranslatedLabel("label_microphone_ups"));
-            labelMicrophoneSensitivity.setText(TranslationM.getTranslatedLabel("label_microphone_sensitivity"));
+            // titledPaneMicrophone.setText(TranslationM.getTranslatedLabel("title_microphone"));
+            // checkboxMicrophone.setText(TranslationM.getTranslatedLabel("label_microphone_detection"));
+            // labelMicrophoneChannel.setText(TranslationM.getTranslatedLabel("label_microphone_channels"));
+            // sliderMicrophoneChannel.setLabelFormatter(new StringConverter<Double>() {
+            //     @Override
+            //     public String toString(Double value) {
+            //         return switch (value.intValue()) {
+            //             case 1 -> TranslationM.getTranslatedLabel("label_microphone_channel_1");
+            //             case 2 -> TranslationM.getTranslatedLabel("label_microphone_channel_2");
+            //             default -> "";
+            //         };
+            //     }
+            //     @Override
+            //     public Double fromString(String string) {
+            //         if(string.equals(TranslationM.getTranslatedLabel("label_microphone_channel_1"))) return 1.0;
+            //         if(string.equals(TranslationM.getTranslatedLabel("label_microphone_channel_2"))) return 2.0;
+            //         return 0.0;
+            //     }
+            // });
+            // labelMicrophoneUpdate.setText(TranslationM.getTranslatedLabel("label_microphone_ups"));
+            // labelMicrophoneSensitivity.setText(TranslationM.getTranslatedLabel("label_microphone_sensitivity"));
 
             titledPaneFPS.setText(TranslationM.getTranslatedLabel("title_fps"));
             labelFPS.setText(TranslationM.getTranslatedLabel("label_fps"));
+            //labelFPSSec.setText(TranslationM.getTranslatedLabel("label_seconds"));
         });
     }
 }

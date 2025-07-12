@@ -2,20 +2,15 @@ package app.maker.controllers.components;
 
 import javafx.css.PseudoClass;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 
 import java.io.File;
-import java.io.IOException;
 
 import app.engine.readers.TranslationM;
-import app.maker.FXFileChooser;
 import app.maker.controllers.AbstractController;
 
 public class LayerButton extends AbstractController {
@@ -23,6 +18,7 @@ public class LayerButton extends AbstractController {
     @FXML private Pane stackpaneContainer, vboxButton, imageContainer;
     @FXML private Label labelLayer;
     @FXML private ImageView imagePreview;
+    @FXML private Tooltip tooltipButton;
 
     private String translationId = "label_layers";
 
@@ -37,24 +33,21 @@ public class LayerButton extends AbstractController {
         });
     }
 
-    private void chooseImage() {
-        File file = FXFileChooser.getImageChooser().showOpenDialog(null); // implementa tu file chooser
-        if (file != null) {
-            Image image = new Image(file.toURI().toString());
-            imagePreview.setImage(image);
-            notifyObservers('I', file);
+    private void setImage(File fimg) {
+        if(fimg != null) {
+            imagePreview.setImage(new Image(fimg.toURI().toString()));
         }
     }
 
     private void handleClick(MouseEvent e) {
         if(e.isPrimaryButtonDown()) {
-            stackpaneContainer.pseudoClassStateChanged(PseudoClass.getPseudoClass("clicked"), true);
-            notifyObservers('T', this);
+            toggleSelect(true);
+            notifyObservers('c', this);
         }
     }
 
-    public void toggleSelect() {
-        stackpaneContainer.pseudoClassStateChanged(PseudoClass.getPseudoClass("clicked"), false);
+    public void toggleSelect(boolean clicked) {
+        stackpaneContainer.pseudoClassStateChanged(PseudoClass.getPseudoClass("clicked"), clicked);
     }
 
     public void setTranslationId(String translationId) {
@@ -64,5 +57,16 @@ public class LayerButton extends AbstractController {
 
     public void updateLanguage() {
         labelLayer.setText(TranslationM.getTranslatedLabel(translationId));
+        Tooltip.install(stackpaneContainer, new Tooltip(TranslationM.getTranslatedLabel(translationId)));
+    }
+
+    @Override
+    public void update(char event, Object data) {
+        switch(event) {
+            case (char)0: setImage((File) data);
+            break;
+            case 'c': toggleSelect(false);
+            break;
+        }
     }
 }

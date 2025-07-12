@@ -1,6 +1,9 @@
 package app.maker.controllers;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Locale;
 
@@ -18,7 +21,7 @@ public class MenubarController extends AbstractController {
 
     @FXML
     private Menu menuStart, menuFile, menuFileSave, menuLanguage;
-    
+
     @FXML
     private MenuItem menuStartVTuber, menuFileDir, menuFileLoad, menuFileSaves, menuFileSaveh;
 
@@ -27,20 +30,22 @@ public class MenubarController extends AbstractController {
         initializeMenuLanguage();
         updateLanguage();
 
-        menuFileDir.setOnAction(e -> {
-            File dir = FXFileChooser.getDirChooser().showDialog(null);
-            if (dir != null) {
-                notifyObservers('d', dir.getPath());
-                FXFileChooser.changeInitialDirectory();
-            }
-        });
+        menuFileDir.setOnAction(e -> selectFile('d'));
+        menuFileLoad.setOnAction(e -> selectFile('z'));
 
-        menuFileLoad.setOnAction(e -> {
-            File img = FXFileChooser.getImageChooser().showOpenDialog(null);
-            if (img != null) {
-                notifyObservers((char) 0, img.getPath());
-            }
-        });
+        menuFileSaves.setOnAction(e -> selectFile('S'));
+        menuFileSaveh.setDisable(true);
+    }
+
+    private void selectFile(char type) {
+        File file = switch(type) {
+            case 'd' -> FXFileChooser.getDirChooser().showDialog(null);
+            case 'S' -> FXFileChooser.getSaveChooser().showSaveDialog(null);
+            default -> null;
+        };
+        if(file == null) return;
+        if(type == 'd') FXFileChooser.changeInitialDirectory();
+        notifyObservers(type, file);
     }
 
     private void initializeMenuLanguage() {
@@ -84,7 +89,7 @@ public class MenubarController extends AbstractController {
             menuLanguage.getItems().add(item);
         }
     }
-    
+
     @Override
     public void updateLanguage() {
         Platform.runLater(() -> {
@@ -95,8 +100,8 @@ public class MenubarController extends AbstractController {
             menuFileDir.setText(TranslationM.getTranslatedLabel("menu_file_dir"));
             menuFileLoad.setText(TranslationM.getTranslatedLabel("menu_file_load"));
             menuFileSave.setText(TranslationM.getTranslatedLabel("menu_file_save"));
-            menuFileSaves.setText(TranslationM.getTranslatedLabel("menu_file_saveh"));
-            menuFileSaveh.setText(TranslationM.getTranslatedLabel("menu_file_saves"));
+            menuFileSaves.setText(TranslationM.getTranslatedLabel("menu_file_saves"));
+            menuFileSaveh.setText(TranslationM.getTranslatedLabel("menu_file_saveh"));
 
             menuLanguage.setText(TranslationM.getTranslatedLabel("menu_language"));
         });

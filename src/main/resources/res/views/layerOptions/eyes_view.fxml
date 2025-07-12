@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Accordion?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ColorPicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Spinner?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<Accordion fx:id="eyesOptionsRoot"
+           fx:controller="app.maker.controllers.layerOptions.EyesController"
+           minWidth="182.0" maxWidth="182.0" VBox.vgrow="ALWAYS"
+           xmlns="http://javafx.com/javafx/17.0.1"
+           xmlns:fx="http://javafx.com/fxml/1">
+  <panes>
+
+    <TitledPane fx:id="titledPaneEyes" text="title_eyes">
+      <content>
+        <ScrollPane AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0"
+                    AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0"
+                    fitToWidth="true">
+          <content>
+
+            <VBox alignment="TOP_CENTER" spacing="10">
+              <padding>
+                <Insets top="10.0" bottom="10.0" left="10.0" right="10.0" />
+              </padding>
+
+              <children>
+                <Button fx:id="buttonEyes" text="button_eyes" onAction="#handleButtonClick" />
+                <HBox fx:id="hboxEyes" styleClass="image-preview" >
+                  <children>
+                    <ImageView fx:id="imagePreviewEyes"
+                               fitWidth="130" fitHeight="105" preserveRatio="true"/>
+                  </children>
+                </HBox>
+                <Label fx:id="labelEyes" minHeight="-Infinity" wrapText="true" text="label_eyes" />
+              </children>
+            </VBox>
+
+          </content>
+        </ScrollPane>
+      </content>
+    </TitledPane>
+
+    <TitledPane fx:id="titledPaneBlink" text="title_blink">
+      <content>
+        <ScrollPane AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0"
+                    AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0"
+                    fitToWidth="true">
+          <content>
+
+            <VBox alignment="TOP_CENTER" spacing="10">
+              <padding>
+                <Insets top="10.0" bottom="10.0" left="10.0" right="10.0" />
+              </padding>
+
+              <children>
+                <CheckBox fx:id="checkboxBlink" text="checkbox_blink">
+                  <tooltip>
+                    <Tooltip fx:id="tooltipBlink" text="tooltip_blink"/>
+                  </tooltip>
+                </CheckBox>
+
+                <HBox alignment="BOTTOM_RIGHT" spacing="4">
+                  <children>
+                    <Label fx:id="labelBlinkEvery" textAlignment="RIGHT" minHeight="-Infinity" wrapText="true" text="label_blink_every" />
+                    <Spinner fx:id="spinnerBlinkEvery" minWidth="52" maxWidth="52" />
+                    <Label fx:id="labelBlinkEverySec" minWidth="30" maxWidth="30" text="label_seconds" />
+                  </children>
+                </HBox>
+                <HBox alignment="BOTTOM_RIGHT" spacing="4">
+                  <children>
+                    <Label fx:id="labelBlinkTime" textAlignment="RIGHT" minHeight="-Infinity" wrapText="true" text="label_blink_time" />
+                    <Spinner fx:id="spinnerBlinkTime" minWidth="52" maxWidth="52"/>
+                    <Label fx:id="labelBlinkTimeSec" minWidth="30" maxWidth="30" text="label_seconds"/>
+                  </children>
+                </HBox>
+
+                <Button fx:id="buttonBlink" text="button_blink" onAction="#handleButtonClick" />
+                <HBox fx:id="hboxBlink" styleClass="image-preview">
+                  <children>
+                    <ImageView fx:id="imagePreviewBlink"
+                              fitWidth="130" fitHeight="105" preserveRatio="true"/>
+                  </children>
+                </HBox>
+                <Label fx:id="labelBlink" minHeight="-Infinity" wrapText="true" text="label_blink" />
+              </children>
+            </VBox>
+
+          </content>
+        </ScrollPane>
+      </content>
+    </TitledPane>
+
+  </panes>
+</Accordion>

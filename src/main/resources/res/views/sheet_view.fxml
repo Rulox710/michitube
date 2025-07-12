@@ -1,21 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.Cursor?>
-<?import javafx.scene.layout.*?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.Rectangle?>
 
 <?import javafx.scene.shape.Rectangle?>
 
 <AnchorPane fx:id="sheetRoot"
             fx:controller="app.maker.controllers.SheetController"
             xmlns="http://javafx.com/javafx/17.0.15" xmlns:fx="http://javafx.com/fxml/1">
-        
-        <!-- Pane interno donde irán los elementos arrastrables (imágenes, etc.) -->
-        <Pane fx:id="paneSheet"
-              prefHeight="300.0" prefWidth="300.0"
-              style="-fx-background-color: lightgray;">
-        </Pane>
-        
+  <children>
+
+    <Pane fx:id="paneSheet"
+          prefHeight="300.0" prefWidth="300.0"
+          style="-fx-background-color: lightgray;">
+      <clip>
+        <Rectangle fx:id="clipRect" width="300" height="300"/>
+      </clip>
+
+      <children>
+
+      </children>
+    </Pane>
+
     <!-- Región inferior derecha para redimensionar -->
     <Region fx:id="resizeHandle"
             layoutX="300.0" layoutY="300.0"
@@ -25,5 +33,6 @@
         <Cursor fx:constant="SE_RESIZE" />
       </cursor>
     </Region>
-    
+
+  </children>
 </AnchorPane>

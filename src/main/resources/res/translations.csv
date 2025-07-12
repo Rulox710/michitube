@@ -2,6 +2,10 @@ KEY,EN,ES
 demo_title,SheIsRaisa,SheIsRaisa
 gui_title,MichiTube,MichiTube
 
+title_error_saving,Save error,Error de guardado
+header_error_saving,It isn't possible to save this model at this time.,No es posible guardar este modelo en este momento.
+content_error_saving,The VTuber model doesn't have the necessary features to be saved. (Body/Eyes/Mouth/Keyboard/Mouse),El modelo VTuber no cuenta con las características necesarias para ser guardado. (Cuerpo/Ojos/Boca/Teclado/Ratón)
+
 button_start,Start Vtuber,Iniciar Vtuber
 button_edit,Edit Vtuber,Editar Vtuber
 
@@ -53,50 +57,79 @@ label_location,Initial location,Ubicación inicial
 
 title_handinput,Hands inputs,Entradas de manos
 label_mouse,Mouse,Ratón
-label_keyboard,Keyboard,Teclado
 
 title_microphone,Microphone settings,Configuración del micrófono
-label_microphone_detection,Microphone,Micrófono
-label_microphone_channels,# Channels,# Canales
+label_microphone_channels,Channel(s),Canal(es)
 label_microphone_channel_1,Mono,Mono
 label_microphone_channel_2,Stereo,Estéreo
-label_microphone_ups,Updates/s,Actualizaciones/s
+label_microphone_ups,Updates:,Actualizaciones:
 label_microphone_sensitivity,Sensitivity,Sensibilidad
 
 title_fps,FPS settings,Configuración de FPS
-label_fps,Frames per second,Cuadros por segundo
+label_fps,Frames per second:,Cuadros por segundo:
 
 
 button_select_image,Select image,Seleccionar imagen
 button_select_color,Select color,Seleccionar color
 
-
-label_layers,Layers,Capas
-label_body,Body,Cuerpo
-label_eyes,Eyes,Ojos
-label_mouth,Mouth,Boca
-label_rhand,Right hand,Mano derecha
-label_lhand,Left hand,Mano izquierda
-label_front,Front,Frente
-
 button_background,Background,Fondo
-title_background_image,Use an Image,Usar una imágen
-label_background_image,The chosen image will be used as the VTuber's background. That means it will be the first to be drawn.,La imagen seleccionada se usará como fondo para el VTuber. Eso significa que será la primera en dibujarse.
-button_background_image,Select Image,Seleccionar Imagen
-title_background_color,Use a Color,Usar un color
-label_background_color,The chosen color will be used as the VTuber's background. That means it gets painted first.,El color seleccionado se usará como fondo para el VTuber. Eso significa que es lo primero en pintarse.
+label_background_cimage,Use background image,Usar imagen de fondo
+checkbox_background_image,Background image,Imagen de fondo
+tooltip_background_cimage,Use or not use an image for the background,Usa o no una imagen para el fondo
+title_background_image,Use an image (for background),Usar una imagen (para el fondo)
+label_background_image,*The chosen image will be used as the VTuber's background. That means it will be the first to be drawn. If none is selected then there will be not background.,*La imagen seleccionada se usará como fondo para el VTuber. Eso significa que será la primera en dibujarse. Si no se selecciona ninguno entonces no habrá fondo.
+tooltip_background_bimage,Select a background image,Selecciona una imagen de fondo
+title_background_color,Use a color,Usar un color
+checkbox_background_color,Background color,Color del fondo
+tooltip_background_ccolor,Use or not use a color for the background,Usar o no un color para el fondo
+label_background_color,*The chosen color will be used as the VTuber's background. That means it gets painted first. If none is selected then there will be not background.,*El color seleccionado se usará como fondo para el VTuber. Eso significa que es lo primero en pintarse. Si no se selecciona ninguno entonces no habrá fondo.
+tooltip_background_bcolor,Select a background color,Selecciona un color de fondo
 
 button_body,VTuber's body, Cuerpo del VTuber
+title_body_image,Use an image (for body),Usar una imágen (para el cuerpo)
+label_body_image,*The chosen image will be used as the VTuber's body. It will be the second image to be drawn. An image must be selected.,*La imagen seleccionada se usará como el cuerpo del VTuber. Será la segunda imagen en dibujarse. Se debe seleccionar una imagen.
 
 button_eyes,VTuber's eyes,Ojos del VTuber
+title_eyes,Use an Image (for eyes),Usar una imágen (para los ojos)
+label_eyes,*The chosen image will be used as the VTuber's eyes. It will be the third image to be drawn. An image must be selected.,*La imagen seleccionada se usará como los ojos del VTuber. Será la tercera imagen en dibujarse. Se debe seleccionar una imagen.
+title_blink,Use an Image (for blinking),Usar una imágen (para el parpadeo)
+checkbox_blink,Use blinking,Usar parpadeo
+tooltip_blink,Use or not use an image to blink,Usar o no una imagen para el parpadeo
+label_blink_every,Time to blink:,Tiempo para parpadear:
+label_blink_time,Time blinking:,Tiempo parpadeando:
+label_blink,*The chosen image will replace the VTuber's eyes for a few seconds; blinking. If none is selected then there will be not blinking,*La imagen elegida reemplazará los ojos del VTuber durante unos segundos a modo de parpadeo. Se debe seleccionar una imagen. Si no se selecciona ninguna entonces no habrá parpadeo.
 
 button_mouth,Vtuber's mouth,Boca del VTuber
+title_mouth,Use an Image (for mouth),Usar una imágen (para la boca)
+label_mouth,The chosen image will be used as the VTuber's mouth. It will be the fourth image to be drawn. An image must be selected.,La imagen seleccionada se usará como los ojos del VTuber. Será la cuarta imagen en dibujarse. Se debe seleccionar una imagen.
+title_talk,Use an Image (for talking),Usar una imágen (para hablar)
+checkbox_microphone_detection,Detect microphone,Detectar micrófono
+tooltip_microphone_detection,Use or not use the microphone to talk,Usar o no el micrófono para hablar
+label_talk,*The chosen image will replace the VTuber's mouth when the microphone sound exceeds a threshold; talking. If none is selected then there will be no talking,*La imagen elegida reemplazará la boca del VTuber cuando el sonido del micrófono supere un umbral para que parezca que habla. Si no se selecciona ninguna entonces no se hablará.
 
-button_table,Table,Mesa
-
-button_mouse,Vtuber's hand & Mouse,Mano del VTuber & Ratón
+button_table,"Table","Mesa"
+title_table_image,Use an Image (for table),Usar una imágen (para la mesa)
+checkbox_table,Draw a "table",Dibujar una "mesa"
+tooltip_ctable,Draw or not draw a "table",Dibujar o no una "mesa"
+tooltip_btable,Select a "table" image,Selecciona una imagen de una "mesa"
+label_table_image,*The chosen image will be used as the VTuber's "table" (or what you want to be painted before the hands). It will be the fifth image to be drawn. If none is selected then there will be not a "table".,*La imagen seleccionada se usará como la "mesa" del VTuber (o lo que sea que quieras que se dibuje antes que las manos). Será la quinta imagen en dibujarse. Si no se selecciona ninguna entonces no habrá una "mesa".
 
 button_keyboard,Vtuber's hand & Keyboard,Mano del VTuber & Teclado
+title_keyboard_off,Use an Image (for hand),Usar una imágen (para la mano)
+tooltip_bhandoff,Select a hand & keyboard image,Selecciona una imagen de una mano & teclado
+label_handoff,*The chosen image will be used as a VTuber's hand & keyboard. It will be the sixth image to be drawn. An image must be selected.,*La imagen seleccionada se usará como una mano y teclado del VTuber. Será la sexta imagen en dibujarse. Se debe seleccionar una imagen.
+title_keyboard_on,Use an Image (for typing),Usar una imágen (para teclear)
+checkbox_keyboard_detection,Detect keyboard,Detectar teclado
+tooltip_keyboard_detection,Use or not use the keboard to key in,Usar o no el teclado para teclear
+tooltip_bhandon,Select a hand on keyboard image,Selecciona una imagen de una mano sobre el teclado
+label_handon,*The chosen image will replace the VTuber's hand when the keyboard is pressed. If none is selected then no key in will occur,*La imagen elegida reemplazará la mano del VTuber cuando se presionen teclas. Si no se selecciona ninguna entonces no se tecleará.
+
+button_mouse,Vtuber's hand & Mouse,Mano del VTuber & Ratón
+title_mouse,Use an Image (for mouse),Usar una imágen (para el mouse)
+
+tooltip_resize,Change the VTuber canvas size,Cambiar el tamaño del lienzo del VTuber
+
+label_seconds,/sec.,/seg.
 
 label_img,Select image,Seleccionar imagen
 type_img,Images only,Solo imágenes
