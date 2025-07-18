@@ -1,18 +1,16 @@
 package app.maker.controllers;
 
+import app.engine.Observer;
+import app.files.PropertiesM;
+import app.files.TranslationM;
+import app.files.VTuberLoader;
+import app.files.VTuberSaver;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Map;
 import java.util.ResourceBundle;
 
-import app.engine.Observer;
-import app.engine.readers.PropertiesM;
-import app.engine.readers.TranslationM;
-import app.maker.controllers.components.DraggableResizableImageView;
-import app.maker.controllers.objects.Objects.ImageInfo;
-import app.maker.controllers.objects.Objects.SheetInfo;
-import app.saver.VTuberWriter;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -23,14 +21,25 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Control;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+/**
+ * Controlador principal, aunque no extiende {@link AbstractController}.
+ * Maneja casi todos los demás controladores, los vincula con los
+ * correspontientes observadores, avisa de cambios a los controladores
+ * que no están vinculados y tiene el esqueleto de los
+ * <code>fxml</code>.
+ *
+ * Usa el <code>fxml</code> en
+ * <code>/res/views/main_view.fxml</code>.
+ *
+ * @see app.Main#start El <code>fxml</code> se asigna en
+ *      <code>app.Main#start</code>.
+ */
 public class MainController implements Initializable, Observer {
 
-    @FXML private VBox rootVBox;
+    @FXML private Pane rootVBox, scrollpaneLayers;
     @FXML private ScrollPane scrollpaneOptions, scrollpaneLayerOptions, scrollpaneSheet;
-    @FXML private VBox scrollpaneLayers;
 
     private Control menuBarInclude;
     private Pane anchorpaneSheet;
@@ -81,43 +90,7 @@ public class MainController implements Initializable, Observer {
     }
 
     public boolean readyToSave() {
-        return false;
-    }
-
-    public void saveVTuber(File file) {
-        if(!file.getName().toLowerCase().endsWith(".sav"))
-            file = new File(file.getParentFile(), file.getName() + ".sav");
-        try {
-            file.createNewFile();
-        } catch (IOException e) {}
-
-        VTuberWriter vtuberWriter = new VTuberWriter();
-
-        String sectionName = "sheet";
-        SheetInfo sheetInfo = sheetController.getSheetInfo();
-        vtuberWriter.put(sectionName, "W",sheetInfo.width);
-        vtuberWriter.put(sectionName, "H",sheetInfo.height);
-        vtuberWriter.put(sectionName, "C",sheetInfo.color);
-
-        Map<String, ImageInfo[]> layers_infos = sheetController.getInfoMap();
-        for(Map.Entry<String, ImageInfo[]> entry: layers_infos.entrySet()) {
-            sectionName = entry.getKey();
-            ImageInfo[] infos = entry.getValue();
-            for (int i = 0; i < infos.length; i++) {
-                ImageInfo view = infos[i];
-                if(view == null) continue;
-                vtuberWriter.put(sectionName + "_" + i, "X", view.x);
-                vtuberWriter.put(sectionName + "_" + i, "Y", view.y);
-                vtuberWriter.put(sectionName + "_" + i, "W", view.width);
-                vtuberWriter.put(sectionName + "_" + i, "H", view.height);
-                vtuberWriter.put(sectionName + "_" + i, "P", view.path);
-            }
-        }
-        try {
-            vtuberWriter.saveToFile(file.getPath());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        return layersController.readyToSave();
     }
 
     @Override
@@ -133,6 +106,16 @@ public class MainController implements Initializable, Observer {
         case 'd':
             PropertiesM.setAppProperty("default_dir", ((File)data).getPath());
         break;
+        case 'L':
+            if(!VTuberLoader.loadVTuber((File)data, layersController, sheetController))
+                Platform.runLater(() -> {
+                    Alert alert = new Alert(AlertType.ERROR);
+                    alert.setTitle(TranslationM.getTranslatedLabel("title_error_loading"));
+                    alert.setHeaderText(TranslationM.getTranslatedLabel("header_error_loading"));
+                    alert.setContentText(TranslationM.getTranslatedLabel("content_error_loading"));
+                    alert.showAndWait();
+                });
+        break;
         case 'S':
             if(!readyToSave()) {
                 Platform.runLater(() -> {
@@ -144,7 +127,7 @@ public class MainController implements Initializable, Observer {
                 });
                 break;
             }
-            saveVTuber((File)data);
+            VTuberSaver.saveVTuber((File)data, layersController, sheetController);
         break;
         case 'm':
             PropertiesM.setVtuberProperty("mouse_detection", String.valueOf(data));

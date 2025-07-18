@@ -17,14 +17,4 @@ public final class Objects {
             locked = false;
         }
     }
-
-    public static class ImageInfo {
-        public int x, y, width, height;
-        public String path;
-    }
-
-    public static class SheetInfo {
-        public int width, height;
-        public String color;
-    }
 }

@@ -1,9 +1,13 @@
 package app.maker.controllers.layerOptions;
 
-import java.io.File;
-
-import app.engine.readers.TranslationM;
+import app.files.TranslationM;
 import app.maker.FXFileChooser;
+import app.maker.controllers.objects.Infos.Info;
+import app.maker.controllers.objects.builders.BasicInfoBuilder;
+
+import java.io.File;
+import java.net.URI;
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Accordion;
@@ -56,6 +60,37 @@ public class KeyboardController extends OptionLayerController {
             imagePreview.setImage(new Image(img.toURI().toString()));
             notifyObservers((char) getTweakID(), img);
         }
+    }
+
+    @Override
+    public boolean readyToSave() {
+        if(imagePreviewOff.getImage() == null) return false;
+        if(checkboxKeyboard.selectedProperty().getValue() && imagePreviewOn.getImage() == null)
+            return false;
+        return true;
+    }
+
+    @Override
+    public boolean setInfo(Info info) {
+        boolean result = true;
+
+        if(info.path[0].length() != 0) {
+            imagePreviewOff.setImage(new Image(info.path[0]));
+            notifyObservers('l', new File(URI.create(info.path[0])));
+        } else result = false;
+
+        if(info.boolParams[0] && info.path[1].length() != 0)
+            imagePreviewOn.setImage(new Image(info.path[1]));
+        else result = false;
+
+        return result;
+    }
+
+    public Info getInfo() {
+        BasicInfoBuilder builder = new BasicInfoBuilder();
+        builder.setUsage(checkboxKeyboard.selectedProperty().getValue());
+
+        return builder.getResult();
     }
 
     @Override

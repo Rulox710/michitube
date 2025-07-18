@@ -1,20 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.Cursor?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.shape.Rectangle?>
-
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.shape.Rectangle?>
 
 <AnchorPane fx:id="sheetRoot"
             fx:controller="app.maker.controllers.SheetController"
-            xmlns="http://javafx.com/javafx/17.0.15" xmlns:fx="http://javafx.com/fxml/1">
+            xmlns="http://javafx.com/javafx/17.0.15"
+            xmlns:fx="http://javafx.com/fxml/1">
   <children>
 
     <Pane fx:id="paneSheet"
-          prefHeight="300.0" prefWidth="300.0"
-          style="-fx-background-color: lightgray;">
+          prefHeight="300.0" prefWidth="300.0">
       <clip>
         <Rectangle fx:id="clipRect" width="300" height="300"/>
       </clip>

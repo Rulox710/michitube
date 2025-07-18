@@ -1,11 +1,11 @@
-package app.vtuber.detectors;
+package app.detectors;
+
+import app.engine.Observable;
+import app.engine.Observer;
 
 import com.github.kwhat.jnativehook.GlobalScreen;
 import com.github.kwhat.jnativehook.keyboard.NativeKeyEvent;
 import com.github.kwhat.jnativehook.keyboard.NativeKeyListener;
-
-import app.engine.Observable;
-import app.engine.Observer;
 
 import java.util.HashSet;
 import java.util.Set;

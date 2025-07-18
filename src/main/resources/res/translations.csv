@@ -5,6 +5,9 @@ gui_title,MichiTube,MichiTube
 title_error_saving,Save error,Error de guardado
 header_error_saving,It isn't possible to save this model at this time.,No es posible guardar este modelo en este momento.
 content_error_saving,The VTuber model doesn't have the necessary features to be saved. (Body/Eyes/Mouth/Keyboard/Mouse),El modelo VTuber no cuenta con las características necesarias para ser guardado. (Cuerpo/Ojos/Boca/Teclado/Ratón)
+title_error_loading,Load error,Error de cargado
+header_error_loading,It isn't possible to find/read this file.,No es posible encontrar/leer este modelo en este momento.
+content_error_loading,The VTuber model file couldn't be found or read,El archivo del modelo VTuber no puede ser encontrado o leído
 
 button_start,Start Vtuber,Iniciar Vtuber
 button_edit,Edit Vtuber,Editar Vtuber

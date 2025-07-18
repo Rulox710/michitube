@@ -21,88 +21,6 @@
            xmlns:fx="http://javafx.com/fxml/1">
   <panes>
 
-    <!-- <TitledPane fx:id="titledPaneHandInput" text="title_handinput">
-      <content>
-        <ScrollPane AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0"
-                    AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0"
-                    fitToWidth="true">
-          <content>
-
-            <HBox spacing="10">
-              <padding>
-                <Insets top="10.0" bottom="10.0" left="10.0" right="10.0" />
-              </padding>
-
-              <children>
-                <CheckBox fx:id="checkboxMouse" text="label_mouse" />
-                <CheckBox fx:id="checkboxKeyboard" text="label_keyboard" />
-              </children>
-            </HBox>
-
-          </content>
-        </ScrollPane>
-      </content>
-    </TitledPane> -->
-
-
-    <!-- <TitledPane fx:id="titledPaneMicrophone" text="title_microphone">
-      <content>
-        <ScrollPane AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0"
-                    AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0"
-                    fitToWidth="true">
-          <content>
-
-            <VBox HBox.hgrow="ALWAYS" spacing="10">
-              <padding>
-                <Insets top="10.0" bottom="10.0" left="10.0" right="10.0" />
-              </padding>
-
-              <children>
-                <HBox spacing="10">
-                  <children>
-                    <CheckBox fx:id="checkboxMicrophone" text="label_microphone_detection" />
-                  </children>
-                </HBox>
-
-                <HBox alignment="CENTER_LEFT" spacing="10">
-                  <children>
-                    <Label fx:id="labelMicrophoneChannel"
-                          maxWidth="Infinity" minWidth="-Infinity" text="label_microphone_channels" wrapText="false"/>
-                    <Slider fx:id="sliderMicrophoneChannel"
-                            blockIncrement="1" majorTickUnit="1" max="2" min="1" minorTickCount="0" showTickLabels="true" snapToTicks="true" value="1" />
-                  </children>
-                </HBox>
-
-                <HBox alignment="CENTER_LEFT" spacing="10">
-                  <children>
-                    <Label fx:id="labelMicrophoneUpdate" text="label_microphone_ups" />
-                    <Spinner fx:id="spinnerMicrophoneUpdate" prefWidth="70" />
-                  </children>
-                </HBox>
-
-                <VBox spacing="5">
-                  <children>
-                    <Label fx:id="labelMicrophoneSensitivity" text="label_microphone_sensitivity" />
-
-                    <StackPane fx:id="micSensitivityStack" alignment="TOP_LEFT">
-                      <children>
-                        <Region fx:id="micLevelOverlay" styleClass="mic-sensitivity-overlay" />
-                        <Slider fx:id="sliderMicrophoneSensitivity"
-                                majorTickUnit="50" max="100" min="0" minorTickCount="0" showTickLabels="true" showTickMarks="false" value="50" />
-                      </children>
-                    </StackPane>
-                  </children>
-                </VBox>
-
-              </children>
-            </VBox>
-
-          </content>
-        </ScrollPane>
-      </content>
-    </TitledPane> -->
-
-
     <TitledPane fx:id="titledPaneFPS" text="title_fps">
       <content>
         <ScrollPane AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0"
@@ -112,11 +30,12 @@
 
             <HBox alignment="BOTTOM_RIGHT" spacing="5">
               <padding>
-                <Insets top="10.0" bottom="10.0" left="10.0" right="10.0" />
+                <Insets top="10.0" bottom="10.0" left="10.0" right="10.0"/>
               </padding>
 
               <children>
-                <Label fx:id="labelFPS" textAlignment="RIGHT" minHeight="-Infinity" wrapText="true" text="label_fps" />
+                <Label fx:id="labelFPS" textAlignment="RIGHT"
+                       minHeight="-Infinity" wrapText="true" text="label_fps"/>
                 <Spinner fx:id="fpsSpinner" minWidth="60" maxWidth="60" />
                 <!-- <Label fx:id="labelFPSSec" minWidth="30" maxWidth="30" text="label_seconds" /> -->
               </children>

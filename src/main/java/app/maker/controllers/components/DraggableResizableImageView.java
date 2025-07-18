@@ -1,16 +1,22 @@
 package app.maker.controllers.components;
 
-import java.io.File;
-
+import app.maker.controllers.objects.Infos.Info;
 import app.maker.controllers.objects.Objects.Delta;
 import app.maker.controllers.objects.Objects.DirectionLock;
-import app.maker.controllers.objects.Objects.ImageInfo;
+import app.maker.controllers.objects.builders.ImageInfoBuilder;
+
+import java.io.File;
+
 import javafx.scene.image.Image;
 import javafx.scene.Cursor;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 
+/**
+ * Compoente que tiene una imagen y permite moverla en los ejes y
+ * cambiar su tamaño.
+ */
 public class DraggableResizableImageView extends Pane {
 
     private final ImageView imageView;
@@ -18,11 +24,25 @@ public class DraggableResizableImageView extends Pane {
     private final int MIN_SIZE = 5, OFFSET = 20;
     private final String PATH;
 
-    public DraggableResizableImageView(File fimg, double maxWidth, double maxHeight) {
+    /**
+     * Constructor de la clase. Una vez creado, no hay forma de
+     * modificar case ningún valor que no sea el tamano de la imagen y
+     * su posición.
+     *
+     * @param fimg El archivo con la imagen a colocar.
+     * @param maxWidth Máximo ancho de la imagen inicialmente.
+     * @param maxHeight Máximo alto de la imagen inicialmente.
+     */
+    public DraggableResizableImageView(
+            File fimg, double maxWidth, double maxHeight
+        ) {
+
         PATH = fimg.toURI().toString();
         Image image = new Image(PATH);
-        double width = (image.getWidth() < maxWidth-OFFSET)? image.getWidth(): maxWidth-OFFSET;
-        double height = (image.getHeight() < maxHeight-OFFSET)? image.getHeight(): maxHeight-OFFSET;
+        double width = (image.getWidth() < maxWidth-OFFSET)?
+                image.getWidth(): maxWidth-OFFSET;
+        double height = (image.getHeight() < maxHeight-OFFSET)?
+                image.getHeight(): maxHeight-OFFSET;
         imageView = new ImageView(image);
         imageView.setCursor(Cursor.MOVE);
         imageView.setFitWidth(width);
@@ -35,6 +55,44 @@ public class DraggableResizableImageView extends Pane {
         getChildren().addAll(imageView, resizeHandle);
     }
 
+    /**
+     * Constructor de la clase. Una vez creado, no hay forma de
+     * modificar case ningún valor que no sea el tamano de la imagen y
+     * su posición.
+     *
+     * @param fimg El archivo con la imagen a colocar.
+     * @param xPos Posición en el eje x inicialmente.
+     * @param yPos Posición en el eje y inicialmente.
+     * @param width Ancho de la imagen inicialmente.
+     * @param height Alto de la imagen inicialmente.
+     */
+    public DraggableResizableImageView(
+            File fimg, int xPos, int yPos, int width, int height
+        ) {
+
+        PATH = fimg.toURI().toString();
+        setLayoutX(xPos);
+        setLayoutY(yPos);
+
+        Image image = new Image(PATH);
+        imageView = new ImageView(image);
+        imageView.setCursor(Cursor.MOVE);
+        imageView.setFitWidth(width);
+        imageView.setFitHeight(height);
+
+        this.resizeHandle = createResizeHandle();
+        setupResizeBehavior();
+        setupDragBehavior();
+
+        getChildren().addAll(imageView, resizeHandle);
+    }
+
+    /**
+     * Crea un componente que servirá para ajustar el tamaño de la
+     * imagen.
+     *
+     * @return El compoente a añadir en la parte inferior del objeto.
+     */
     private Region createResizeHandle() {
         Region handle = new Region();
         handle.setStyle("-fx-background-color: white; -fx-border-color: black");
@@ -47,8 +105,14 @@ public class DraggableResizableImageView extends Pane {
         return handle;
     }
 
+    /**
+     * Crea la lógica para ajustar los tamaños de la imagen con el
+     * componente <code>resizeHandle</code>.
+     */
     private void setupResizeBehavior() {
-        final Delta startDelta = new Delta(), startImage = new Delta(), dragDelta = new Delta();
+        final Delta startDelta = new Delta(),
+                    startImage = new Delta(),
+                    dragDelta = new Delta();
 
         resizeHandle.setOnMousePressed(event -> {
             startDelta.x = event.getSceneX();
@@ -70,10 +134,12 @@ public class DraggableResizableImageView extends Pane {
                     imageView.setFitWidth(newWidth);
                     imageView.setFitHeight(newHeight);
                 break;
+
                 case SECONDARY:
                     dragDelta.x = event.getSceneX() - startDelta.x;
 
-                    double aspectRatio = imageView.getFitWidth() / imageView.getFitHeight();
+                    double aspectRatio = imageView.getFitWidth()
+                            / imageView.getFitHeight();
                     newWidth = Math.max(MIN_SIZE, startImage.x + dragDelta.x);
                     newHeight = newWidth / aspectRatio;
 
@@ -82,11 +148,17 @@ public class DraggableResizableImageView extends Pane {
                         imageView.setFitHeight(newHeight);
                     }
                 break;
+
+                default:
+                break;
             }
 
         });
     }
 
+    /**
+     * Crea la lógica para mover la imagen del componente.
+     */
     private void setupDragBehavior() {
         final Delta dragDelta = new Delta();
         final DirectionLock directionLock = new DirectionLock();
@@ -98,14 +170,19 @@ public class DraggableResizableImageView extends Pane {
         });
 
         imageView.setOnMouseDragged(event -> {
-            double deltaX = Math.abs(event.getSceneX() + dragDelta.x - getLayoutX());
-            double deltaY = Math.abs(event.getSceneY() + dragDelta.y - getLayoutY());
+            double deltaX = Math.abs(
+                event.getSceneX() + dragDelta.x - getLayoutX()
+            );
+            double deltaY = Math.abs(
+                event.getSceneY() + dragDelta.y - getLayoutY()
+            );
 
             switch(event.getButton()) {
                 case PRIMARY:
                     setLayoutX(event.getSceneX() + dragDelta.x);
                     setLayoutY(event.getSceneY() + dragDelta.y);
                 break;
+
                 case SECONDARY:
                     if (!directionLock.locked) {
                         if(deltaX > 0.77) directionLock.horizontal = true;
@@ -118,10 +195,19 @@ public class DraggableResizableImageView extends Pane {
                     else if (directionLock.vertical)
                         setLayoutY(event.getSceneY() + dragDelta.y);
                 break;
+
+                default:
+                break;
             }
         });
     }
 
+    /**
+     * Cambia el estilo de componente dependiendo de si tiene el foco o
+     * no según el parámetro dado.
+     *
+     * @param hasFocus Indica si tiene el foco o no.
+     */
     public void setFocus(boolean hasFocus) {
         if (hasFocus) {
             setStyle("-fx-border-color: white;");
@@ -135,13 +221,22 @@ public class DraggableResizableImageView extends Pane {
         setDisable(!hasFocus);
     }
 
-    public ImageInfo getImageInfo() {
-        final ImageInfo IMAGE_INFO = new ImageInfo();
-        IMAGE_INFO.x = (int) Math.round(getLayoutX());
-        IMAGE_INFO.y = (int) Math.round(getLayoutY());
-        IMAGE_INFO.width = (int) Math.round(imageView.getFitWidth());
-        IMAGE_INFO.height = (int) Math.round(imageView.getFitHeight());
-        IMAGE_INFO.path = PATH;
-        return IMAGE_INFO;
+    /**
+     * Crea un objeto en el que se pueden guardar distintas primitivas
+     * y cadenas según las necesidades específicas. En este caso el
+     * objeto es del tipo {@link ImageInfoBuilder}.
+     *
+     * @return El objeto que trasporta toda la información relevante
+     *         del componente.
+     */
+    public Info getImageInfo() {
+        ImageInfoBuilder builder = new ImageInfoBuilder();
+
+        builder.setXPos((int) Math.round(getLayoutX()));
+        builder.setYPos((int) Math.round(getLayoutY()));
+        builder.setWidth((int) Math.round(imageView.getFitWidth()));
+        builder.setHeight((int) Math.round(imageView.getFitHeight()));
+        builder.setPath(PATH);
+        return builder.getResult();
     }
 }

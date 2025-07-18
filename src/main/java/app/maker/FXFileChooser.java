@@ -1,14 +1,23 @@
 package app.maker;
 
+import app.files.PropertiesM;
+import app.files.TranslationM;
+
 import java.io.File;
 
-import app.engine.readers.PropertiesM;
-import app.engine.readers.TranslationM;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 
+/**
+ * Clase para manejar los diálogos de selección de archivos y
+ * directorios en la aplicación. Permite seleccionar imágenes,
+ * archivos de guardado y directorios.
+ */
 public class FXFileChooser {
 
+    /**
+     * Tipos de archivos que se pueden seleccionar.
+     */
     public enum TYPE {
         IMG, SVS, DIR
     }
@@ -17,6 +26,11 @@ public class FXFileChooser {
     private static FileChooser saveChooser = getSaveChooser();
     private static DirectoryChooser dirChooser = getDirChooser();
 
+    /**
+     * Aplica las traducciones a los diálogos de selección de archivos.
+     * Se debe llamar después de inicializar la aplicación y antes de
+     * mostrar cualquier diálogo.
+     */
     public static void applyTranslations() {
         imageChooser.setTitle(TranslationM.getTranslatedLabel("chooser_img"));
         imageChooser.getExtensionFilters().remove(0);
@@ -38,12 +52,21 @@ public class FXFileChooser {
         dirChooser.setTitle(TranslationM.getTranslatedLabel("chooser_dir"));
     }
 
+    /**
+     * Cambia el directorio inicial de los diálogos de selección de
+     * archivos.
+     */
     public static void changeInitialDirectory() {
         imageChooser.setInitialDirectory(new File(PropertiesM.getAppProperty("default_dir")));
         saveChooser.setInitialDirectory(new File(PropertiesM.getAppProperty("default_dir")));
         dirChooser.setInitialDirectory(new File(PropertiesM.getAppProperty("default_dir")));
     }
 
+    /**
+     * Devuelve el diálogo de selección de imágenes.
+     *
+     * @return El diálogo de selección de imágenes.
+     */
     public static FileChooser getImageChooser() {
         if(imageChooser == null) {
             imageChooser = new FileChooser();
@@ -59,6 +82,11 @@ public class FXFileChooser {
         return imageChooser;
     }
 
+    /**
+     * Devuelve el diálogo de selección de archivos de guardado.
+     *
+     * @return El diálogo de selección de archivos de guardado.
+     */
     public static FileChooser getSaveChooser() {
         if(saveChooser == null) {
             saveChooser = new FileChooser();
@@ -73,6 +101,11 @@ public class FXFileChooser {
         return saveChooser;
     }
 
+    /**
+     * Devuelve el diálogo de selección de directorios.
+     *
+     * @return El diálogo de selección de directorios.
+     */
     public static DirectoryChooser getDirChooser() {
         if(dirChooser == null) {
             dirChooser = new DirectoryChooser();

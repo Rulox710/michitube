@@ -8,27 +8,35 @@
 
 <MenuBar fx:controller="app.maker.controllers.MenubarController"
          prefHeight="10.0" VBox.vgrow="NEVER"
-         xmlns="http://javafx.com/javafx/17.0.15" xmlns:fx="http://javafx.com/fxml/1">
+         xmlns="http://javafx.com/javafx/17.0.15"
+         xmlns:fx="http://javafx.com/fxml/1">
   <menus>
 
     <Menu fx:id="menuStart" text="menu_start">
       <items>
-        <MenuItem fx:id="menuStartVTuber" text="menu_start_vtuber" />
+        <MenuItem fx:id="menuStartVTuber" text="menu_start_vtuber"/>
       </items>
     </Menu>
 
     <Menu fx:id="menuFile" mnemonicParsing="false" text="menu_file">
       <items>
-        <MenuItem fx:id="menuFileDir" mnemonicParsing="false" text="menu_file_dir" />
-        <SeparatorMenuItem mnemonicParsing="false" />
+        <MenuItem fx:id="menuFileDir" mnemonicParsing="false"
+                  text="menu_file_dir"/>
+        <SeparatorMenuItem mnemonicParsing="false"/>
 
-        <MenuItem fx:id="menuFileLoad" mnemonicParsing="false" text="menu_file_load" />
-        <SeparatorMenuItem mnemonicParsing="false" />
+        <MenuItem fx:id="menuFileLoad" mnemonicParsing="false"
+                  text="menu_file_load"/>
+        <SeparatorMenuItem mnemonicParsing="false"/>
 
-        <Menu fx:id="menuFileSave" mnemonicParsing="false" text="menu_file_save">
+        <Menu fx:id="menuFileSave" mnemonicParsing="false"
+              text="menu_file_save">
           <items>
-            <MenuItem fx:id="menuFileSaveh" mnemonicParsing="false" text="menu_file_saveh" />
-            <MenuItem fx:id="menuFileSaves" mnemonicParsing="false" text="menu_file_saves" />
+
+            <MenuItem fx:id="menuFileSaveh" mnemonicParsing="false"
+                      text="menu_file_saveh"/>
+            <MenuItem fx:id="menuFileSaves" mnemonicParsing="false"
+                      text="menu_file_saves"/>
+
           </items>
         </Menu>
       </items>
@@ -42,7 +50,7 @@
 
     <Menu mnemonicParsing="false" text="Help">
       <items>
-        <MenuItem mnemonicParsing="false" text="About MyHelloApp" />
+        <MenuItem mnemonicParsing="false" text="About MyHelloApp"/>
       </items>
     </Menu>
 

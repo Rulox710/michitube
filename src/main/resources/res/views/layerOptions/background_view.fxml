@@ -41,19 +41,23 @@
                   </tooltip>
                 </CheckBox>
 
-                <Button fx:id="buttonImage" text="button_select_image" onAction="#handleButtonClick">
+                <Button fx:id="buttonImage" text="button_select_image"
+                        onAction="#handleButtonClick">
                   <tooltip>
-                    <Tooltip fx:id="tooltipBImage" text="tooltip_background_bimage"/>
+                    <Tooltip fx:id="tooltipBImage"
+                             text="tooltip_background_bimage"/>
                   </tooltip>
                 </Button>
 
                 <HBox fx:id="hboxImage" styleClass="image-preview">
                   <children>
                     <ImageView fx:id="imagePreview"
-                               fitWidth="130" fitHeight="105" preserveRatio="true"/>
+                               fitWidth="130" fitHeight="105"
+                               preserveRatio="true"/>
                   </children>
                 </HBox>
-                <Label fx:id="labelImage" wrapText="true" text="label_background_image" />
+                <Label fx:id="labelImage" wrapText="true"
+                       text="label_background_image"/>
               </children>
             </VBox>
 
@@ -77,20 +81,25 @@
               <children>
                 <CheckBox fx:id="checkboxColor" text="label_background_ccolor">
                   <tooltip>
-                    <Tooltip fx:id="tooltipCColor" text="tooltip_background_ccolor"/>
+                    <Tooltip fx:id="tooltipCColor"
+                             text="tooltip_background_ccolor"/>
                   </tooltip>
                 </CheckBox>
 
-                <ColorPicker fx:id="colorPicker" minHeight="-Infinity" minWidth="-Infinity">
+                <ColorPicker fx:id="colorPicker"
+                             minHeight="-Infinity" minWidth="-Infinity">
                   <!-- <tooltip>
                     <Tooltip fx:id="tooltipColor" text="tooltip_background_color"/>
                   </tooltip> -->
                   <value>
-                    <Color red="0.8274509906768799" green="0.8274509906768799" blue="0.8274509906768799"/>
+                    <Color red="0.8274509906768799"
+                           green="0.8274509906768799"
+                           blue="0.8274509906768799"/>
                   </value>
                 </ColorPicker>
 
-                <Label fx:id="labelColor" wrapText="true" text="label_background_color" />
+                <Label fx:id="labelColor" wrapText="true"
+                       text="label_background_color"/>
               </children>
             </VBox>
 

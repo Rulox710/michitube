@@ -29,7 +29,7 @@ public class AppPaths {
      *
      * @param appName Nombre de la aplicación.
      * @param type Tipo de ruta que se desea obtener.
-     * 
+     *
      * @return Un objeto File que representa la ruta del directorio.
      */
     public static File getAppPath(String appName, PathType type) {
@@ -38,33 +38,30 @@ public class AppPaths {
 
         switch (type) {
             case CONFIG:
-                if (os.contains("win")) {
+                if(os.contains("win"))
                     basePath = System.getenv("APPDATA");
-                } else if (os.contains("mac")) {
+                else if(os.contains("mac"))
                     basePath = System.getProperty("user.home")+ SEP +"Library"+ SEP +"Application Support";
-                } else {
+                else
                     basePath = System.getProperty("user.home")+ SEP +".config";
-                }
                 break;
 
             case DATA:
-                if (os.contains("win")) {
+                if(os.contains("win"))
                     basePath = System.getenv("LOCALAPPDATA");
-                } else if (os.contains("mac")) {
+                else if(os.contains("mac"))
                     basePath = System.getProperty("user.home")+ SEP +"Library"+ SEP +"Application Support";
-                } else {
+                else
                     basePath = System.getProperty("user.home") + "/.local/share";
-                }
                 break;
 
             case CACHE:
-                if (os.contains("win")) {
+                if(os.contains("win"))
                     basePath = System.getenv("LOCALAPPDATA")+ SEP +"Cache";
-                } else if (os.contains("mac")) {
+                else if(os.contains("mac"))
                     basePath = System.getProperty("user.home")+ SEP +"Library"+ SEP +"Caches";
-                } else {
+                else
                     basePath = System.getProperty("user.home")+ SEP +".cache";
-                }
                 break;
 
             case TEMP:

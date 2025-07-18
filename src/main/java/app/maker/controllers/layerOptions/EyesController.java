@@ -1,9 +1,13 @@
 package app.maker.controllers.layerOptions;
 
-import java.io.File;
-
-import app.engine.readers.TranslationM;
+import app.files.TranslationM;
 import app.maker.FXFileChooser;
+import app.maker.controllers.objects.Infos.Info;
+import app.maker.controllers.objects.builders.EyesInfoBuilder;
+
+import java.io.File;
+import java.net.URI;
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Accordion;
@@ -69,6 +73,43 @@ public class EyesController extends OptionLayerController {
             imagePreview.setImage(new Image(img.toURI().toString()));
             notifyObservers((char) getTweakID(), img);
         }
+    }
+
+    @Override
+    public boolean readyToSave() {
+        if(imagePreviewEyes.getImage() == null) return false;
+        if(checkboxBlink.selectedProperty().getValue() && imagePreviewBlink.getImage() == null)
+            return false;
+        return true;
+    }
+
+    @Override
+    public boolean setInfo(Info info) {
+        boolean result = true;
+
+        if(info.path[0].length() != 0) {
+            imagePreviewEyes.setImage(new Image(info.path[0]));
+            notifyObservers('l', new File(URI.create(info.path[0])));
+        } else result = false;
+
+        spinnerBlinkEvery.getValueFactory().setValue(info.intParams[0]);
+        spinnerBlinkTime.getValueFactory().setValue(info.intParams[1]);
+        checkboxBlink.selectedProperty().setValue(info.boolParams[0]);
+        if(info.boolParams[0] && info.path[1].length() != 0){
+            imagePreviewBlink.setImage(new Image(info.path[1]));
+        } else result = false;
+
+        return result;
+    }
+
+    @Override
+    public Info getInfo() {
+        EyesInfoBuilder builder = new EyesInfoBuilder();
+        builder.setUsage(checkboxBlink.selectedProperty().getValue());
+        builder.setIntParam(spinnerBlinkEvery.getValue());
+        builder.setIntParam(spinnerBlinkTime.getValue());
+
+        return builder.getResult();
     }
 
     @Override

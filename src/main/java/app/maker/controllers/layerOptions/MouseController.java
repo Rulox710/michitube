@@ -1,6 +1,9 @@
 package app.maker.controllers.layerOptions;
 
-import app.engine.readers.TranslationM;
+import app.files.TranslationM;
+import app.maker.controllers.objects.Infos.Info;
+import app.maker.controllers.objects.builders.BasicInfoBuilder;
+
 import javafx.fxml.FXML;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.TitledPane;
@@ -17,6 +20,23 @@ public class MouseController extends OptionLayerController {
         optionsRoot = mouseOptionsRoot;
         firstPane = titledPaneMouse;
         super.initialize();
+    }
+
+    @Override
+    public boolean readyToSave() {
+        return true;
+    }
+
+    @Override
+    public boolean setInfo(Info info) {
+        return true;
+    }
+
+    @Override
+    public Info getInfo() {
+        BasicInfoBuilder builder = new BasicInfoBuilder();
+
+        return builder.getResult();
     }
 
     @Override

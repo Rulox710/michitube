@@ -19,15 +19,14 @@ import javax.swing.plaf.FontUIResource;
 import com.github.kwhat.jnativehook.GlobalScreen;
 import com.github.kwhat.jnativehook.NativeHookException;
 
+import app.detectors.Keyboard;
+import app.detectors.Microphone;
+import app.detectors.Mouse;
 import app.engine.DeltaTimeManager;
-import app.engine.maker.guis.MainGUI;
-import app.engine.readers.PropertiesM;
-import app.engine.readers.TranslationM;
+import app.files.PropertiesM;
+import app.files.TranslationM;
 import app.maker.controllers.MainController;
 import app.vtuber.Window;
-import app.vtuber.detectors.Keyboard;
-import app.vtuber.detectors.Microphone;
-import app.vtuber.detectors.Mouse;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -47,13 +46,13 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        
+
         // FXMLLoader loader = new FXMLLoader(getClass().getResource("/res/layouts/main_view.fxml"));
         // BorderPane root = loader.load();
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/res/views/main_view.fxml"));
         VBox root = loader.load();
-        
+
         Scene scene = new Scene(root);
 
         int taskbarHeight = Integer.parseInt(
@@ -67,7 +66,7 @@ public class Main extends Application {
         primaryStage.setWidth(Constants.FULLSCREEN_WIDTH);
         primaryStage.setHeight(Constants.FULLSCREEN_HEIGHT-taskbarHeight);
 
-        
+
         primaryStage.show();
     }
 
@@ -126,7 +125,7 @@ public class Main extends Application {
 
         //MainGUI configGui = new MainGUI();
         launch(args);
-        
+
         // Window window = new Window();
 
         // Microphone micDetector = null;

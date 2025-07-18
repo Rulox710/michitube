@@ -1,6 +1,6 @@
 package app.engine;
 
-import app.engine.readers.PropertiesM;
+import app.files.PropertiesM;
 
 /**
  * Tiene lo necesario para medir que tantas actualizaciones se hacen en

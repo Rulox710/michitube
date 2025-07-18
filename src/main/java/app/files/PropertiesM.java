@@ -1,4 +1,7 @@
-package app.engine.readers;
+package app.files;
+
+import app.Constants;
+import app.fileUtils.AppPaths;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -9,9 +12,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Properties;
 
-import app.Constants;
-import app.fileUtils.AppPaths;
-
+/**
+ * Clase que tiene lo necesario para encontrar las configuraciones
+ * de la aplicación, usarlas y actualizarlas
+ */
 public final class PropertiesM {
 
     /** Ruta del archivo de configuración. */
@@ -62,7 +66,7 @@ public final class PropertiesM {
         save(configFile, APP_CONFIG_PROPERTIES, APP_CONFIG_DESC);
     }
 
-    
+
     public static void loadVtuberProperties(String vtuberName) {
         File configDir = AppPaths.getAppPath(Constants.APP_NAME, AppPaths.PathType.CONFIG);
         File configFile = new File(configDir, "VTUBER.sav");
@@ -102,7 +106,7 @@ public final class PropertiesM {
         if(!isValidInt(property))
             VTUBER_PROPERTIES.setProperty("window_height", "400");
         property = VTUBER_PROPERTIES.getProperty("window_location");
-        if(property == null) 
+        if(property == null)
             VTUBER_PROPERTIES.setProperty("window_location", "se");
         property = VTUBER_PROPERTIES.getProperty("windows_taskbar_height");
         if(!isValidInt(property))
@@ -199,12 +203,12 @@ public final class PropertiesM {
         properties.setProperty(key, value);
         return true;
     }
-  
+
     /**
      * Verifica si una cadena representa un valor booleano válido.
      *
      * @param value La cadena que se va a verificar.
-     * 
+     *
      * @return {@code true} si la cadena es "true" o "false",
      *         {@code false} de lo contrario.
      */

@@ -1,15 +1,13 @@
 package app.maker.controllers;
 
-import java.io.BufferedWriter;
+import app.files.PropertiesM;
+import app.files.TranslationM;
+import app.maker.FXFileChooser;
+
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Locale;
 
-import app.engine.readers.PropertiesM;
-import app.engine.readers.TranslationM;
-import app.maker.FXFileChooser;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Menu;
@@ -17,6 +15,16 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.ToggleGroup;
 
+/**
+ * Controlador del menú superior de la aplicación.
+ *
+ * Usa el <code>fxml</code> en
+ * <code>/res/views/menubar_view.fxml</code>.
+ *
+ * @see app.maker.controllers.MainController#initialize El
+ *      <code>fxml</code> y los estilos se asignan en
+ *      <code>app.maker.controllers.MainController#initialize</code>
+ */
 public class MenubarController extends AbstractController {
 
     @FXML
@@ -25,21 +33,31 @@ public class MenubarController extends AbstractController {
     @FXML
     private MenuItem menuStartVTuber, menuFileDir, menuFileLoad, menuFileSaves, menuFileSaveh;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void initialize() {
         initializeMenuLanguage();
         updateLanguage();
 
         menuFileDir.setOnAction(e -> selectFile('d'));
-        menuFileLoad.setOnAction(e -> selectFile('z'));
+        menuFileLoad.setOnAction(e -> selectFile('L'));
 
         menuFileSaves.setOnAction(e -> selectFile('S'));
         menuFileSaveh.setDisable(true);
     }
 
+    /**
+     * Abre un diálogo para seleccionar un archivo o directorio
+     * dependiendo del tipo indicado.
+     *
+     * @param type El tipo de archivo o directorio.
+     */
     private void selectFile(char type) {
         File file = switch(type) {
             case 'd' -> FXFileChooser.getDirChooser().showDialog(null);
+            case 'L' -> FXFileChooser.getSaveChooser().showOpenDialog(null);
             case 'S' -> FXFileChooser.getSaveChooser().showSaveDialog(null);
             default -> null;
         };
@@ -48,6 +66,9 @@ public class MenubarController extends AbstractController {
         notifyObservers(type, file);
     }
 
+    /**
+     * Inicializa el menú de selección de idioma.
+     */
     private void initializeMenuLanguage() {
         ToggleGroup languageGroup = new ToggleGroup();
         String[] optionsToChoose = Arrays.stream(TranslationM.LANGUAGES.values())
@@ -56,7 +77,7 @@ public class MenubarController extends AbstractController {
 
         int currentLanguage = TranslationM.LANGUAGES.valueOf(
             PropertiesM.getAppProperty("language")
-        ).getIndex();
+        ).ordinal();
 
         menuLanguage.getItems().clear();
 
@@ -90,6 +111,9 @@ public class MenubarController extends AbstractController {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void updateLanguage() {
         Platform.runLater(() -> {

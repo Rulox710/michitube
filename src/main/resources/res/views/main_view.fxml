@@ -2,7 +2,6 @@
 
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.SplitPane?>
-
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
@@ -10,7 +9,8 @@
 
 <VBox fx:id="rootVBox"
       fx:controller="app.maker.controllers.MainController"
-      xmlns="http://javafx.com/javafx/17.0.15" xmlns:fx="http://javafx.com/fxml/1">
+      xmlns="http://javafx.com/javafx/17.0.15"
+      xmlns:fx="http://javafx.com/fxml/1">
   <children>
 
     <!-- <fx:include fx:id="menuBarInclude" source="menubar_view.fxml" /> -->
@@ -19,10 +19,11 @@
           HBox.hgrow="ALWAYS" maxWidth="Infinity" VBox.vgrow="ALWAYS" spacing="2.0">
       <children>
 
-        <SplitPane dividerPositions="0.5" orientation="VERTICAL" minWidth="200.0" maxWidth="200.0" VBox.vgrow="ALWAYS">
+        <SplitPane dividerPositions="0.5" orientation="VERTICAL"
+                   minWidth="200.0" maxWidth="200.0" VBox.vgrow="ALWAYS">
           <items>
 
-            <AnchorPane HBox.hgrow="ALWAYS" maxWidth="Infinity" minHeight="260.0" >
+            <AnchorPane HBox.hgrow="ALWAYS" maxWidth="Infinity" minHeight="260.0">
               <children>
 
                 <ScrollPane fx:id="scrollpaneOptions"
@@ -37,7 +38,7 @@
               </children>
             </AnchorPane>
 
-            <AnchorPane HBox.hgrow="ALWAYS" maxWidth="Infinity" minHeight="300.0" >
+            <AnchorPane HBox.hgrow="ALWAYS" maxWidth="Infinity" minHeight="300.0">
               <children>
                 <ScrollPane fx:id="scrollpaneLayerOptions"
                             AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0"
@@ -62,7 +63,8 @@
           <content>
 
             <VBox fx:id="scrollpaneLayers"
-                  minWidth="182.0" maxWidth="182.0" spacing="10.0" VBox.vgrow="ALWAYS" >
+                  minWidth="182.0" maxWidth="182.0" spacing="10.0"
+                  VBox.vgrow="ALWAYS">
               <children>
                 <!-- <fx:include source="/res/views/LayerButton.fxml"/> -->
               </children>

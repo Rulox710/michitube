@@ -1,6 +1,12 @@
 package app.maker.controllers.layerOptions;
 
+import app.files.TranslationM;
+import app.maker.FXFileChooser;
+import app.maker.controllers.objects.Infos.Info;
+import app.maker.controllers.objects.builders.MouthInfoBuilder;
+
 import java.io.File;
+import java.net.URI;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
@@ -8,8 +14,6 @@ import javax.sound.sampled.DataLine;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.TargetDataLine;
 
-import app.engine.readers.TranslationM;
-import app.maker.FXFileChooser;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -173,6 +177,44 @@ public class MouthController extends OptionLayerController {
         if (captureThread != null && captureThread.isAlive()) {
             captureThread.interrupt();
         }
+    }
+
+    @Override
+    public boolean readyToSave() {
+        if(imagePreviewMouth.getImage() == null) return false;
+        if(checkboxMicrophone.selectedProperty().getValue() && imagePreviewTalk.getImage() == null)
+            return false;
+        return true;
+    }
+
+    @Override
+    public boolean setInfo(Info info) {
+        boolean result = true;
+
+        if(info.path[0].length() != 0) {
+            imagePreviewMouth.setImage(new Image(info.path[0]));
+            notifyObservers('l', new File(URI.create(info.path[0])));
+        } else result = false;
+
+        sliderMicrophoneChannel.setValue(info.intParams[0]);
+        spinnerMicrophoneUpdate.getValueFactory().setValue(info.intParams[1]);
+        sliderMicrophoneSensitivity.setValue(info.intParams[2]);
+        checkboxMicrophone.selectedProperty().setValue(info.boolParams[0]);
+        if(info.boolParams[0] && info.path[1].length() != 0)
+            imagePreviewTalk.setImage(new Image(info.path[1]));
+        else result = false;
+
+        return result;
+    }
+
+    public Info getInfo() {
+        MouthInfoBuilder builder = new MouthInfoBuilder();
+        builder.setUsage(checkboxMicrophone.selectedProperty().getValue());
+        builder.setIntParam((int) sliderMicrophoneChannel.getValue());
+        builder.setIntParam(spinnerMicrophoneUpdate.getValue());
+        builder.setIntParam((int) sliderMicrophoneSensitivity.getValue());
+
+        return builder.getResult();
     }
 
     @Override

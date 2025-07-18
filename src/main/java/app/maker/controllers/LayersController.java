@@ -1,53 +1,75 @@
 package app.maker.controllers;
 
-import java.io.File;
-import java.io.IOException;
-
-import app.engine.Observer;
+import app.Ids;
 import app.maker.controllers.components.LayerButton;
 import app.maker.controllers.layerOptions.OptionLayerController;
+import app.maker.controllers.objects.Infos.Info;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
 
-public class LayersController extends AbstractController implements Observer {
+public class LayersController extends AbstractController {
 
-    private final int LAYERS = 7;
     private int selectedLayer = 0;
 
-    private StackPane[] stackpaneLayers = new StackPane[LAYERS];
-    private LayerButton[] buttonControllers = new LayerButton[LAYERS];
+    private final StackPane[] stackpaneLayers = new StackPane[Ids.values().length];
+    private final LayerButton[] buttonControllers = new LayerButton[Ids.values().length];
 
-    private Accordion[] accordionLayers = new Accordion[LAYERS];
-    private OptionLayerController[] accordionController = new OptionLayerController[LAYERS];
+    private final Accordion[] accordionLayers = new Accordion[Ids.values().length];
+    private final OptionLayerController[] accordionController = new OptionLayerController[Ids.values().length];
 
-    private final String[] IDS = {"background", "body", "eyes", "mouth", "table", "keyboard", "mouse"};
-
-    private Pane parentContainer;
-    private ScrollPane optionsContainer;
+    private final Pane parentContainer;
+    private final ScrollPane optionsContainer;
 
     public LayersController(Pane parentContainer, ScrollPane optionsContainer) {
         this.parentContainer = parentContainer;
         this.optionsContainer = optionsContainer;
     }
 
+    public boolean readyToSave() {
+        for(int i = 0; i < accordionController.length; i++) {
+            if(!accordionController[i].readyToSave()) return false;
+        }
+        return true;
+    }
+
+    public boolean setInfo(Ids id, Info info) {
+        return accordionController[id.ordinal()].setInfo(info);
+    }
+
+    public Map<Ids, Info> getInfos() {
+        final Map<Ids, Info> INFO_MAP = new HashMap<>(Ids.values().length-1);
+        for(int i = 0; i < accordionController.length; i++) {
+            Ids key = Ids.values()[i];
+            Info infos = accordionController[i].getInfo();
+            if(infos == null) continue;
+            INFO_MAP.put(key, infos);
+
+        }
+        return INFO_MAP;
+    }
+
     @Override
     public void initialize() {
         try {
-            for(int i = 0; i < LAYERS; i++) {
+            for(int i = 0; i < Ids.values().length; i++) {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/res/views/components/layer_button.fxml"));
                 stackpaneLayers[i] = loader.load();
                 stackpaneLayers[i].getStylesheets().add(getClass().getResource("/res/styles/layer_button.css").toExternalForm());
                 buttonControllers[i] = loader.getController();
-                buttonControllers[i].setTranslationId(String.format("button_%s", IDS[i]));
+                buttonControllers[i].setTranslationId(String.format("button_%s", Ids.values()[i].getID()));
                 parentContainer.getChildren().add(stackpaneLayers[i]);
                 buttonControllers[i].addObserver(this);
 
-                loader = new FXMLLoader(getClass().getResource(String.format("/res/views/layerOptions/%s_view.fxml", IDS[i%6])));
+                loader = new FXMLLoader(getClass().getResource(String.format("/res/views/layerOptions/%s_view.fxml", Ids.values()[i].getID())));
                 accordionLayers[i] = loader.load();
                 accordionLayers[i].getStylesheets().add(getClass().getResource("/res/styles/image_preview.css").toExternalForm());
                 if(i == 3)
@@ -71,7 +93,7 @@ public class LayersController extends AbstractController implements Observer {
     @Override
     public void updateLanguage() {
         Platform.runLater(() -> {
-            for(int i = 0; i < LAYERS; i++) {
+            for(int i = 0; i < Ids.values().length; i++) {
                 buttonControllers[i].updateLanguage();
                 accordionController[i].updateLanguage();
             }
@@ -94,12 +116,15 @@ public class LayersController extends AbstractController implements Observer {
                     }
                 }
             break;
+
             case 'C': notifyObservers('C', data);
             break;
+
             case 'T':
                 int tweakID = accordionController[selectedLayer].getTweakID();
                 notifyObservers((char)selectedLayer, tweakID);
             break;
+
             case (char)0:
             case (char)1: notifyObservers('i', data);
             break;

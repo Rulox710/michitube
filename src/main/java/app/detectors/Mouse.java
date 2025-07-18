@@ -1,12 +1,12 @@
-package app.vtuber.detectors;
-
-import com.github.kwhat.jnativehook.GlobalScreen;
-import com.github.kwhat.jnativehook.mouse.NativeMouseEvent;
-import com.github.kwhat.jnativehook.mouse.NativeMouseMotionListener;
+package app.detectors;
 
 import app.Constants;
 import app.engine.Observable;
 import app.engine.Observer;
+
+import com.github.kwhat.jnativehook.GlobalScreen;
+import com.github.kwhat.jnativehook.mouse.NativeMouseEvent;
+import com.github.kwhat.jnativehook.mouse.NativeMouseMotionListener;
 
 /**
  * Detecta y gestiona los movimientos del ratón en la pantalla.

@@ -33,7 +33,8 @@
               </padding>
 
               <children>
-                <Button fx:id="buttonHandOff" text="button_select_image" onAction="#handleButtonClick">
+                <Button fx:id="buttonHandOff" text="button_select_image"
+                        onAction="#handleButtonClick">
                   <tooltip>
                     <Tooltip fx:id="tooltipBHandOff" text="tooltip_bhandoff"/>
                   </tooltip>
@@ -42,7 +43,8 @@
                 <HBox fx:id="hboxHandOff" styleClass="image-preview">
                   <children>
                     <ImageView fx:id="imagePreviewOff"
-                               fitWidth="130" fitHeight="105" preserveRatio="true"/>
+                               fitWidth="130" fitHeight="105"
+                               preserveRatio="true"/>
                   </children>
                 </HBox>
                 <Label fx:id="labelHandOff" wrapText="true" text="label_handoff"/>
@@ -66,13 +68,16 @@
               </padding>
 
               <children>
-                <CheckBox fx:id="checkboxKeyboard" text="checkbox_keyboard_detection">
+                <CheckBox fx:id="checkboxKeyboard"
+                          text="checkbox_keyboard_detection">
                   <tooltip>
-                    <Tooltip fx:id="tooltipKeyboard" text="tooltip_keyboard_detection"/>
+                    <Tooltip fx:id="tooltipKeyboard"
+                             text="tooltip_keyboard_detection"/>
                   </tooltip>
                 </CheckBox>
 
-                <Button fx:id="buttonHandOn" text="button_select_image" onAction="#handleButtonClick">
+                <Button fx:id="buttonHandOn" text="button_select_image"
+                        onAction="#handleButtonClick">
                   <tooltip>
                     <Tooltip fx:id="tooltipBHandOn" text="tooltip_bhandon"/>
                   </tooltip>
@@ -81,7 +86,8 @@
                 <HBox fx:id="hboxHandOn" styleClass="image-preview">
                   <children>
                     <ImageView fx:id="imagePreviewOn"
-                               fitWidth="130" fitHeight="105" preserveRatio="true"/>
+                               fitWidth="130" fitHeight="105"
+                               preserveRatio="true"/>
                   </children>
                 </HBox>
                 <Label fx:id="labelHandOn" wrapText="true" text="label_handon"/>

@@ -1,6 +1,8 @@
 package app.maker.controllers.layerOptions;
 
 import app.maker.controllers.AbstractController;
+import app.maker.controllers.objects.Infos.Info;
+
 import javafx.application.Platform;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.TitledPane;
@@ -29,5 +31,15 @@ public abstract class OptionLayerController extends AbstractController {
 
     public final int getTweakID() {
         return optionsRoot.getPanes().indexOf(lastExpanded);
+    }
+
+    public abstract boolean readyToSave();
+
+    public boolean setInfo(Info info) {
+        return true;
+    }
+
+    public Info getInfo() {
+        return null;
     }
 }

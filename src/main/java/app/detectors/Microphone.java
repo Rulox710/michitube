@@ -1,14 +1,14 @@
-package app.vtuber.detectors;
+package app.detectors;
+
+import app.engine.Observable;
+import app.engine.Observer;
+import app.files.PropertiesM;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.DataLine;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.TargetDataLine;
-
-import app.engine.Observable;
-import app.engine.Observer;
-import app.engine.readers.PropertiesM;
 
 /**
  * Detecta y gestiona la entrada de audio del micrófono.

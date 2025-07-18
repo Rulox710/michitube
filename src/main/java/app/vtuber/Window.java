@@ -1,5 +1,14 @@
 package app.vtuber;
 
+import app.Constants;
+import app.engine.DeltaTimeManager;
+import app.engine.Observer;
+import app.files.PropertiesM;
+import app.files.TranslationM;
+
+import com.github.kwhat.jnativehook.GlobalScreen;
+import com.github.kwhat.jnativehook.NativeHookException;
+
 import java.awt.*;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
@@ -12,14 +21,7 @@ import java.util.LinkedList;
 
 import javax.swing.*;
 
-import com.github.kwhat.jnativehook.GlobalScreen;
-import com.github.kwhat.jnativehook.NativeHookException;
 
-import app.Constants;
-import app.engine.DeltaTimeManager;
-import app.engine.Observer;
-import app.engine.readers.PropertiesM;
-import app.engine.readers.TranslationM;
 
 /**
  * Clase que representa la ventana principal de la aplicación.
@@ -31,7 +33,7 @@ public class Window implements Observer, KeyListener {
     // Constantes de escalado para ajustar la ventana a diferentes resoluciones
     //private final double SCALING_FACTOR_X = (double) Integer.parseInt(PropertiesM.getProperty("window_width")) / 500;
     //private final double SCALING_FACTOR_Y = (double) Integer.parseInt(PropertiesM.getProperty("window_height")) / 400;
-    
+
     /**
      * Panel personalizado para dibujar los elementos de la ventana.
      */

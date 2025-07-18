@@ -1,9 +1,13 @@
 package app.maker.controllers.layerOptions;
 
-import java.io.File;
-
-import app.engine.readers.TranslationM;
+import app.files.TranslationM;
 import app.maker.FXFileChooser;
+import app.maker.controllers.objects.Infos.Info;
+import app.maker.controllers.objects.builders.BasicInfoBuilder;
+
+import java.io.File;
+import java.net.URI;
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Accordion;
@@ -54,6 +58,33 @@ public class TableController extends OptionLayerController {
             imagePreview.setImage(new Image(img.toURI().toString()));
             notifyObservers((char) 0, img);
         }
+    }
+
+    @Override
+    public boolean readyToSave() {
+        if(checkboxTable.selectedProperty().getValue() && imagePreview.getImage() == null)
+            return false;
+        return true;
+    }
+
+    @Override
+    public boolean setInfo(Info info) {
+        boolean result = true;
+
+        checkboxTable.selectedProperty().setValue(info.boolParams[0]);
+        if(info.boolParams[0] && info.path[0].length() != 0) {
+            imagePreview.setImage(new Image(info.path[0]));
+            notifyObservers('l', new File(URI.create(info.path[0])));
+        } else result = false;
+
+        return result;
+    }
+
+    public Info getInfo() {
+        BasicInfoBuilder builder = new BasicInfoBuilder();
+        builder.setUsage(checkboxTable.selectedProperty().getValue());
+
+        return builder.getResult();
     }
 
     @Override
