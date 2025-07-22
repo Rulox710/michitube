@@ -2,6 +2,7 @@ package app.maker.controllers;
 
 import app.Ids;
 import app.maker.controllers.components.LayerButton;
+import app.maker.controllers.layerOptions.MouthController;
 import app.maker.controllers.layerOptions.OptionLayerController;
 import app.maker.controllers.objects.Infos.Info;
 
@@ -28,6 +29,16 @@ public class LayersController extends AbstractController {
 
     private final Pane parentContainer;
     private final ScrollPane optionsContainer;
+
+    public void open() {
+        MouthController mc = (MouthController) accordionController[Ids.MOUTH.ordinal()];
+        mc.open();
+    }
+
+    public void close() {
+        MouthController mc = (MouthController) accordionController[Ids.MOUTH.ordinal()];
+        mc.close();
+    }
 
     public LayersController(Pane parentContainer, ScrollPane optionsContainer) {
         this.parentContainer = parentContainer;
@@ -127,6 +138,9 @@ public class LayersController extends AbstractController {
 
             case (char)0:
             case (char)1: notifyObservers('i', data);
+            break;
+
+            case 'z': open();
             break;
         }
     }

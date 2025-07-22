@@ -3,6 +3,7 @@ package app.files;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -82,5 +83,12 @@ public class VTuberWriter {
                 writer.newLine();
             }
         }
+    }
+
+    public Map<String, Map<String, String>> getClone() {
+        Map<String, Map<String, String>> clone = new HashMap<>();
+        for (Map.Entry<String, Map<String, String>> entry : sections.entrySet())
+            clone.put(entry.getKey(), new HashMap<>(entry.getValue()));
+        return clone;
     }
 }

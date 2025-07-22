@@ -21,9 +21,7 @@ public class DeltaTimeManager extends Observable {
      * Constructor privado para poder usar el patrón singleton.
      */
     private DeltaTimeManager() {
-        MAX_UPDATES_PER_SECOND = Integer.parseInt(
-            PropertiesM.getVtuberProperty("frames_per_second")
-        );
+        MAX_UPDATES_PER_SECOND = 60;
         start();
     }
 

@@ -64,6 +64,25 @@ public class MouthController extends OptionLayerController {
         }
     }
 
+    public void open() {
+        try {
+            AudioFormat format = new AudioFormat(8000.0f, 8, 1, true, false);
+            DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
+            microphone = (TargetDataLine) AudioSystem.getLine(info);
+            microphone.open(format);
+        } catch(LineUnavailableException e) {
+            e.printStackTrace();
+            throw new RuntimeException("No se pudo inicializar la línea de datos del micrófono");
+        }
+        if(checkboxMicrophone.selectedProperty().getValue()) startCapture();
+    }
+
+    public void close() {
+        stopCapture();
+        microphone.stop();
+        microphone.close();
+    }
+
     @Override
     public void initialize() {
         updateLanguage();
@@ -143,21 +162,21 @@ public class MouthController extends OptionLayerController {
     }
 
     private void startCapture() {
-        if (running) return; // ya está corriendo
+        if(running) return;
         running = true;
 
         captureThread = new Thread(() -> {
             try {
                 microphone.start();
                 long lastExecutionTime = System.currentTimeMillis();
-                while (!Thread.interrupted()) {
+                while(!Thread.interrupted()) {
                     long frameTime = 1000 / spinnerMicrophoneUpdate.getValue();
                     long currentTime = System.currentTimeMillis();
                     long elapsedTime = currentTime - lastExecutionTime;
-                    if (elapsedTime >= frameTime) {
+                    if(elapsedTime >= frameTime) {
                         byte[] buffer = new byte[microphone.getBufferSize() / 10];
                         int bytesRead = microphone.read(buffer, 0, buffer.length);
-                        if (bytesRead > 0) {
+                        if(bytesRead > 0) {
                             updateAmplitude(calculateAmplitude(buffer));
                         }
                         lastExecutionTime = currentTime;
@@ -174,7 +193,7 @@ public class MouthController extends OptionLayerController {
 
     private void stopCapture() {
         running = false;
-        if (captureThread != null && captureThread.isAlive()) {
+        if(captureThread != null && captureThread.isAlive()) {
             captureThread.interrupt();
         }
     }
@@ -200,13 +219,16 @@ public class MouthController extends OptionLayerController {
         spinnerMicrophoneUpdate.getValueFactory().setValue(info.intParams[1]);
         sliderMicrophoneSensitivity.setValue(info.intParams[2]);
         checkboxMicrophone.selectedProperty().setValue(info.boolParams[0]);
-        if(info.boolParams[0] && info.path[1].length() != 0)
+        if(info.boolParams[0] && info.path[1].length() != 0) {
             imagePreviewTalk.setImage(new Image(info.path[1]));
+            checkboxMicrophone.selectedProperty().setValue(info.boolParams[0]);
+        }
         else result = false;
 
         return result;
     }
 
+    @Override
     public Info getInfo() {
         MouthInfoBuilder builder = new MouthInfoBuilder();
         builder.setUsage(checkboxMicrophone.selectedProperty().getValue());

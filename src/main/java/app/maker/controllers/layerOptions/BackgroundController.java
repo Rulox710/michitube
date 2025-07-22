@@ -73,7 +73,7 @@ public class BackgroundController extends OptionLayerController {
         File img = FXFileChooser.getImageChooser().showOpenDialog(null);
         if(img != null) {
             imagePreview.setImage(new Image(img.toURI().toString()));
-            notifyObservers((char) 0, img);
+            notifyObservers((char) getTweakID(), img);
         }
     }
 
@@ -95,6 +95,7 @@ public class BackgroundController extends OptionLayerController {
         if(info.boolParams[0] && info.path[0].length() != 0){
             imagePreview.setImage(new Image(info.path[0]));
             notifyObservers('l', new File(URI.create(info.path[0])));
+            checkboxImage.selectedProperty().setValue(info.boolParams[0]);
         } else result = false;
 
         if(info.boolParams[1]) {

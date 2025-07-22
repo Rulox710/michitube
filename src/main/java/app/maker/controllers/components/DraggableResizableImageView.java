@@ -9,6 +9,7 @@ import java.io.File;
 
 import javafx.scene.image.Image;
 import javafx.scene.Cursor;
+import javafx.scene.effect.ColorAdjust;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
@@ -21,7 +22,7 @@ public class DraggableResizableImageView extends Pane {
 
     private final ImageView imageView;
     private final Region resizeHandle;
-    private final int MIN_SIZE = 5, OFFSET = 20;
+    private final int MIN_SIZE = 10, OFFSET = 20;
     private final String PATH;
 
     /**
@@ -91,7 +92,7 @@ public class DraggableResizableImageView extends Pane {
      * Crea un componente que servirá para ajustar el tamaño de la
      * imagen.
      *
-     * @return El compoente a añadir en la parte inferior del objeto.
+     * @return El componente a añadir en la parte inferior del objeto.
      */
     private Region createResizeHandle() {
         Region handle = new Region();
@@ -209,14 +210,17 @@ public class DraggableResizableImageView extends Pane {
      * @param hasFocus Indica si tiene el foco o no.
      */
     public void setFocus(boolean hasFocus) {
-        if (hasFocus) {
+        if(hasFocus) {
             setStyle("-fx-border-color: white;");
             resizeHandle.setStyle("-fx-background-color: white; -fx-border-color: black");
-            imageView.setStyle("-fx-opacity: 1.0;");
+            imageView.setEffect(null);
         } else {
             setStyle("-fx-border-color: transparent;");
             resizeHandle.setStyle("-fx-background-color: transparent; -fx-border-color: transparent");
-            imageView.setStyle("-fx-opacity: 0.5;");
+            ColorAdjust adjust = new ColorAdjust();
+            adjust.setBrightness(-0.4);      // más oscuro
+            adjust.setSaturation(-0.5);      // menos saturado
+            imageView.setEffect(adjust);
         }
         setDisable(!hasFocus);
     }

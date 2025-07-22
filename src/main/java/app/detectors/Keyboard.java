@@ -1,5 +1,6 @@
 package app.detectors;
 
+import app.engine.DeltaTimeManager;
 import app.engine.Observable;
 import app.engine.Observer;
 
@@ -29,6 +30,12 @@ public class Keyboard extends Observable
      */
     public Keyboard() {
         GlobalScreen.addNativeKeyListener(this);
+        DeltaTimeManager.getInstance().addObserver(this);
+    }
+
+    public void stopCapture() {
+        GlobalScreen.removeNativeKeyListener(this);
+        DeltaTimeManager.getInstance().removeObserver(this);
     }
 
     /**

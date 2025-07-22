@@ -38,7 +38,7 @@ public class BodyController extends OptionLayerController {
         File img = FXFileChooser.getImageChooser().showOpenDialog(null);
         if(img != null) {
             imagePreview.setImage(new Image(img.toURI().toString()));
-            notifyObservers((char) 0, img);
+            notifyObservers((char) getTweakID(), img);
         }
     }
 

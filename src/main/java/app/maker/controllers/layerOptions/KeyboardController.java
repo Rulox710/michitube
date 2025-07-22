@@ -79,8 +79,10 @@ public class KeyboardController extends OptionLayerController {
             notifyObservers('l', new File(URI.create(info.path[0])));
         } else result = false;
 
-        if(info.boolParams[0] && info.path[1].length() != 0)
+        if(info.boolParams[0] && info.path[1].length() != 0) {
             imagePreviewOn.setImage(new Image(info.path[1]));
+            checkboxKeyboard.selectedProperty().setValue(info.boolParams[0]);
+        }
         else result = false;
 
         return result;

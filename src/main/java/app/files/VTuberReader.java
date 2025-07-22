@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
@@ -67,6 +68,11 @@ public class VTuberReader {
                 }
             }
         }
+    }
+
+    public void loadFromMap(Map<String, Map<String, String>> infoMap) {
+        for (Map.Entry<String, Map<String, String>> entry : infoMap.entrySet())
+            sections.put(entry.getKey(), new HashMap<>(entry.getValue()));
     }
 
     /**

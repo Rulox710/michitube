@@ -96,7 +96,7 @@ public final class VTuberLoader {
         ));
 
         return sheetController.setInfoImage(
-                id.ordinal(), tweak, imageBuilder.getResult()
+                id, tweak, imageBuilder.getResult()
             );
     }
 

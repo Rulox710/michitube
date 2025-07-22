@@ -2,6 +2,7 @@ package app.maker.controllers;
 
 import app.Ids;
 import app.files.TranslationM;
+import app.maker.controllers.components.DraggableResizableArea;
 import app.maker.controllers.components.DraggableResizableImageView;
 import app.maker.controllers.objects.Infos.Info;
 import app.maker.controllers.objects.Objects.Delta;
@@ -10,7 +11,6 @@ import app.maker.controllers.objects.builders.SheetInfoBuilder;
 
 import java.io.File;
 import java.net.URI;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,17 +42,15 @@ public class SheetController extends AbstractController {
                               LAYER_MOUTH = new DraggableResizableImageView[2],
                               LAYER_TABLE = new DraggableResizableImageView[1],
                               LAYER_KEYBOARD = new DraggableResizableImageView[2],
-                              LAYER_MOUSE = new DraggableResizableImageView[2];
-    private final int[] layerSizes = { LAYER_BACKGROUND.length,
-                         LAYER_BODY.length,
-                         LAYER_EYES.length,
-                         LAYER_MOUTH.length,
-                         LAYER_TABLE.length,
-                         LAYER_KEYBOARD.length,
-                         LAYER_MOUSE.length };
+                              LAYER_MOUSE = new DraggableResizableImageView[1];
+    private final int LAYERS_SIZE = LAYER_BACKGROUND.length + LAYER_BODY.length + LAYER_EYES.length +
+                                    LAYER_MOUTH.length + LAYER_TABLE.length + LAYER_KEYBOARD.length +
+                                    LAYER_MOUSE.length;
     private final Map<Ids, DraggableResizableImageView[]> LAYERS_MAP =  new HashMap<>(Ids.values().length);
 
-    private int currentLayer = 0, lastLayer;
+    private DraggableResizableArea mouseArea;
+
+    private Ids currentLayer = Ids.BACKGROUND, lastLayer;
     private int currentTweak = 0, lastTweak;
 
     public SheetController() {
@@ -65,27 +63,32 @@ public class SheetController extends AbstractController {
         LAYERS_MAP.put(Ids.MOUSE, LAYER_MOUSE);
     }
 
-    public void selectLayer(int layerID, int tweakID) {
+    public void selectLayer(Ids layerID, int tweakID) {
         lastLayer = currentLayer;
         lastTweak = currentTweak;
         currentLayer = layerID;
         currentTweak = tweakID;
 
         try {
-            LAYERS_MAP.get(Ids.values()[lastLayer])[lastTweak].setFocus(false);
+            LAYERS_MAP.get(lastLayer)[lastTweak].setFocus(false);
         } catch(Exception e) {}
         try {
-            LAYERS_MAP.get(Ids.values()[currentLayer])[currentTweak].setFocus(true);
+            LAYERS_MAP.get(currentLayer)[currentTweak].setFocus(true);
         } catch(Exception e) {}
+
+        if(lastLayer == Ids.MOUSE && currentLayer != Ids.MOUSE)
+            mouseArea.setFocus(false);
+        if(currentLayer == Ids.MOUSE)
+            mouseArea.setFocus(true);
     }
 
     public void setImage(File imageFile) {
         if (imageFile == null || !imageFile.exists()) return;
 
-        LAYERS_MAP.get(Ids.values()[currentLayer])[currentTweak] = new DraggableResizableImageView(imageFile, paneSheet.getWidth(), paneSheet.getHeight());
-        LAYERS_MAP.get(Ids.values()[currentLayer])[currentTweak].setFocus(true);
-        Pane image = LAYERS_MAP.get(Ids.values()[currentLayer])[currentTweak];
-        int a = currentLayer;
+        LAYERS_MAP.get(currentLayer)[currentTweak] = new DraggableResizableImageView(imageFile, paneSheet.getWidth(), paneSheet.getHeight());
+        LAYERS_MAP.get(currentLayer)[currentTweak].setFocus(true);
+        Pane image = LAYERS_MAP.get(currentLayer)[currentTweak];
+        Ids a = currentLayer;
         int b = currentTweak;
         Platform.runLater(() -> {
             paneSheet.getChildren().remove(getIndex(a, b));
@@ -93,7 +96,7 @@ public class SheetController extends AbstractController {
         });
     }
 
-    private boolean setImage(int layer, int tweak, String imageUri, int xPos, int yPos, int width, int height) {
+    private boolean setImage(Ids layer, int tweak, String imageUri, int xPos, int yPos, int width, int height) {
         File imageFile;
         try {
             imageFile = new File(URI.create(imageUri));
@@ -102,12 +105,12 @@ public class SheetController extends AbstractController {
             return false;
         }
 
-        LAYERS_MAP.get(Ids.values()[layer])[tweak] = new DraggableResizableImageView(imageFile, xPos, yPos, width, height);
+        LAYERS_MAP.get(layer)[tweak] = new DraggableResizableImageView(imageFile, xPos, yPos, width, height);
         if(layer == currentLayer && tweak == currentTweak)
-           LAYERS_MAP.get(Ids.values()[layer])[tweak].setFocus(true);
-        else LAYERS_MAP.get(Ids.values()[layer])[tweak].setFocus(false);
-        Pane image = LAYERS_MAP.get(Ids.values()[layer])[tweak];
-        int a = layer;
+           LAYERS_MAP.get(layer)[tweak].setFocus(true);
+        else LAYERS_MAP.get(layer)[tweak].setFocus(false);
+        Pane image = LAYERS_MAP.get(layer)[tweak];
+        Ids a = layer;
         int b = tweak;
         Platform.runLater(() -> {
             paneSheet.getChildren().remove(getIndex(a, b));
@@ -117,16 +120,19 @@ public class SheetController extends AbstractController {
         return true;
     }
 
-    private int getIndex(int layer, int tweak) {
-        int index = 0;
-        for(int i = 0; i < layer; i++) index += layerSizes[i];
-        return index + tweak;
+    private int getIndex(Ids layer, int tweak) {
+        int sum = -1;
+        for(Ids id: Ids.values()) {
+            if(id == layer) break;
+            sum += LAYERS_MAP.get(id).length;
+        }
+        return sum + LAYERS_MAP.get(layer).length - tweak;
     }
 
     @Override
     public void initialize() {
         ObservableList<Node> children = paneSheet.getChildren();
-        while(children.size() < Arrays.stream(layerSizes).sum()) {
+        while(children.size() < LAYERS_SIZE) {
             children.add(new Pane());
         }
 
@@ -137,6 +143,12 @@ public class SheetController extends AbstractController {
         )));
 
         enableResizeHandle();
+
+        mouseArea = new DraggableResizableArea(
+            MIN_SIZE, MIN_SIZE, paneSheet.getPrefHeight(), paneSheet.getPrefWidth()
+        );
+        mouseArea.setFocus(false);
+        children.add(mouseArea);
 
         updateLanguage();
     }
@@ -223,7 +235,7 @@ public class SheetController extends AbstractController {
         return builder.getResult();
     }
 
-    public boolean setInfoImage(int layer, int tweak, Info infoImage) {
+    public boolean setInfoImage(Ids layer, int tweak, Info infoImage) {
         return setImage(layer, tweak, infoImage.path[0], infoImage.x, infoImage.y, infoImage.width, infoImage.height);
     }
 
@@ -259,7 +271,8 @@ public class SheetController extends AbstractController {
             case (char)4:
             case (char)5:
             case (char)6:
-                selectLayer((int)event, (int)data);
+                Ids layer = Ids.values()[(int)event];
+                selectLayer(layer, (int)data);
             break;
 
             case 'i': setImage((File)data);

@@ -1,6 +1,7 @@
 package app.detectors;
 
 import app.Constants;
+import app.engine.DeltaTimeManager;
 import app.engine.Observable;
 import app.engine.Observer;
 
@@ -28,6 +29,12 @@ public class Mouse extends Observable
      */
     public Mouse() {
         GlobalScreen.addNativeMouseMotionListener(this);
+        DeltaTimeManager.getInstance().addObserver(this);
+    }
+
+    public void stopCapture() {
+        GlobalScreen.removeNativeMouseMotionListener(this);
+        DeltaTimeManager.getInstance().removeObserver(this);
     }
 
     /**

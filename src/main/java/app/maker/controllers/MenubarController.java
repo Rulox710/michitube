@@ -41,6 +41,8 @@ public class MenubarController extends AbstractController {
         initializeMenuLanguage();
         updateLanguage();
 
+        menuStartVTuber.setOnAction(e -> notifyObservers('R', null));
+
         menuFileDir.setOnAction(e -> selectFile('d'));
         menuFileLoad.setOnAction(e -> selectFile('L'));
 

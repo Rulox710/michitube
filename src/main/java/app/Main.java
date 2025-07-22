@@ -1,39 +1,13 @@
 package app;
 
-import java.awt.Font;
-import java.awt.GraphicsEnvironment;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Scanner;
-
-import javax.swing.UIManager;
-import javax.swing.plaf.FontUIResource;
-
-import com.github.kwhat.jnativehook.GlobalScreen;
-import com.github.kwhat.jnativehook.NativeHookException;
-
-import app.detectors.Keyboard;
-import app.detectors.Microphone;
-import app.detectors.Mouse;
-import app.engine.DeltaTimeManager;
 import app.files.PropertiesM;
 import app.files.TranslationM;
-import app.maker.controllers.MainController;
-import app.vtuber.Window;
+
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 /**
@@ -44,117 +18,64 @@ import javafx.stage.Stage;
  */
 public class Main extends Application {
 
+    private static Stage primaryStage;
+
     @Override
     public void start(Stage primaryStage) throws Exception {
-
-        // FXMLLoader loader = new FXMLLoader(getClass().getResource("/res/layouts/main_view.fxml"));
-        // BorderPane root = loader.load();
-
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/res/views/main_view.fxml"));
-        VBox root = loader.load();
-
-        Scene scene = new Scene(root);
-
-        int taskbarHeight = Integer.parseInt(
-            PropertiesM.getVtuberProperty("windows_taskbar_height")
-        );
-
-        primaryStage.setTitle(TranslationM.getTranslatedLabel("gui_title"));
-        primaryStage.setScene(scene);
-        primaryStage.setMinWidth(700);
-        primaryStage.setMinHeight(680);
-        primaryStage.setWidth(Constants.FULLSCREEN_WIDTH);
-        primaryStage.setHeight(Constants.FULLSCREEN_HEIGHT-taskbarHeight);
-
-
-        primaryStage.show();
+        openMainWindow(primaryStage);
     }
 
-    /**
-     * El método principal que inicia el programa.
-     * Carga las configuraciones, crea la ventana principal y realiza
-     * la detección de dispositivos.
-     *
-     * @param args Los argumentos de la línea de comandos
-     *             (no se utilizan en este programa).
-     */
-    public static void main(String[] args) {
-        TranslationM.load();
-        PropertiesM.loadAppProperties();
-        PropertiesM.loadVtuberProperties("String vtuberName");
+    public static void openMainWindow(Stage stage) {
+        try {
+            FXMLLoader loader = new FXMLLoader(Main.class.getResource("/res/views/main_view.fxml"));
+            Pane root = loader.load();
+            Scene scene = new Scene(root);
 
-        String language = PropertiesM.getAppProperty("language");
-        Locale locale = Locale.ENGLISH;
-        switch(language) {
-            case "EN":
-                locale = Locale.ENGLISH;
-                break;
-            case "ES":
-                locale = new Locale(language);
-                break;
-            default:
-                locale = Locale.ENGLISH;
-                break;
+            int taskbarHeight = Integer.parseInt(
+                PropertiesM.getVtuberProperty("windows_taskbar_height")
+            );
+
+            stage.setTitle(TranslationM.getTranslatedLabel("gui_title"));
+            stage.setScene(scene);
+            stage.setMinWidth(700);
+            stage.setMinHeight(680);
+            stage.setWidth(Constants.FULLSCREEN_WIDTH);
+            stage.setHeight(Constants.FULLSCREEN_HEIGHT - taskbarHeight);
+            stage.show();
+
+            Main.primaryStage = stage;
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
-        Locale.setDefault(locale);
+    }
 
-        // Font font = new Font("Arial", Font.PLAIN, 14);
-        // for (Enumeration<Object> keys = UIManager.getDefaults().keys(); keys.hasMoreElements();) {
-        //     Object key = keys.nextElement();
-        //     Object value = UIManager.get(key);
-        //     if (value instanceof FontUIResource)
-        //         UIManager.put(key, new FontUIResource(font));
-        // }
-        // try {
-        //     Font roboto = Font.createFont(Font.TRUETYPE_FONT, new File(Constants.RES+"Roboto-Regular.ttf")).deriveFont(16f);
-        //     GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-        //     ge.registerFont(roboto);
+    public static void hidePrimaryStage() {
+        Platform.runLater(() -> {
+            Main.primaryStage.hide();
+        });
+    }
 
-        //     // Aplicarla como fuente global (sin comprometer compatibilidad multilingüe)
-        //     for (Enumeration<Object> keys = UIManager.getDefaults().keys(); keys.hasMoreElements();) {
-        //         Object key = keys.nextElement();
-        //         Object value = UIManager.get(key);
-        //         if (value instanceof FontUIResource) {
-        //             UIManager.put(key, new FontUIResource(roboto));
-        //         }
-        //     }
-        // } catch (Exception e) {
-        //     e.printStackTrace();
-        // }
-        // System.out.println(UIManager.getFont("Label.font"));
+    public static void showPrimaryStage() {
+        Platform.runLater(() -> {
+            Main.primaryStage.show();
+        });
+    }
 
-        //MainGUI configGui = new MainGUI();
+    public static void closePrimaryStage() {
+        Platform.runLater(() -> {
+            Main.primaryStage.close();
+            Platform.exit();
+        });
+    }
+
+    public static void startPrimaryStage() {
+        Platform.runLater(() -> {
+            Main.openMainWindow(new Stage());
+        });
+    }
+
+    public static void launchApp(String[] args) {
+        Platform.setImplicitExit(false);
         launch(args);
-
-        // Window window = new Window();
-
-        // Microphone micDetector = null;
-        // if(Boolean.parseBoolean(Constants.PROPERTIES.getProperty("microphone_detection"))) {
-        //     micDetector = new Microphone();
-        //     micDetector.addObserver(window);
-        // }
-
-        // try {
-        //     GlobalScreen.registerNativeHook();
-        // } catch (NativeHookException e) {
-        //     e.printStackTrace();
-        // }
-
-        // Keyboard keyboard = null;
-        // if(Boolean.parseBoolean(Constants.PROPERTIES.getProperty("keyboard_detection"))) {
-        //     keyboard = new Keyboard();
-        //     keyboard.addObserver(window);
-        // }
-
-        // Mouse mouse = null;
-        // if(Boolean.parseBoolean(Constants.PROPERTIES.getProperty("mouse_detection"))) {
-        //     mouse = new Mouse();
-        //     mouse.addObserver(window);
-        // }
-
-        // DeltaTimeManager.getInstance().addObserver(window);
-        // if(micDetector != null) DeltaTimeManager.getInstance().addObserver(micDetector);
-        // if(keyboard != null) DeltaTimeManager.getInstance().addObserver(keyboard);
-        // if(mouse != null) DeltaTimeManager.getInstance().addObserver(mouse);
     }
 }

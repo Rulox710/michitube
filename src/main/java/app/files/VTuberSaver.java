@@ -78,34 +78,9 @@ public class VTuberSaver {
 
     }
 
-    /**
-     * Método estático que debe ser llamado para guardar las
-     * configuraciones del modelo vtuber.
-     *
-     * @param file Archivo en donde se guardarán las configuracions del
-     *             vtuber.
-     * @param layersController El controlador de las cofiguraciones de
-     *                         los parámetros de donde se obtienen los
-     *                         distintos parámetros.
-     * @param sheetController El controlador del que se obtiene la
-     *                        información de la hoja y los gráficos
-     *                        relativos a las imágenes.
-     *
-     * @return Un booleano que indica si algún dato de la configuración
-     *         tiene un error grave que no se puede corregir
-     *         automáticamente.
-     */
-    public static boolean saveVTuber(
-            File file, LayersController layersController, SheetController sheetController
+    public static VTuberWriter getVTuberWriter(
+            LayersController layersController, SheetController sheetController
         ) {
-
-        if(!file.getName().toLowerCase().endsWith(".sav"))
-            file = new File(file.getParentFile(), file.getName() + ".sav");
-        try {
-            file.createNewFile();
-        } catch (IOException e) {
-            return false;
-        }
 
         VTuberWriter vtuberWriter = new VTuberWriter();
 
@@ -169,6 +144,42 @@ public class VTuberSaver {
                 break;
             }
         }
+        return vtuberWriter;
+    }
+
+    /**
+     * Método estático que debe ser llamado para guardar las
+     * configuraciones del modelo vtuber.
+     *
+     * @param file Archivo en donde se guardarán las configuracions del
+     *             vtuber.
+     * @param layersController El controlador de las cofiguraciones de
+     *                         los parámetros de donde se obtienen los
+     *                         distintos parámetros.
+     * @param sheetController El controlador del que se obtiene la
+     *                        información de la hoja y los gráficos
+     *                        relativos a las imágenes.
+     *
+     * @return Un booleano que indica si algún dato de la configuración
+     *         tiene un error grave que no se puede corregir
+     *         automáticamente.
+     */
+    public static boolean saveVTuber(
+            File file, LayersController layersController, SheetController sheetController
+        ) {
+
+        if(!file.getName().toLowerCase().endsWith(".sav"))
+            file = new File(file.getParentFile(), file.getName() + ".sav");
+        try {
+            file.createNewFile();
+        } catch (IOException e) {
+            return false;
+        }
+
+        VTuberWriter vtuberWriter = getVTuberWriter(
+            layersController, sheetController
+        );
+
         try {
             vtuberWriter.saveToFile(file.getPath());
         } catch (IOException e) {

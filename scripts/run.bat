@@ -1,10 +1,10 @@
 @ECHO off
 @chcp 65001>nul
 
-SET "EXEC=app.Main"
+SET "EXEC=app.AppLauncher"
 SET "RES_DIR=../src/main/resources"
 SET "SRC_DIR=../src/main/java"
-SET "JAVA_PRIN=../src/main/java/app/Main.java"
+SET "JAVA_PRIN=../src/main/java/app/AppLauncher.java"
 
 REM Pregunta al usuario si desea compilar
 choice /c SN /n /m "¿Compilar (S/N)?"

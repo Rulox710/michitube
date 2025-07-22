@@ -128,10 +128,16 @@ tooltip_bhandon,Select a hand on keyboard image,Selecciona una imagen de una man
 label_handon,*The chosen image will replace the VTuber's hand when the keyboard is pressed. If none is selected then no key in will occur,*La imagen elegida reemplazará la mano del VTuber cuando se presionen teclas. Si no se selecciona ninguna entonces no se tecleará.
 
 button_mouse,Vtuber's hand & Mouse,Mano del VTuber & Ratón
+title_area,Movement area,Área de movimiento
+label_area,Initial position,Posición inical
+checkbox_movement,Detect mouse,Detectar ratón
+tooltip_movement,Use or not use the mouse to move the hand,Usar o no el ratón para mover la mano
 title_mouse,Use an Image (for mouse),Usar una imágen (para el mouse)
 
 tooltip_resize,Change the VTuber canvas size,Cambiar el tamaño del lienzo del VTuber
 
+label_X,X:,X:
+label_Y,Y:,Y:
 label_seconds,/sec.,/seg.
 
 label_img,Select image,Seleccionar imagen
