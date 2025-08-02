@@ -1,6 +1,9 @@
 package app.maker.controllers;
 
+import app.Constants;
+import app.LogMessage;
 import app.Main;
+import app.engine.DeltaTimeManager;
 import app.engine.Observer;
 import app.files.PropertiesM;
 import app.files.TranslationM;
@@ -13,9 +16,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
-
-import com.github.kwhat.jnativehook.GlobalScreen;
-import com.github.kwhat.jnativehook.NativeHookException;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -58,57 +58,69 @@ public class MainController implements Initializable, Observer {
 
     private VTuberWindow vtWin = new VTuberWindow();
 
+    /**
+     * Inicializa el controlador principal.
+     * Carga los componentes de la interfaz y vincula los controladores
+     * necesarios.
+     *
+     * @param location La ubicación del recurso FXML.
+     * @param resources Los recursos asociados con el FXML.
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        int count = 0;
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/res/views/menubar_view.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/menubar_view.fxml"));
+            count++;
             menuBarInclude = loader.load();
+            System.out.println(String.format(LogMessage.GUI_FXML.get(), "Barra de menu"));
             menubarController = loader.getController();
             rootVBox.getChildren().add(0, menuBarInclude);
 
-            loader = new FXMLLoader(getClass().getResource("/res/views/options_view.fxml"));
+            loader = new FXMLLoader(getClass().getResource("/views/options_view.fxml"));
             vboxOptionsInclude = loader.load();
+            System.out.println(String.format(LogMessage.GUI_FXML.get(), "Panel de opciones"));
+            count++;
             optionsController = loader.getController();
             scrollpaneOptions.setContent(vboxOptionsInclude);
 
             layersController = new LayersController(scrollpaneLayers, scrollpaneLayerOptions);
             layersController.initialize();
 
-            loader = new FXMLLoader(getClass().getResource("/res/views/sheet_view.fxml"));
+            loader = new FXMLLoader(getClass().getResource("/views/sheet_view.fxml"));
             anchorpaneSheet = loader.load();
+            System.out.println(String.format(LogMessage.GUI_FXML_END.get(), "Vista de la hoja"));
+            count++;
             sheetController = loader.getController();
             scrollpaneSheet.setContent(anchorpaneSheet);
         } catch (IOException e) {
+            String error = switch(count) {
+                case 0 -> "Barra de menu";
+                case 1 -> "Panel de opciones";
+                case 2 -> "Vista de la hoja";
+                default -> "Desconocido";
+            };
+            System.out.println(String.format(LogMessage.GUI_FXML_X.get(), error));
+
+            Constants.printTimeStamp(System.err);
             e.printStackTrace();
+            Platform.runLater(() -> {
+                Main.stopApp(true);
+            });
         }
         menubarController.addObserver(this);
         optionsController.addObserver(this);
         layersController.addObserver(sheetController);
         vtWin.addObserver(this);
         vtWin.addObserver(layersController);
-
-        Platform.runLater(() -> {
-            Stage stage = (Stage) rootVBox.getScene().getWindow();
-            stage.setOnCloseRequest(event -> {
-                saveConfig();
-                Main.closePrimaryStage();
-                try {
-                    GlobalScreen.unregisterNativeHook();
-                } catch(NativeHookException ex) {
-                    ex.printStackTrace();
-                }
-                System.exit(0);
-            });
-        });
     }
 
     public void saveConfig() {
-        PropertiesM.saveVtuberProperties();
         PropertiesM.saveAppProperties();
     }
 
     public boolean readyToSave() {
-        return layersController.readyToSave();
+        return layersController.readyToSave() && sheetController.readyToSave();
     }
 
     /**
@@ -133,16 +145,30 @@ public class MainController implements Initializable, Observer {
     public void update(char event, Object data) {
         switch(event) {
         case 'R':
-            saveConfig();
+            if(!readyToSave()) {
+                Platform.runLater(() -> {
+                    Alert alert = new Alert(AlertType.ERROR);
+                    alert.setTitle(TranslationM.getTranslatedLabel("title_error_startup"));
+                    alert.setHeaderText(TranslationM.getTranslatedLabel("header_error_startup"));
+                    alert.setContentText(TranslationM.getTranslatedLabel("content_error_startup"));
+                    alert.showAndWait();
+                });
+                break;
+            }
             layersController.close();
             Main.hidePrimaryStage();
 
             VTuberReader reader = new VTuberReader();
-            reader.loadFromMap(
-                VTuberSaver.getVTuberWriter(layersController, sheetController
+            reader.loadFromMap(VTuberSaver.getVTuberWriter(
+                layersController, sheetController
             ).getClone());
 
             vtWin.setMap(reader);
+        break;
+
+        case 'f':
+            PropertiesM.setAppProperty("frames_per_second", String.valueOf((int) data));
+            DeltaTimeManager.getInstance().changeMaxUPS((int) data);
         break;
 
         case 'l':
@@ -180,34 +206,6 @@ public class MainController implements Initializable, Observer {
                 break;
             }
             VTuberSaver.saveVTuber((File)data, layersController, sheetController);
-        break;
-
-        case 'm':
-            PropertiesM.setVtuberProperty("mouse_detection", String.valueOf(data));
-        break;
-
-        case 'k':
-            PropertiesM.setVtuberProperty("keyboard_detection", String.valueOf(data));
-        break;
-
-        case 'n':
-            PropertiesM.setVtuberProperty("microphone_detection", String.valueOf(data));
-        break;
-
-        case 'u':
-            PropertiesM.setVtuberProperty("microphone_ups", String.valueOf(data));
-        break;
-
-        case 'c':
-            PropertiesM.setVtuberProperty("microphone_channels", String.valueOf(data));
-        break;
-
-        case 's':
-            PropertiesM.setVtuberProperty("microphone_threshold", String.valueOf(data));
-        break;
-
-        case 'f':
-            PropertiesM.setVtuberProperty("frames_per_second", String.valueOf(data));
         break;
 
         case 'z': Main.showPrimaryStage();

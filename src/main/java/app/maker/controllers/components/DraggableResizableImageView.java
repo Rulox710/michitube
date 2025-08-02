@@ -1,11 +1,15 @@
 package app.maker.controllers.components;
 
+import app.files.PropertiesM;
 import app.maker.controllers.objects.Infos.Info;
 import app.maker.controllers.objects.Objects.Delta;
 import app.maker.controllers.objects.Objects.DirectionLock;
 import app.maker.controllers.objects.builders.ImageInfoBuilder;
 
 import java.io.File;
+import java.net.URI;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import javafx.scene.image.Image;
 import javafx.scene.Cursor;
@@ -22,7 +26,7 @@ public class DraggableResizableImageView extends Pane {
 
     private final ImageView imageView;
     private final Region resizeHandle;
-    private final int MIN_SIZE = 10, OFFSET = 20;
+    private final int MIN_SIZE = 10, OFFSET = 20, HANDLE_SIZE = 10;
     private final String PATH;
 
     /**
@@ -44,10 +48,12 @@ public class DraggableResizableImageView extends Pane {
                 image.getWidth(): maxWidth-OFFSET;
         double height = (image.getHeight() < maxHeight-OFFSET)?
                 image.getHeight(): maxHeight-OFFSET;
+        setPrefSize(width, height);
+
         imageView = new ImageView(image);
         imageView.setCursor(Cursor.MOVE);
-        imageView.setFitWidth(width);
-        imageView.setFitHeight(height);
+        imageView.fitHeightProperty().bind(prefHeightProperty());
+        imageView.fitWidthProperty().bind(prefWidthProperty());
 
         this.resizeHandle = createResizeHandle();
         setupResizeBehavior();
@@ -74,12 +80,13 @@ public class DraggableResizableImageView extends Pane {
         PATH = fimg.toURI().toString();
         setLayoutX(xPos);
         setLayoutY(yPos);
+        setPrefSize(width, height);
 
         Image image = new Image(PATH);
         imageView = new ImageView(image);
         imageView.setCursor(Cursor.MOVE);
-        imageView.setFitWidth(width);
-        imageView.setFitHeight(height);
+        imageView.fitHeightProperty().bind(prefHeightProperty());
+        imageView.fitWidthProperty().bind(prefWidthProperty());
 
         this.resizeHandle = createResizeHandle();
         setupResizeBehavior();
@@ -97,11 +104,11 @@ public class DraggableResizableImageView extends Pane {
     private Region createResizeHandle() {
         Region handle = new Region();
         handle.setStyle("-fx-background-color: white; -fx-border-color: black");
-        handle.setPrefSize(10, 10);
+        handle.setPrefSize(HANDLE_SIZE, HANDLE_SIZE);
         handle.setCursor(Cursor.SE_RESIZE);
 
-        handle.layoutXProperty().bind(imageView.fitWidthProperty());
-        handle.layoutYProperty().bind(imageView.fitHeightProperty());
+        handle.layoutXProperty().bind(imageView.fitWidthProperty().subtract(HANDLE_SIZE/2));
+        handle.layoutYProperty().bind(imageView.fitHeightProperty().subtract(HANDLE_SIZE/2));
 
         return handle;
     }
@@ -132,8 +139,8 @@ public class DraggableResizableImageView extends Pane {
                     newWidth = Math.max(MIN_SIZE, startImage.x + dragDelta.x);
                     newHeight = Math.max(MIN_SIZE, startImage.y + dragDelta.y);
 
-                    imageView.setFitWidth(newWidth);
-                    imageView.setFitHeight(newHeight);
+                    setPrefWidth(newWidth);
+                    setPrefHeight(newHeight);
                 break;
 
                 case SECONDARY:
@@ -145,8 +152,8 @@ public class DraggableResizableImageView extends Pane {
                     newHeight = newWidth / aspectRatio;
 
                     if(newHeight >= MIN_SIZE && newWidth >= MIN_SIZE) {
-                        imageView.setFitWidth(newWidth);
-                        imageView.setFitHeight(newHeight);
+                        setPrefWidth(newWidth);
+                        setPrefHeight(newHeight);
                     }
                 break;
 
@@ -234,13 +241,18 @@ public class DraggableResizableImageView extends Pane {
      *         del componente.
      */
     public Info getImageInfo() {
+        Path basePath = Paths.get(PropertiesM.getAppProperty("default_dir"));
+        URI fileUri = URI.create(PATH);
+        Path fullPath = Paths.get(fileUri);
+        Path relativePath = basePath.relativize(fullPath);
+
         ImageInfoBuilder builder = new ImageInfoBuilder();
 
         builder.setXPos((int) Math.round(getLayoutX()));
         builder.setYPos((int) Math.round(getLayoutY()));
         builder.setWidth((int) Math.round(imageView.getFitWidth()));
         builder.setHeight((int) Math.round(imageView.getFitHeight()));
-        builder.setPath(PATH);
+        builder.setPath(relativePath.toString());
         return builder.getResult();
     }
 }

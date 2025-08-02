@@ -7,6 +7,9 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import app.Sections;
+import app.Sections.KEYS;
+
 /**
  * Clase que escribe un archivo de texto acerca del modelo vtuber en un formato
  * que luego será legible por {@link VTuberReader#loadFromFile}.
@@ -36,28 +39,28 @@ import java.util.Map;
  */
 public class VTuberWriter {
 
-    private final Map<String, Map<String, String>> sections = new LinkedHashMap<>();
+    private final Map<Sections, Map<KEYS, String>> sections = new LinkedHashMap<>();
 
     /**
      * Agrega una clave principal si esta falta en el mapa que luego se
      * usa para guardar en el archivo.
      *
-     * @param sectionName La cadena con la que se identifica ésta clave.
+     * @param sectionName La sección con la que se identifica ésta clave.
      */
-    private void addSection(String sectionName) {
+    private void addSection(Sections sectionName) {
         sections.putIfAbsent(sectionName, new LinkedHashMap<>());
     }
 
     /**
      * Agrega un valor al mapa según la clave principal y secundaria.
      *
-     * @param sectionName La cadena con la que se identifica la clave
+     * @param sectionName La sección con la que se identifica la clave
      *                    principal.
-     * @param key La cadena con la que se identifica la clave
+     * @param key La llave con la que se identifica la clave
      *            secundaria.
      * @param value El valor que se va a guardar.
      */
-    public void put(String sectionName, String key, Object value) {
+    public void put(Sections sectionName, KEYS key, Object value) {
         addSection(sectionName);
         String v = (value != null)? value.toString(): "null";
         sections.get(sectionName).put(key, v);
@@ -72,12 +75,13 @@ public class VTuberWriter {
      * @throws IOException
      */
     public void saveToFile(String path) throws IOException {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(path))) {
-            for (var entry : sections.entrySet()) {
-                writer.write("[" + entry.getKey() + "]");
+        try(BufferedWriter writer = new BufferedWriter(new FileWriter(path))) {
+            //Entry<Sections, Map<String, String>>
+            for(var entry: sections.entrySet()) {
+                writer.write("[" + entry.getKey().getKEY() + "]");
                 writer.newLine();
-                for (var kv : entry.getValue().entrySet()) {
-                    writer.write(kv.getKey() + "=" + kv.getValue());
+                for(var kv : entry.getValue().entrySet()) {
+                    writer.write(kv.getKey().getKEY() + "=" + kv.getValue());
                     writer.newLine();
                 }
                 writer.newLine();
@@ -85,9 +89,9 @@ public class VTuberWriter {
         }
     }
 
-    public Map<String, Map<String, String>> getClone() {
-        Map<String, Map<String, String>> clone = new HashMap<>();
-        for (Map.Entry<String, Map<String, String>> entry : sections.entrySet())
+    public Map<Sections, Map<KEYS, String>> getClone() {
+        Map<Sections, Map<KEYS, String>> clone = new HashMap<>();
+        for(var entry : sections.entrySet())
             clone.put(entry.getKey(), new HashMap<>(entry.getValue()));
         return clone;
     }

@@ -63,12 +63,16 @@ public class MouthInfoBuilder extends InfoBuilder {
     public void setIntParam(int param) {
         if(param < 1) param = 1;
 
-        if(counterI == 0)
-            if(param > 2) param = 2;
-        else if(counterI == 1)
-            if(param > 120) param = 120;
-        else
-            if(param > 100) param = 100;
+        switch(counterI) {
+            case 0: if(param > 2) param = 2;
+            break;
+
+            case 1: if(param > 120) param = 120;
+            break;
+
+            default: if(param > 100) param = 100;
+            break;
+        }
 
         intParams[counterI] = param;
         counterI++;

@@ -5,12 +5,21 @@ package app.maker.controllers.objects;
  */
 public final class Objects {
 
+    public double x, y;
+
     /**
      * Clase que puede llevar dos números enteros, util para
      * representar coordenadas o dimensiones.
      */
     public static class Delta {
         public double x, y;
+
+        public Delta() {}
+
+        public Delta(double x, double y) {
+            this.x = x;
+            this.y = y;
+        }
     }
 
     /**

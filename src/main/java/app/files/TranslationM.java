@@ -1,8 +1,10 @@
 package app.files;
 
 import app.Constants;
+import app.LogMessage;
 
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -43,8 +45,7 @@ public final class TranslationM {
     }
 
     /** Ubicación de las cadenas traducidas. */
-    private static final String TRANSLATIONS_ROUTE = Constants.RES
-        + "translations.csv";
+    private static final String TRANSLATIONS_ROUTE = "/translations.csv";
 
     /** Contiene cadenas en varios idiomas. */
     private static final Map<String, Map<String, String>> translationsMap =
@@ -55,6 +56,8 @@ public final class TranslationM {
      * distintas traducciones.
      */
     public static void load() {
+        System.out.println(LogMessage.TRANSLATIONS_START.get());
+        int count = 0;
         InputStream in =
             TranslationM.class.getResourceAsStream(TRANSLATIONS_ROUTE);
         Scanner sc = new Scanner(in);
@@ -65,8 +68,15 @@ public final class TranslationM {
             for(int i = 1; i < fields.length; i++)
                 languageValues.put(languages[i], fields[i]);
             translationsMap.put(fields[0], languageValues);
+            count++;
         }
         sc.close();
+
+        System.out.println(String.format(LogMessage.TRANSLATIONS_COUNT.get(), count));
+        System.out.println(String.format(
+            LogMessage.TRANSLATIONS_LANG.get(),
+            String.join(", ", Arrays.copyOfRange(languages, 1, languages.length))
+        ));
     }
 
     /**

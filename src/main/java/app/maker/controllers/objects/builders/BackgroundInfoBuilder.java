@@ -13,7 +13,6 @@ public class BackgroundInfoBuilder extends InfoBuilder {
     private boolean[] usage = new boolean[2];
     private int counter = 0;
 
-
     /**
      * {@inheritDoc}
      */

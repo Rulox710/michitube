@@ -45,6 +45,25 @@ Mientras la ventana esté activa puede registrar el teclado, ratón y micrófono
   </a>
   <p style="margin-left: 10px;">Programado con Java 17</p>
 </div>
-aunque no utiliza caracteristicas de esta versión, por lo que puede ser usado con Java 8.
 
-Se usa la versión más actual de JNativeHook hasta la fecha de Marzo 02 del 2024. Este proyecto tiene un directorio `/libs` con `jnativehook-2.2.2.jar` dentro de él. Más información u otras versiones pueden ser encontradas en la página de GitHub para [JNativeHook](https://github.com/kwhat/jnativehook). Esta librería tiene la [Licencia Pública General Reducida de GNU (LGPL)](https://www.gnu.org/licenses/lgpl-3.0.html), y no fue modificada para este proyecto.
+## Licencia
+Este proyecto está licenciado bajo la **Licencia Apache 2.0**.
+
+Ver el archivo [LICENSE](LICENSE) para más detalles.
+
+Para más información, visita: http://www.apache.org/licenses/LICENSE-2.0
+
+## Licencias de terceros
+Este proyecto utiliza:
+
+- **JNativeHook** (https://github.com/kwhat/jnativehook)
+  Licencia: GNU Lesser General Public License v3
+  [COPYING](legal/jnativehook-2.2.2/COPYING.md)
+  [COPYING.LESSER](legal/jnativehook-2.2.2/COPYING.LESSER.md)
+
+- **JavaFX** (https://openjfx.io/)
+  Licencia GPL v2 con la excepción Classpath
+  JavaFX.Base [LICENCE](legal/javafx-17.0.15/javafx.base/LICENSE)
+  JavaFX.Controls [LICENCE](legal/javafx-17.0.15/javafx.controls/LICENSE)
+  JavaFX.FXML [LICENCE](legal/javafx-17.0.15/javafx.fxml/LICENSE)
+  JavaFX.Graphics [LICENCE](legal/javafx-17.0.15/javafx.graphics/LICENSE)

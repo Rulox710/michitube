@@ -1,6 +1,7 @@
 package app.detectors;
 
 import app.Constants;
+import app.LogMessage;
 import app.engine.DeltaTimeManager;
 import app.engine.Observable;
 import app.engine.Observer;
@@ -19,8 +20,7 @@ import com.github.kwhat.jnativehook.mouse.NativeMouseMotionListener;
 public class Mouse extends Observable
         implements Observer, NativeMouseMotionListener {
 
-    private byte x = 0, y = 0;
-    private final byte MAX_X = 50, MAX_Y = 40;
+    private double x = 0, y = 0;
 
     /**
      * Constructor de la clase Mouse.
@@ -30,22 +30,15 @@ public class Mouse extends Observable
     public Mouse() {
         GlobalScreen.addNativeMouseMotionListener(this);
         DeltaTimeManager.getInstance().addObserver(this);
+
+        System.out.println(LogMessage.DETECT_MOUSE.get());
     }
 
     public void stopCapture() {
         GlobalScreen.removeNativeMouseMotionListener(this);
         DeltaTimeManager.getInstance().removeObserver(this);
-    }
 
-    /**
-     * Limita un valor entero al rango válido para las coordenadas del
-     * ratón.
-     *
-     * @param value El valor entero a limitar.
-     * @return El valor limitado al rango de 0 a 100.
-     */
-    private byte limitToValidRange(int value) {
-        return (byte) Math.min(Math.max(value, 0), 100);
+        System.out.println(LogMessage.DETECT_MOUSE_CLOSE.get());
     }
 
     /**
@@ -55,14 +48,11 @@ public class Mouse extends Observable
      */
     @Override
     public void nativeMouseMoved(NativeMouseEvent e) {
-        int mouseX = e.getX();
-        int mouseY = e.getY();
-        x = limitToValidRange(
-            (int) ((double) mouseX / Constants.FULLSCREEN_WIDTH * MAX_X)
-        );
-        y = limitToValidRange(
-            (int) ((double) mouseY / Constants.FULLSCREEN_HEIGHT * MAX_Y)
-        );
+        double mouseX = e.getX();
+        double mouseY = e.getY();
+
+        x = Math.min(Math.max(0, mouseX / Constants.FULLSCREEN_WIDTH), 1);
+        y = Math.min(Math.max(0, mouseY / Constants.FULLSCREEN_HEIGHT), 1);
     }
 
     /**
@@ -72,7 +62,7 @@ public class Mouse extends Observable
     public void update(char event, Object data) {
         switch(event) {
             case 'u':
-                byte[] pair = {x, y};
+                double[] pair = {x, y};
                 notifyObservers('r', pair);
             default: break;
         }

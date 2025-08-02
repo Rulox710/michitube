@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Accordion?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ColorPicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.paint.Color?>
+
+<Accordion fx:id="backgroundOptionsRoot"
+           fx:controller="app.maker.controllers.layerOptions.BackgroundController"
+           minWidth="182.0" maxWidth="182.0" VBox.vgrow="ALWAYS"
+           xmlns="http://javafx.com/javafx/17.0.1"
+           xmlns:fx="http://javafx.com/fxml/1">
+  <panes>
+
+    <TitledPane fx:id="titledPaneImage" text="title_background_image">
+      <content>
+        <ScrollPane AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0"
+                    AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
+          <content>
+
+            <VBox>
+              <children>
+                <CheckBox fx:id="checkboxImage" text="label_background_cimage">
+                  <tooltip>
+                    <Tooltip fx:id="tooltipCImage" text="tooltip_background_cimage"/>
+                  </tooltip>
+                </CheckBox>
+
+                <Button fx:id="buttonImage" text="button_select_image"
+                        onAction="#handleButtonClick">
+                  <tooltip>
+                    <Tooltip fx:id="tooltipBImage"
+                             text="tooltip_background_bimage"/>
+                  </tooltip>
+                </Button>
+
+                <HBox fx:id="hboxImage" styleClass="image-preview">
+                  <children>
+                    <ImageView fx:id="imagePreview"
+                               fitWidth="130" fitHeight="105"
+                               preserveRatio="true"/>
+                  </children>
+                </HBox>
+                <Label fx:id="labelImage" text="label_background_image"/>
+              </children>
+            </VBox>
+
+          </content>
+        </ScrollPane>
+      </content>
+    </TitledPane>
+
+    <TitledPane fx:id="titledPaneColor" text="title_background_color">
+      <content>
+        <ScrollPane AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0"
+                    AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
+          <content>
+
+            <VBox fx:id="vboxColor">
+              <children>
+                <CheckBox fx:id="checkboxColor" text="label_background_ccolor">
+                  <tooltip>
+                    <Tooltip fx:id="tooltipCColor"
+                             text="tooltip_background_ccolor"/>
+                  </tooltip>
+                </CheckBox>
+
+                <ColorPicker fx:id="colorPicker"
+                             minHeight="-Infinity" minWidth="-Infinity">
+                  <!-- <tooltip>
+                    <Tooltip fx:id="tooltipColor" text="tooltip_background_color"/>
+                  </tooltip> -->
+                  <value>
+                    <Color red="0.8274509906768799"
+                           green="0.8274509906768799"
+                           blue="0.8274509906768799"/>
+                  </value>
+                </ColorPicker>
+
+                <Label fx:id="labelColor" text="label_background_color" />
+              </children>
+            </VBox>
+
+          </content>
+        </ScrollPane>
+      </content>
+    </TitledPane>
+  </panes>
+</Accordion>

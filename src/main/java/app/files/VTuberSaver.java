@@ -1,6 +1,8 @@
 package app.files;
 
+import app.Constants;
 import app.Ids;
+import app.LogMessage;
 import app.Sections;
 import app.Sections.KEYS;
 import app.maker.controllers.LayersController;
@@ -32,14 +34,57 @@ public class VTuberSaver {
         ) {
 
         Info sheetInfo = sheetController.getSheetInfo();
-        vtuberWriter.put(Sections.SHEET.getKEY(), KEYS.WIDTH.getKEY(),sheetInfo.width);
-        vtuberWriter.put(Sections.SHEET.getKEY(), KEYS.HEIGHT.getKEY(),sheetInfo.height);
+        vtuberWriter.put(
+            Sections.SHEET, KEYS.WIDTH, sheetInfo.getInt(KEYS.WIDTH)
+        );
+        vtuberWriter.put(
+            Sections.SHEET, KEYS.HEIGHT, sheetInfo.getInt(KEYS.HEIGHT)
+        );
+    }
+
+    /**
+     * Método estático que recibe la información sobre el area del
+     * ratón del controlador {@link SheetController}.
+     *
+     * @param vtuberWriter Objeto {@link VTuberWriter} ya iniciado que
+     *                     encuentra el archivo y coloca las
+     *                     configuraciones.
+     * @param sheetController El controlador del que se recibe la
+     *                        información.
+     */
+    private static void receiveMouseAreaInfo(
+            VTuberWriter vtuberWriter, SheetController sheetController
+        ) {
+
+        Info areaInfo = sheetController.getMouseAreaInfo();
+
+        KEYS[] mouseKeys = {KEYS.WIDTH, KEYS.HEIGHT, KEYS.XPOS, KEYS.YPOS};
+        for(KEYS key: mouseKeys)
+            vtuberWriter.put(
+                Sections.MOUSE, key, areaInfo.getInt(key)
+            );
+        vtuberWriter.put(
+            Sections.MOUSE, KEYS.COLOR, areaInfo.getString(KEYS.COLOR)
+        );
+
+        KEYS[] posKeys = {
+            KEYS.XPOS_A, KEYS.XPOS_B, KEYS.XPOS_C, KEYS.XPOS_D,
+            KEYS.YPOS_A, KEYS.YPOS_B, KEYS.YPOS_C, KEYS.YPOS_D
+        };
+        for(int i = 0; i < posKeys.length/2; i++) {
+            vtuberWriter.put(
+                Sections.MOUSE, posKeys[i], areaInfo.getInt(posKeys[i])
+            );
+            vtuberWriter.put(
+                Sections.MOUSE, posKeys[i+4], areaInfo.getInt(posKeys[i+4])
+            );
+        }
     }
 
     /**
      * Método estático que recibe la información sobre las disitintas
      * imágenes empleadas en el controlador {@link SheetController}
-     * según qué capa y ajuste se indique..
+     * según qué capa y ajuste se indique.
      *
      * @param vtuberWriter Objeto {@link VTuberWriter} ya iniciado que
      *                     encuentra el archivo y coloca las
@@ -49,16 +94,26 @@ public class VTuberSaver {
      */
     private static void receiveImageInfo(
             VTuberWriter vtuberWriter, SheetController sheetController,
-            Ids section, int i
+            Ids id, Sections section, int i
         ) {
 
-        Info sheetInfo = sheetController.getInfoMap().get(section)[i];
+        Info sheetInfo = sheetController.getInfoMap().get(id)[i];
 
-        vtuberWriter.put(section.getID(), KEYS.XPOS.getFormatKEY(i), sheetInfo.x);
-        vtuberWriter.put(section.getID(), KEYS.YPOS.getFormatKEY(i), sheetInfo.y);
-        vtuberWriter.put(section.getID(), KEYS.WIDTH.getFormatKEY(i), sheetInfo.width);
-        vtuberWriter.put(section.getID(), KEYS.HEIGHT.getFormatKEY(i), sheetInfo.height);
-        vtuberWriter.put(section.getID(), KEYS.PATH.getFormatKEY(i), sheetInfo.path[0]);
+        KEYS[] keys = {
+            KEYS.XPOS, KEYS.YPOS, KEYS.WIDTH, KEYS.HEIGHT, KEYS.PATH
+        };
+        KEYS[] elementKeys = switch(i) {
+            case 0 -> new KEYS[]
+                {KEYS.XPOS_0, KEYS.YPOS_0, KEYS.WIDTH_0, KEYS.HEIGHT_0, KEYS.PATH_0};
+            case 1 -> new KEYS[]
+                {KEYS.XPOS_1, KEYS.YPOS_1, KEYS.WIDTH_1, KEYS.HEIGHT_1, KEYS.PATH_1};
+            case 2 -> new KEYS[]
+                {KEYS.XPOS_2, KEYS.YPOS_2, KEYS.WIDTH_2, KEYS.HEIGHT_2, KEYS.PATH_2};
+            default -> keys;
+        };
+        for(int k = 0; k < elementKeys.length-1; k++)
+            vtuberWriter.put(section, elementKeys[k], sheetInfo.getInt(keys[k]));
+        vtuberWriter.put(section, elementKeys[4], sheetInfo.getString(keys[4]));
     }
 
     /**
@@ -90,57 +145,60 @@ public class VTuberSaver {
         Map<Ids, Info[]> layers_infos = sheetController.getInfoMap();
 
         for(Map.Entry<Ids, Info[]> entry: layers_infos.entrySet()) {
-            Ids section = entry.getKey();
+            Ids id = entry.getKey();
+            Sections section = id.getEquivalent();
 
-            Info optionInfo = optionsInfos.get(section);
-            switch(section) {
+            Info optionInfo = optionsInfos.get(id);
+            switch(id) {
                 case BACKGROUND:
-                    vtuberWriter.put(section.getID(), KEYS.IMAGE.getKEY(), optionInfo.boolParams[0]);
-                    vtuberWriter.put(section.getID(), KEYS.USECOLOR.getKEY(), optionInfo.boolParams[1]);
-                    if(optionInfo.boolParams[0])
-                        receiveImageInfo(vtuberWriter, sheetController, section, 0);
-                    if(optionInfo.boolParams[1]) {
-                        vtuberWriter.put(section.getID(), KEYS.COLOR.getKEY(), optionInfo.color);
-                    }
+                    vtuberWriter.put(section, KEYS.IMAGE, optionInfo.getBoolean(KEYS.IMAGE));
+                    vtuberWriter.put(section, KEYS.USECOLOR, optionInfo.getBoolean(KEYS.USECOLOR));
+                    if(optionInfo.getBoolean(KEYS.IMAGE))
+                        receiveImageInfo(vtuberWriter, sheetController, id, section, 0);
+                    if(optionInfo.getBoolean(KEYS.USECOLOR))
+                        vtuberWriter.put(section, KEYS.COLOR, optionInfo.getString(KEYS.COLOR));
                 break;
 
                 case BODY:
-                    receiveImageInfo(vtuberWriter, sheetController, section, 0);
+                    receiveImageInfo(vtuberWriter, sheetController, id, section, 0);
                 break;
 
                 case EYES:
-                    receiveImageInfo(vtuberWriter, sheetController, section, 0);
-                    vtuberWriter.put(section.getID(), KEYS.USE.getKEY(), optionInfo.boolParams[0]);
-                    if(!optionInfo.boolParams[0]) continue;
-                    vtuberWriter.put(section.getID(), KEYS.TIMETO.getKEY(), optionInfo.intParams[0]);
-                    vtuberWriter.put(section.getID(), KEYS.TIMEBLINK.getKEY(), optionInfo.intParams[1]);
-                    receiveImageInfo(vtuberWriter, sheetController, section, 1);
+                    receiveImageInfo(vtuberWriter, sheetController, id, section, 0);
+                    vtuberWriter.put(section, KEYS.USE, optionInfo.getBoolean(KEYS.USE));
+                    if(!optionInfo.getBoolean(KEYS.USE)) continue;
+                    vtuberWriter.put(section, KEYS.TIMETO, optionInfo.getInt(KEYS.TIMETO));
+                    vtuberWriter.put(section, KEYS.TIMEBLINK, optionInfo.getInt(KEYS.TIMEBLINK));
+                    receiveImageInfo(vtuberWriter, sheetController, id, section, 1);
                 break;
 
                 case MOUTH:
-                    receiveImageInfo(vtuberWriter, sheetController, section, 0);
-                    vtuberWriter.put(section.getID(), KEYS.USE.getKEY(), optionInfo.boolParams[0]);
-                    if(!optionInfo.boolParams[0]) continue;
-                    vtuberWriter.put(section.getID(), KEYS.CHNLS.getKEY(), optionInfo.intParams[0]);
-                    vtuberWriter.put(section.getID(), KEYS.UPS.getKEY(), optionInfo.intParams[1]);
-                    vtuberWriter.put(section.getID(), KEYS.SENS.getKEY(), optionInfo.intParams[2]);
-                    receiveImageInfo(vtuberWriter, sheetController, section, 1);
+                    receiveImageInfo(vtuberWriter, sheetController, id, section, 0);
+                    vtuberWriter.put(section, KEYS.USE, optionInfo.getBoolean(KEYS.USE));
+                    if(!optionInfo.getBoolean(KEYS.USE)) continue;
+                    vtuberWriter.put(section, KEYS.CHNLS, optionInfo.getInt(KEYS.CHNLS));
+                    vtuberWriter.put(section, KEYS.UPS, optionInfo.getInt(KEYS.UPS));
+                    vtuberWriter.put(section, KEYS.SENS, optionInfo.getInt(KEYS.SENS));
+                    receiveImageInfo(vtuberWriter, sheetController, id, section, 1);
                 break;
 
                 case TABLE:
-                    vtuberWriter.put(section.getID(), KEYS.USE.getKEY(), optionInfo.boolParams[0]);
-                    if(!optionInfo.boolParams[0]) continue;
-                    receiveImageInfo(vtuberWriter, sheetController, section, 0);
+                    vtuberWriter.put(section, KEYS.USE, optionInfo.getBoolean(KEYS.USE));
+                    if(!optionInfo.getBoolean(KEYS.USE)) continue;
+                    receiveImageInfo(vtuberWriter, sheetController, id, section, 0);
                 break;
 
                 case KEYBOARD:
-                    receiveImageInfo(vtuberWriter, sheetController, section, 0);
-                    vtuberWriter.put(section.getID(), KEYS.USE.getKEY(), optionInfo.boolParams[0]);
-                    if(!optionInfo.boolParams[0]) continue;
-                    receiveImageInfo(vtuberWriter, sheetController, section, 1);
+                    receiveImageInfo(vtuberWriter, sheetController, id, section, 0);
+                    receiveImageInfo(vtuberWriter, sheetController, id, section, 1);
+                    vtuberWriter.put(section, KEYS.USE, optionInfo.getBoolean(KEYS.USE));
+                    if(!optionInfo.getBoolean(KEYS.USE)) continue;
+                    receiveImageInfo(vtuberWriter, sheetController, id, section, 2);
                 break;
 
                 case MOUSE:
+                    vtuberWriter.put(section, KEYS.USE, optionInfo.getBoolean(KEYS.IMAGE));
+                    receiveMouseAreaInfo(vtuberWriter, sheetController);
                 break;
             }
         }
@@ -173,6 +231,9 @@ public class VTuberSaver {
         try {
             file.createNewFile();
         } catch (IOException e) {
+            Constants.printTimeStamp(System.err);
+            System.out.println(LogMessage.MODEL_SAVE_X.get());
+            System.err.println(LogMessage.MODEL_SAVE_X.get());
             return false;
         }
 
@@ -183,8 +244,12 @@ public class VTuberSaver {
         try {
             vtuberWriter.saveToFile(file.getPath());
         } catch (IOException e) {
+            Constants.printTimeStamp(System.err);
+            System.err.println(LogMessage.MODEL_SAVE_X.get());
             return false;
         }
+
+        System.out.println(LogMessage.MODEL_SAVE_O.get());
         return true;
     }
 }

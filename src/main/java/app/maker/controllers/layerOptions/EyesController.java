@@ -1,5 +1,6 @@
 package app.maker.controllers.layerOptions;
 
+import app.Sections.KEYS;
 import app.files.TranslationM;
 import app.maker.FXFileChooser;
 import app.maker.controllers.objects.Infos.Info;
@@ -7,7 +8,10 @@ import app.maker.controllers.objects.builders.EyesInfoBuilder;
 
 import java.io.File;
 import java.net.URI;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
+import javafx.css.PseudoClass;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Accordion;
@@ -30,12 +34,16 @@ public class EyesController extends OptionLayerController {
     @FXML private Button buttonEyes, buttonBlink;
     @FXML private ImageView imagePreviewEyes, imagePreviewBlink;
     @FXML private Spinner<Integer> spinnerBlinkEvery, spinnerBlinkTime;
-    @FXML private HBox hboxBlink;
+    @FXML private HBox hboxEyes, hboxBlink;
     @FXML private CheckBox checkboxBlink;
     @FXML private Tooltip tooltipBlink;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void initialize() {
+        hasError = new boolean[2]; // 0: Eyes, 1: Blink
         updateLanguage();
 
         optionsRoot = eyesOptionsRoot;
@@ -51,6 +59,38 @@ public class EyesController extends OptionLayerController {
         });
     }
 
+    @Override
+    protected void handleError(int index, boolean error, boolean notify) {
+        index = index%2;
+        hasError[index] = error;
+
+        TitledPane currentPane;
+        HBox currentHBox;
+        switch(index) {
+            case 0:
+            default:
+                currentPane = titledPaneEyes;
+                currentHBox = hboxEyes;
+            break;
+
+            case 1:
+                currentPane = titledPaneBlink;
+                currentHBox = hboxBlink;
+            break;
+        }
+        currentPane.pseudoClassStateChanged(PseudoClass.getPseudoClass("error"), hasError[index]);
+        currentHBox.pseudoClassStateChanged(PseudoClass.getPseudoClass("error"), hasError[index]);
+
+        if(notify) {
+            boolean anyError = false;
+            for(boolean b: hasError) if(b) {
+                anyError = true;
+                break;
+            }
+            notifyObservers('e', anyError);
+        }
+    }
+
     private void updateEnabledState(boolean enabled) {
         labelBlinkEvery.setDisable(!enabled);
         spinnerBlinkEvery.setDisable(!enabled);
@@ -62,42 +102,74 @@ public class EyesController extends OptionLayerController {
         buttonBlink.setDisable(!enabled);
         hboxBlink.setDisable(!enabled);
         imagePreviewBlink.setDisable(!enabled);
+
+        if(!enabled) handleError(1, false, true);
     }
 
     @FXML
     private void handleButtonClick(ActionEvent event) {
         Object source = event.getSource();
-        ImageView imagePreview = (source == buttonEyes)? imagePreviewEyes: imagePreviewBlink;
+        ImageView imagePreview = source == buttonEyes? imagePreviewEyes: imagePreviewBlink;
+        int index = source == buttonEyes? 0: 1;
+
         File img = FXFileChooser.getImageChooser().showOpenDialog(null);
         if(img != null) {
             imagePreview.setImage(new Image(img.toURI().toString()));
             notifyObservers((char) getTweakID(), img);
+
+            handleError(index, false, true);
         }
     }
 
     @Override
     public boolean readyToSave() {
-        if(imagePreviewEyes.getImage() == null) return false;
-        if(checkboxBlink.selectedProperty().getValue() && imagePreviewBlink.getImage() == null)
-            return false;
-        return true;
+        boolean hasBeenNotified = false;
+
+        if(imagePreviewEyes.getImage() == null) {
+            handleError(0, true, !hasBeenNotified);
+            hasBeenNotified = true;
+        }
+        if(checkboxBlink.selectedProperty().getValue() && imagePreviewBlink.getImage() == null) {
+            handleError(1, true, !hasBeenNotified);
+            hasBeenNotified = true;
+        }
+
+        return !hasBeenNotified;
     }
 
     @Override
     public boolean setInfo(Info info) {
         boolean result = true;
+        Path relativePath, fullPath;
+        URI fullUri;
 
-        if(info.path[0].length() != 0) {
-            imagePreviewEyes.setImage(new Image(info.path[0]));
-            notifyObservers('l', new File(URI.create(info.path[0])));
-        } else result = false;
+        if(info.getString(KEYS.PATH_0).length() != 0) {
+            relativePath = Paths.get(info.getString(KEYS.PATH_0));
+            fullPath = basePath.resolve(relativePath);
+            fullUri = fullPath.toUri();
+            imagePreviewEyes.setImage(new Image(fullUri.toString()));
+            notifyObservers('l', new File(fullUri));
+        } else {
+            result = false;
+            imagePreviewEyes.setImage(null);
+            notifyObservers('l', null);
+        }
 
-        spinnerBlinkEvery.getValueFactory().setValue(info.intParams[0]);
-        spinnerBlinkTime.getValueFactory().setValue(info.intParams[1]);
-        checkboxBlink.selectedProperty().setValue(info.boolParams[0]);
-        if(info.boolParams[0] && info.path[1].length() != 0){
-            imagePreviewBlink.setImage(new Image(info.path[1]));
-        } else result = false;
+        spinnerBlinkEvery.getValueFactory().setValue(info.getInt(KEYS.TIMETO));
+        spinnerBlinkTime.getValueFactory().setValue(info.getInt(KEYS.TIMEBLINK));
+        checkboxBlink.selectedProperty().setValue(info.getBoolean(KEYS.USE));
+        if(info.getBoolean(KEYS.USE) && info.getString(KEYS.PATH_1).length() != 0){
+            relativePath = Paths.get(info.getString(KEYS.PATH_1));
+            fullPath = basePath.resolve(relativePath);
+            fullUri = fullPath.toUri();
+            imagePreviewBlink.setImage(new Image(fullUri.toString()));
+        } else {
+            result = false;
+            imagePreviewBlink.setImage(null);
+        }
+
+        for(int i = 0 ; hasError.length > i; i++) handleError(i, false, false);
+        notifyObservers('e', false);
 
         return result;
     }

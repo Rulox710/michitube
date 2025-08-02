@@ -1,5 +1,6 @@
 package app.maker.controllers.layerOptions;
 
+import app.Sections.KEYS;
 import app.files.TranslationM;
 import app.maker.FXFileChooser;
 import app.maker.controllers.objects.Infos.Info;
@@ -7,7 +8,10 @@ import app.maker.controllers.objects.builders.BasicInfoBuilder;
 
 import java.io.File;
 import java.net.URI;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
+import javafx.css.PseudoClass;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Accordion;
@@ -31,8 +35,12 @@ public class TableController extends OptionLayerController {
     @FXML private Tooltip tooltipTable, tooltipBTable;
     @FXML private HBox hboxImage;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void initialize() {
+        hasError = new boolean[1]; // 0: Image
         updateLanguage();
 
         optionsRoot = tableOptionsRoot;
@@ -42,13 +50,39 @@ public class TableController extends OptionLayerController {
         updateEnabledState(checkboxTable.isSelected());
         checkboxTable.selectedProperty().addListener((obs, oldVal, newVal) -> {
             updateEnabledState(newVal);
+            if(!newVal) {
+                hasError[0] = false;
+                notifyObservers('e', false);
+            }
         });
+    }
+
+    @Override
+    protected void handleError(int index, boolean error, boolean notify) {
+        index = index%1;
+        hasError[index] = error;
+
+        TitledPane currentPane;
+        HBox currentHBox;
+        switch(index) {
+            case 0:
+            default:
+                currentPane = titledPaneImage;
+                currentHBox = hboxImage;
+            break;
+        }
+        currentPane.pseudoClassStateChanged(PseudoClass.getPseudoClass("error"), hasError[index]);
+        currentHBox.pseudoClassStateChanged(PseudoClass.getPseudoClass("error"), hasError[index]);
+
+        if(notify) notifyObservers('e', hasError[0]);
     }
 
     private void updateEnabledState(boolean enabled) {
         buttonImage.setDisable(!enabled);
         hboxImage.setDisable(!enabled);
         imagePreview.setDisable(!enabled);
+
+        if(!enabled) handleError(0, false, true);
     }
 
     @FXML
@@ -57,26 +91,38 @@ public class TableController extends OptionLayerController {
         if(img != null) {
             imagePreview.setImage(new Image(img.toURI().toString()));
             notifyObservers((char) getTweakID(), img);
-            System.out.print(getTweakID());
+
+            handleError(0, false, true);
         }
     }
 
     @Override
     public boolean readyToSave() {
         if(checkboxTable.selectedProperty().getValue() && imagePreview.getImage() == null)
-            return false;
-        return true;
+            handleError(0, true, true);
+        return !hasError[0];
     }
 
     @Override
     public boolean setInfo(Info info) {
         boolean result = true;
+        Path relativePath, fullPath;
+        URI fullUri;
 
-        checkboxTable.selectedProperty().setValue(info.boolParams[0]);
-        if(info.boolParams[0] && info.path[0].length() != 0) {
-            imagePreview.setImage(new Image(info.path[0]));
-            notifyObservers('l', new File(URI.create(info.path[0])));
-        } else result = false;
+        checkboxTable.selectedProperty().setValue(info.getBoolean(KEYS.USE));
+        if(info.getBoolean(KEYS.USE) && info.getString(KEYS.PATH_0).length() != 0) {
+            relativePath = Paths.get(info.getString(KEYS.PATH_0));
+            fullPath = basePath.resolve(relativePath);
+            fullUri = fullPath.toUri();
+            imagePreview.setImage(new Image(fullUri.toString()));
+            notifyObservers('l', new File(fullUri));
+        } else {
+            result = false;
+            imagePreview.setImage(null);
+            notifyObservers('l', null);
+        }
+
+        handleError(0, false, true);
 
         return result;
     }

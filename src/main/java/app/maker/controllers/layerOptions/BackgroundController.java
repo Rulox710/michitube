@@ -1,5 +1,6 @@
 package app.maker.controllers.layerOptions;
 
+import app.Sections.KEYS;
 import app.files.TranslationM;
 import app.maker.FXFileChooser;
 import app.maker.controllers.objects.Infos.Info;
@@ -7,9 +8,12 @@ import app.maker.controllers.objects.builders.BackgroundInfoBuilder;
 
 import java.io.File;
 import java.net.URI;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
+import javafx.css.PseudoClass;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Accordion;
@@ -38,8 +42,12 @@ public class BackgroundController extends OptionLayerController {
     @FXML private Tooltip tooltipBImage/*, tooltipColor*/, tooltipCImage, tooltipCColor;
     @FXML private CheckBox checkboxImage, checkboxColor;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void initialize() {
+        hasError = new boolean[2]; // 0: Image, 1: Color
         updateLanguage();
 
         optionsRoot = backgroundOptionsRoot;
@@ -56,11 +64,31 @@ public class BackgroundController extends OptionLayerController {
         });
     }
 
+    protected void handleError(int index, boolean error, boolean notify) {
+        index = index%1;
+        hasError[index] = error;
+
+        TitledPane currentPane;
+        HBox currentHBox;
+        switch(index) {
+            case 0:
+            default:
+                currentPane = titledPaneImage;
+                currentHBox = hboxImage;
+            break;
+        }
+        currentPane.pseudoClassStateChanged(PseudoClass.getPseudoClass("error"), hasError[index]);
+        currentHBox.pseudoClassStateChanged(PseudoClass.getPseudoClass("error"), hasError[index]);
+
+        if(notify) notifyObservers('e', hasError[0]);
+    }
+
     private void updateEnabledState(CheckBox checkbox, boolean enabled) {
         if(checkbox == checkboxImage) {
             buttonImage.setDisable(!enabled);
             hboxImage.setDisable(!enabled);
             imagePreview.setDisable(!enabled);
+            if(!enabled) handleError(0, false, true);
         } else {
             colorPicker.setDisable(!enabled);
             Color color = (enabled)? colorPicker.getValue(): Color.LIGHTGRAY;
@@ -74,6 +102,8 @@ public class BackgroundController extends OptionLayerController {
         if(img != null) {
             imagePreview.setImage(new Image(img.toURI().toString()));
             notifyObservers((char) getTweakID(), img);
+
+            handleError(0, false, true);
         }
     }
 
@@ -83,23 +113,33 @@ public class BackgroundController extends OptionLayerController {
 
     @Override
     public boolean readyToSave() {
-        if(checkboxImage.selectedProperty().getValue() && imagePreview == null)
-            return false;
-        return true;
+        if(checkboxImage.selectedProperty().getValue() && imagePreview.getImage() == null)
+            handleError(0, true, true);
+        return !hasError[0];
     }
 
     @Override
     public boolean setInfo(Info info) {
         boolean result = true;
+        Path relativePath, fullPath;
+        URI fullUri;
 
-        if(info.boolParams[0] && info.path[0].length() != 0){
-            imagePreview.setImage(new Image(info.path[0]));
-            notifyObservers('l', new File(URI.create(info.path[0])));
-            checkboxImage.selectedProperty().setValue(info.boolParams[0]);
-        } else result = false;
+        checkboxImage.selectedProperty().setValue(info.getBoolean(KEYS.IMAGE));
+        if(info.getBoolean(KEYS.IMAGE) && info.getString(KEYS.PATH).length() != 0) {
+            relativePath = Paths.get(info.getString(KEYS.PATH));
+            fullPath = basePath.resolve(relativePath);
+            fullUri = fullPath.toUri();
+            imagePreview.setImage(new Image(fullUri.toString()));
+            notifyObservers('l', new File(fullUri));
+        } else {
+            result = false;
+            imagePreview.setImage(null);
+            notifyObservers('l', null);
+        }
 
-        if(info.boolParams[1]) {
-            String hex = info.color;
+        checkboxColor.selectedProperty().setValue(false);
+        if(info.getBoolean(KEYS.USECOLOR)) {
+            String hex = info.getString(KEYS.COLOR);
             if(hex.equals("")) result = false;
 
             try {
@@ -109,14 +149,16 @@ public class BackgroundController extends OptionLayerController {
                 double a = (double)(Integer.valueOf(hex.substring(7, 9), 16)) / 255;
                 Platform.runLater(() -> {
                     colorPicker.setValue(new Color(r, g, b, a));
-                    checkboxColor.selectedProperty().setValue(info.boolParams[1]);
+                    checkboxColor.selectedProperty().setValue(info.getBoolean(KEYS.USECOLOR));
                 });
             } catch(StringIndexOutOfBoundsException | NumberFormatException e) {
                 result = false;
-                checkboxColor.selectedProperty().setValue(info.boolParams[1]);
+                checkboxColor.selectedProperty().setValue(info.getBoolean(KEYS.USECOLOR));
             }
 
         }
+
+        handleError(0, false, true);
 
         return result;
     }

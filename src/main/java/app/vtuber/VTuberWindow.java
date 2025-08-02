@@ -5,9 +5,9 @@ import app.Sections;
 import app.Sections.KEYS;
 import app.detectors.Keyboard;
 import app.detectors.Microphone;
+import app.detectors.Mouse;
 import app.engine.DeltaTimeManager;
 import app.engine.Observable;
-import app.engine.Observer;
 import app.files.TranslationM;
 import app.files.VTuberReader;
 
@@ -15,6 +15,8 @@ import com.github.kwhat.jnativehook.GlobalScreen;
 import com.github.kwhat.jnativehook.NativeHookException;
 
 import java.awt.Color;
+import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
@@ -23,6 +25,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 import javax.swing.JFrame;
 
@@ -39,6 +42,9 @@ public class VTuberWindow extends Observable implements KeyListener {
     private VTuberReader infoMap;
     private Microphone micDetector;
     private Keyboard keyDetector;
+    private Mouse mouseDetector;
+
+    private int fps;
 
     private final int[] TARGET_SEQUENCE_EXIT = {
         KeyEvent.VK_CONTROL, KeyEvent.VK_SHIFT, KeyEvent.VK_C
@@ -48,6 +54,15 @@ public class VTuberWindow extends Observable implements KeyListener {
     };
     private final LinkedList<Integer> keyQueue = new LinkedList<>();
 
+    private int[] getColor(String hexString) {
+        int r = Integer.valueOf(hexString.substring(1, 3), 16);
+        int g = Integer.valueOf(hexString.substring(3, 5), 16);
+        int b = Integer.valueOf(hexString.substring(5, 7), 16);
+        int a = Integer.valueOf(hexString.substring(7, 9), 16);
+
+        return new int[] {r, g, b, a};
+    }
+
     /**
      * Configura y muestra la ventana principal.
      */
@@ -55,21 +70,20 @@ public class VTuberWindow extends Observable implements KeyListener {
         this.infoMap = infoMap;
 
         window = new JFrame();
+        Image icono = Toolkit.getDefaultToolkit().getImage(
+            getClass().getResource("/assets/icon.png")
+        );
+        window.setIconImage(icono);
+
         window.setSize(
-            infoMap.getInt(Sections.SHEET.getKEY(), KEYS.WIDTH.getKEY()),
-            infoMap.getInt(Sections.SHEET.getKEY(), KEYS.HEIGHT.getKEY())
+            infoMap.getInt(Sections.SHEET, KEYS.WIDTH),
+            infoMap.getInt(Sections.SHEET, KEYS.HEIGHT)
         );
         window.setResizable(false);
         window.setUndecorated(undecorated);
 
-        String strColor = infoMap.get(
-            Sections.BACKGROUND.getKEY(), KEYS.COLOR.getKEY()
-        );
-        int r = Integer.valueOf(strColor.substring(1, 3), 16);
-        int g = Integer.valueOf(strColor.substring(3, 5), 16);
-        int b = Integer.valueOf(strColor.substring(5, 7), 16);
-        int a = Integer.valueOf(strColor.substring(7, 9), 16);
-        Color backgroundColor = new Color(r, g, b, a);
+        int[] color = getColor(infoMap.get(Sections.BACKGROUND, KEYS.COLOR));
+        Color backgroundColor = new Color(color[0], color[1], color[2], color[3]);
 
         window.getContentPane().setBackground(backgroundColor);
         //window.setBackground(new Color(0, 0, 0, 0));
@@ -98,6 +112,10 @@ public class VTuberWindow extends Observable implements KeyListener {
                 window.dispose();
                 if(micDetector != null) micDetector.stopCapture();
                 if(keyDetector != null) keyDetector.stopCapture();
+                if(mouseDetector != null) mouseDetector.stopCapture();
+                micDetector = null;
+                keyDetector = null;
+                mouseDetector = null;
                 DeltaTimeManager.getInstance().removeObserver(panel);
                 notifyObservers('z', null);
             }
@@ -109,76 +127,110 @@ public class VTuberWindow extends Observable implements KeyListener {
     private void startMichiPane() {
         panel = new MichiPanel();
         int[] params = new int[4];
-        for(Ids layer: Ids.values()) {
-            switch(layer) {
+
+        for(Ids id: Ids.values()) {
+            Sections section = id.getEquivalent();
+            KEYS[] infoKeys = new KEYS[]
+                {KEYS.XPOS_0, KEYS.YPOS_0, KEYS.WIDTH_0, KEYS.HEIGHT_0, KEYS.PATH_0};
+
+            switch(id) {
                 case BACKGROUND:
-                    if(!infoMap.getBoolean(layer.getID(), KEYS.IMAGE.getKEY())) break;
-                    params[0] = infoMap.getInt(layer.getID(), KEYS.XPOS.getFormatKEY(0));
-                    params[1] = infoMap.getInt(layer.getID(), KEYS.YPOS.getFormatKEY(0));
-                    params[2] = infoMap.getInt(layer.getID(), KEYS.WIDTH.getFormatKEY(0));
-                    params[3] = infoMap.getInt(layer.getID(), KEYS.HEIGHT.getFormatKEY(0));
-                    panel.setImage(layer, 0, infoMap.get(layer.getID(), KEYS.PATH.getFormatKEY(0)));
+                    if(!infoMap.getBoolean(section, KEYS.IMAGE)) break;
+                    for(int i = 0; i < 4; i++)
+                        params[i] = infoMap.getInt(section, infoKeys[i]);
+                    panel.setImage(id, 0, infoMap.get(section, infoKeys[4]));
                 break;
 
                 case TABLE:
-                    if(!infoMap.getBoolean(layer.getID(), KEYS.USE.getKEY())) break;
-                    params[0] = infoMap.getInt(layer.getID(), KEYS.XPOS.getFormatKEY(0));
-                    params[1] = infoMap.getInt(layer.getID(), KEYS.YPOS.getFormatKEY(0));
-                    params[2] = infoMap.getInt(layer.getID(), KEYS.WIDTH.getFormatKEY(0));
-                    params[3] = infoMap.getInt(layer.getID(), KEYS.HEIGHT.getFormatKEY(0));
-                    panel.setImage(layer, 0, infoMap.get(layer.getID(), KEYS.PATH.getFormatKEY(0)));
+                    if(!infoMap.getBoolean(section, KEYS.USE)) break;
+                    for(int i = 0; i < 4; i++)
+                        params[i] = infoMap.getInt(section, infoKeys[i]);
+                    panel.setImage(id, 0, infoMap.get(section, infoKeys[4]));
                 break;
 
                 case BODY:
-                    params[0] = infoMap.getInt(layer.getID(), KEYS.XPOS.getFormatKEY(0));
-                    params[1] = infoMap.getInt(layer.getID(), KEYS.YPOS.getFormatKEY(0));
-                    params[2] = infoMap.getInt(layer.getID(), KEYS.WIDTH.getFormatKEY(0));
-                    params[3] = infoMap.getInt(layer.getID(), KEYS.HEIGHT.getFormatKEY(0));
-                    panel.setImage(layer, 0, infoMap.get(layer.getID(), KEYS.PATH.getFormatKEY(0)));
+                    for(int i = 0; i < 4; i++)
+                        params[i] = infoMap.getInt(section, infoKeys[i]);
+                    panel.setImage(id, 0, infoMap.get(section, infoKeys[4]));
                 break;
 
                 case EYES:
                     params = new int[10];
 
-                    params[0] = infoMap.getInt(layer.getID(), KEYS.XPOS.getFormatKEY(0));
-                    params[1] = infoMap.getInt(layer.getID(), KEYS.YPOS.getFormatKEY(0));
-                    params[2] = infoMap.getInt(layer.getID(), KEYS.WIDTH.getFormatKEY(0));
-                    params[3] = infoMap.getInt(layer.getID(), KEYS.HEIGHT.getFormatKEY(0));
-                    panel.setImage(layer, 0, infoMap.get(layer.getID(), KEYS.PATH.getFormatKEY(0)));
+                    for(int i = 0; i < 4; i++)
+                        params[i] = infoMap.getInt(section, infoKeys[i]);
+                    panel.setImage(id, 0, infoMap.get(section, infoKeys[4]));
 
-                    if(!infoMap.getBoolean(layer.getID(), KEYS.USE.getKEY())) break;
-                    params[4] = infoMap.getInt(layer.getID(), KEYS.XPOS.getFormatKEY(1));
-                    params[5] = infoMap.getInt(layer.getID(), KEYS.YPOS.getFormatKEY(1));
-                    params[6] = infoMap.getInt(layer.getID(), KEYS.WIDTH.getFormatKEY(1));
-                    params[7] = infoMap.getInt(layer.getID(), KEYS.HEIGHT.getFormatKEY(1));
-                    panel.setImage(layer, 1, infoMap.get(layer.getID(), KEYS.PATH.getFormatKEY(1)));
+                    infoKeys = new KEYS[]
+                        {KEYS.XPOS_1, KEYS.YPOS_1, KEYS.WIDTH_1, KEYS.HEIGHT_1, KEYS.PATH_1};
 
-                    params[8] = infoMap.getInt(layer.getID(), KEYS.TIMETO.getKEY());
-                    params[9] = infoMap.getInt(layer.getID(), KEYS.TIMEBLINK.getKEY());
+                    if(!infoMap.getBoolean(section, KEYS.USE)) break;
+                    for(int i = 0; i < 4; i++)
+                        params[i+(infoKeys.length-1)] = infoMap.getInt(section, infoKeys[i]);
+                    panel.setImage(id, 1, infoMap.get(section, infoKeys[4]));
+
+                    params[8] = infoMap.getInt(section, KEYS.TIMETO);
+                    params[9] = infoMap.getInt(section, KEYS.TIMEBLINK);
                 break;
 
                 case MOUTH:
-                case KEYBOARD:
                     params = new int[8];
 
-                    params[0] = infoMap.getInt(layer.getID(), KEYS.XPOS.getFormatKEY(0));
-                    params[1] = infoMap.getInt(layer.getID(), KEYS.YPOS.getFormatKEY(0));
-                    params[2] = infoMap.getInt(layer.getID(), KEYS.WIDTH.getFormatKEY(0));
-                    params[3] = infoMap.getInt(layer.getID(), KEYS.HEIGHT.getFormatKEY(0));
-                    panel.setImage(layer, 0, infoMap.get(layer.getID(), KEYS.PATH.getFormatKEY(0)));
+                    for(int i = 0; i < 4; i++)
+                        params[i] = infoMap.getInt(section, infoKeys[i]);
+                    panel.setImage(id, 0, infoMap.get(section, infoKeys[4]));
 
-                    if(!infoMap.getBoolean(layer.getID(), KEYS.USE.getKEY())) break;
-                    params[4] = infoMap.getInt(layer.getID(), KEYS.XPOS.getFormatKEY(1));
-                    params[5] = infoMap.getInt(layer.getID(), KEYS.YPOS.getFormatKEY(1));
-                    params[6] = infoMap.getInt(layer.getID(), KEYS.WIDTH.getFormatKEY(1));
-                    params[7] = infoMap.getInt(layer.getID(), KEYS.HEIGHT.getFormatKEY(1));
-                    panel.setImage(layer, 1, infoMap.get(layer.getID(), KEYS.PATH.getFormatKEY(1)));
+                    infoKeys = new KEYS[]
+                        {KEYS.XPOS_1, KEYS.YPOS_1, KEYS.WIDTH_1, KEYS.HEIGHT_1, KEYS.PATH_1};
+
+                    if(!infoMap.getBoolean(section, KEYS.USE)) break;
+                    for(int i = 0; i < 4; i++)
+                        params[i+(infoKeys.length-1)] = infoMap.getInt(section, infoKeys[i]);
+                    panel.setImage(id, 1, infoMap.get(section, infoKeys[4]));
+                break;
+
+                case KEYBOARD:
+                    params = new int[12];
+
+                    for(int i = 0; i < 4; i++)
+                        params[i] = infoMap.getInt(section, infoKeys[i]);
+                    panel.setImage(id, 0, infoMap.get(section, infoKeys[4]));
+
+                    infoKeys = new KEYS[]
+                        {KEYS.XPOS_1, KEYS.YPOS_1, KEYS.WIDTH_1, KEYS.HEIGHT_1, KEYS.PATH_1};
+
+                    for(int i = 0; i < 4; i++)
+                        params[i+infoKeys.length-1] = infoMap.getInt(section, infoKeys[i]);
+                    panel.setImage(id, 1, infoMap.get(section, infoKeys[4]));
+
+                    infoKeys = new KEYS[]
+                        {KEYS.XPOS_2, KEYS.YPOS_2, KEYS.WIDTH_2, KEYS.HEIGHT_2, KEYS.PATH_2};
+
+                    if(!infoMap.getBoolean(section, KEYS.USE)) break;
+                    for(int i = 0; i < 4; i++)
+                        params[i+(infoKeys.length-1)*2] = infoMap.getInt(section, infoKeys[i]);
+                    panel.setImage(id, 2, infoMap.get(section, infoKeys[4]));
                 break;
 
                 case MOUSE:
+                    params = new int[12];
+
+                    infoKeys = new KEYS[] {
+                        KEYS.XPOS, KEYS.YPOS, KEYS.WIDTH, KEYS.HEIGHT,
+                        KEYS.XPOS_A, KEYS.YPOS_A, KEYS.XPOS_B, KEYS.YPOS_B,
+                        KEYS.XPOS_C, KEYS.YPOS_C, KEYS.XPOS_D, KEYS.YPOS_D
+                    };
+                    for(int i = 0; i < infoKeys.length; i++)
+                        params[i] = infoMap.getInt(section, infoKeys[i]);
+
+                    int[] color = getColor(infoMap.get(section, KEYS.COLOR));
+                    Color handColor = new Color(
+                        color[0], color[1], color[2], color[3]
+                    );
+                    panel.setHandColor(handColor);
                 break;
             }
-            panel.setParams(layer, params);
+            panel.setParams(id, params);
         }
 
         window.add(panel);
@@ -186,25 +238,24 @@ public class VTuberWindow extends Observable implements KeyListener {
     }
 
     private void startInputMethods() {
-        if(infoMap.getBoolean(Sections.MOUTH.getKEY(), KEYS.USE.getKEY())) {
+        if(infoMap.getBoolean(Sections.MOUTH, KEYS.USE)) {
             micDetector = new Microphone(
-                infoMap.getInt(Sections.MOUTH.getKEY(), KEYS.SENS.getKEY()),
-                infoMap.getInt(Sections.MOUTH.getKEY(), KEYS.CHNLS.getKEY()),
-                infoMap.getInt(Sections.MOUTH.getKEY(), KEYS.UPS.getKEY())
+                infoMap.getInt(Sections.MOUTH, KEYS.SENS),
+                infoMap.getInt(Sections.MOUTH, KEYS.CHNLS),
+                infoMap.getInt(Sections.MOUTH, KEYS.UPS)
             );
             micDetector.addObserver(panel);
         }
 
-        if(infoMap.getBoolean(Sections.KEYBOARD.getKEY(), KEYS.USE.getKEY())) {
+        if(infoMap.getBoolean(Sections.KEYBOARD, KEYS.USE)) {
             keyDetector = new Keyboard();
             keyDetector.addObserver(panel);
         }
 
-        // Mouse mouse = null;
-        // if(Boolean.parseBoolean(Constants.PROPERTIES.getProperty("mouse_detection"))) {
-        //     mouse = new Mouse();
-        //     mouse.addObserver(this);
-        // }
+        if(infoMap.getBoolean(Sections.MOUSE, KEYS.USE)) {
+            mouseDetector = new Mouse();
+            mouseDetector.addObserver(panel);
+        }
     }
 
     /**
@@ -262,6 +313,10 @@ public class VTuberWindow extends Observable implements KeyListener {
                 window.dispose();
                 if(micDetector != null) micDetector.stopCapture();
                 if(keyDetector != null) keyDetector.stopCapture();
+                if(mouseDetector != null) mouseDetector.stopCapture();
+                micDetector = null;
+                keyDetector = null;
+                mouseDetector = null;
                 DeltaTimeManager.getInstance().removeObserver(panel);
                 notifyObservers('Z', null);
             }

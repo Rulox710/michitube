@@ -1,7 +1,9 @@
 package app.files;
 
 import app.Constants;
+import app.LogMessage;
 import app.fileUtils.AppPaths;
+import app.files.TranslationM.LANGUAGES;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -25,15 +27,8 @@ public final class PropertiesM {
     /** Comentario al guradar las configuraciones */
     private static final String APP_CONFIG_DESC = "App configurations";
 
-    private static final Properties VTUBER_PROPERTIES = new Properties();
-    private static final String VTUBER_DESC = "VTuber model configurations";
-
     public static String getAppProperty(String key) {
         return APP_CONFIG_PROPERTIES.getProperty(key);
-    }
-
-    public static String getVtuberProperty(String key) {
-        return VTUBER_PROPERTIES.getProperty(key);
     }
 
     /**
@@ -43,79 +38,65 @@ public final class PropertiesM {
      * tener errores.
      */
     public static void loadAppProperties() {
+        System.out.println(LogMessage.PROPERTIES_START.get());
+
         File configDir = AppPaths.getAppPath(Constants.APP_NAME, AppPaths.PathType.CONFIG);
         File configFile = new File(configDir, APP_CONFIG_FILE);
 
         try(FileInputStream fileInputStream = new FileInputStream(configFile)) {
             APP_CONFIG_PROPERTIES.load(fileInputStream);
+            configFile.createNewFile();
         } catch (IOException e) {
-            try {
-                configFile.createNewFile();
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            }
+            Constants.printTimeStamp(System.err);
+            e.printStackTrace();
         }
 
         String property = APP_CONFIG_PROPERTIES.getProperty("language");
-        if(!isValidLanguage(property))
-            APP_CONFIG_PROPERTIES.setProperty("language", "ES");
+        if(!isValidLanguage(property)) {
+            System.out.println(String.format(
+                LogMessage.PROPERTIES_LANG_X.get(), LANGUAGES.ES.toString()
+            ));
+            APP_CONFIG_PROPERTIES.setProperty("language", LANGUAGES.ES.toString());
+        } else
+            System.out.println(String.format(
+                LogMessage.PROPERTIES_LANG_O.get(), property
+            ));
+
         property = APP_CONFIG_PROPERTIES.getProperty("default_dir");
-        if(!isValidPath(property))
-            APP_CONFIG_PROPERTIES.setProperty("default_dir", System.getProperty("user.home"));
+        if(!isValidPath(property)) {
+            System.out.println(String.format(
+                LogMessage.PROPERTIES_DIR_X.get(), System.getProperty("user.dir")
+            ));
+            APP_CONFIG_PROPERTIES.setProperty("default_dir", System.getProperty("user.dir"));
+            //System.getProperty("user.home")
+        } else
+            System.out.println(String.format(
+                LogMessage.PROPERTIES_DIR_O.get(), property
+            ));
 
-        save(configFile, APP_CONFIG_PROPERTIES, APP_CONFIG_DESC);
-    }
+        property = APP_CONFIG_PROPERTIES.getProperty("frames_per_second");
+        if(!isValidInt(property)) {
+            System.out.println(String.format(
+                LogMessage.PROPERTIES_FPS_X.get(), "60"
+            ));
+            APP_CONFIG_PROPERTIES.setProperty("frames_per_second", "60");
+        } else
+            System.out.println(String.format(
+                LogMessage.PROPERTIES_FPS_O.get(), property
+            ));
 
+        property = APP_CONFIG_PROPERTIES.getProperty("windows_taskbar_height");
+        if(!isValidInt(property)) {
+            System.out.println(String.format(
+                LogMessage.PROPERTIES_WINH_X.get(), "50"
+            ));
+            APP_CONFIG_PROPERTIES.setProperty("windows_taskbar_height", "50");
+        } else
+            System.out.println(String.format(
+                LogMessage.PROPERTIES_WINH_O.get(), property
+            ));
 
-    public static void loadVtuberProperties(String vtuberName) {
-        File configDir = AppPaths.getAppPath(Constants.APP_NAME, AppPaths.PathType.CONFIG);
-        File configFile = new File(configDir, "VTUBER.sav");
-
-        try(FileInputStream fileInputStream = new FileInputStream(configFile)) {
-            VTUBER_PROPERTIES.load(fileInputStream);
-        } catch (IOException e) {
-            try {
-                configFile.createNewFile();
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            }
-        }
-
-        String property = VTUBER_PROPERTIES.getProperty("microphone_detection");
-        if(!isValidBoolean(property))
-            VTUBER_PROPERTIES.setProperty("microphone_detection", "true");
-        property = VTUBER_PROPERTIES.getProperty("microphone_threshold");
-        if(!isValidByte(property))
-            VTUBER_PROPERTIES.setProperty("microphone_threshold", "5");
-        property = VTUBER_PROPERTIES.getProperty("microphone_channels");
-        if(!isValidInt(property))
-            VTUBER_PROPERTIES.setProperty("microphone_channels", "1");
-        property = VTUBER_PROPERTIES.getProperty("keyboard_detection");
-        if(!isValidBoolean(property))
-            VTUBER_PROPERTIES.setProperty("keyboard_detection", "true");
-        property = VTUBER_PROPERTIES.getProperty("microphone_ups");
-        if(!isValidInt(property))
-            VTUBER_PROPERTIES.setProperty("microphone_ups", "10");
-        property = VTUBER_PROPERTIES.getProperty("mouse_detection");
-        if(!isValidBoolean(property))
-            VTUBER_PROPERTIES.setProperty("mouse_detection","true");
-        property = VTUBER_PROPERTIES.getProperty("window_width");
-        if(!isValidInt(property))
-            VTUBER_PROPERTIES.setProperty("window_width", "500");
-        property = VTUBER_PROPERTIES.getProperty("window_height");
-        if(!isValidInt(property))
-            VTUBER_PROPERTIES.setProperty("window_height", "400");
-        property = VTUBER_PROPERTIES.getProperty("window_location");
-        if(property == null)
-            VTUBER_PROPERTIES.setProperty("window_location", "se");
-        property = VTUBER_PROPERTIES.getProperty("windows_taskbar_height");
-        if(!isValidInt(property))
-            VTUBER_PROPERTIES.setProperty("windows_taskbar_height", "50");
-        property = VTUBER_PROPERTIES.getProperty("frames_per_second");
-        if(!isValidInt(property))
-            VTUBER_PROPERTIES.setProperty("frames_per_second", "60");
-
-        save(configFile, VTUBER_PROPERTIES, VTUBER_DESC);
+        //save(configFile, APP_CONFIG_PROPERTIES, APP_CONFIG_DESC);
     }
 
     public static void saveAppProperties() {
@@ -124,18 +105,14 @@ public final class PropertiesM {
         save(configFile, APP_CONFIG_PROPERTIES, APP_CONFIG_DESC);
     }
 
-    public static void saveVtuberProperties() {
-        File configDir = AppPaths.getAppPath(Constants.APP_NAME, AppPaths.PathType.CONFIG);
-        File configFile = new File(configDir, "VTUBER.sav");
-        save(configFile, VTUBER_PROPERTIES, VTUBER_DESC);
-    }
-
     private static void save(File file, Properties properties, String comment) {
         try {
             FileWriter writer = new FileWriter(file);
             properties.store(writer, comment);
             writer.close();
+            System.out.println(LogMessage.PROPERTIES_SAVE.get());
         } catch (IOException e) {
+            Constants.printTimeStamp(System.err);
             e.printStackTrace();
         }
     }
@@ -144,15 +121,6 @@ public final class PropertiesM {
         boolean isDone = setProperty(APP_CONFIG_PROPERTIES, key, value);
         if(isDone) {
             saveAppProperties();
-            return true;
-        }
-        return false;
-    }
-
-    public static boolean setVtuberProperty(String key, String value) {
-        boolean isDone = setProperty(VTUBER_PROPERTIES, key, value);
-        if(isDone) {
-            saveVtuberProperties();
             return true;
         }
         return false;

@@ -10,7 +10,7 @@ import app.maker.controllers.objects.Infos.Info;
 public class BasicInfoBuilder extends InfoBuilder {
 
     private boolean usage;
-    private String[] strParams = {"", ""};
+    private String[] strParams = {"", "", ""};
     private int counterS = 0;
 
     /**
@@ -45,6 +45,6 @@ public class BasicInfoBuilder extends InfoBuilder {
      */
     @Override
     public Info getResult() {
-        return new BasicInfo(strParams[0], usage, strParams[1]);
+        return new BasicInfo(strParams[0], strParams[1], usage, strParams[2]);
     }
 }

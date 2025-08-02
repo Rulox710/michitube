@@ -1,6 +1,9 @@
 package app.maker.controllers;
 
+import app.Constants;
 import app.Ids;
+import app.LogMessage;
+import app.Main;
 import app.maker.controllers.components.LayerButton;
 import app.maker.controllers.layerOptions.MouthController;
 import app.maker.controllers.layerOptions.OptionLayerController;
@@ -46,10 +49,10 @@ public class LayersController extends AbstractController {
     }
 
     public boolean readyToSave() {
-        for(int i = 0; i < accordionController.length; i++) {
-            if(!accordionController[i].readyToSave()) return false;
-        }
-        return true;
+        boolean result = true;
+        for(int i = 0; i < accordionController.length; i++)
+            if(!accordionController[i].readyToSave()) result = false;
+        return result;
     }
 
     public boolean setInfo(Ids id, Info info) {
@@ -70,34 +73,44 @@ public class LayersController extends AbstractController {
 
     @Override
     public void initialize() {
+        int i = 0;
         try {
-            for(int i = 0; i < Ids.values().length; i++) {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/res/views/components/layer_button.fxml"));
+            for(; i < Ids.values().length; i++) {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/components/layer_button.fxml"));
                 stackpaneLayers[i] = loader.load();
-                stackpaneLayers[i].getStylesheets().add(getClass().getResource("/res/styles/layer_button.css").toExternalForm());
+                System.out.println(String.format(LogMessage.GUI_FXML.get(), "Botón de " + Ids.values()[i].getID()));
+                stackpaneLayers[i].getStylesheets().add(getClass().getResource("/styles/layer_button.css").toExternalForm());
                 buttonControllers[i] = loader.getController();
                 buttonControllers[i].setTranslationId(String.format("button_%s", Ids.values()[i].getID()));
                 parentContainer.getChildren().add(stackpaneLayers[i]);
                 buttonControllers[i].addObserver(this);
 
-                loader = new FXMLLoader(getClass().getResource(String.format("/res/views/layerOptions/%s_view.fxml", Ids.values()[i].getID())));
+                loader = new FXMLLoader(getClass().getResource(String.format("/views/layerOptions/%s_view.fxml", Ids.values()[i].getID())));
                 accordionLayers[i] = loader.load();
-                accordionLayers[i].getStylesheets().add(getClass().getResource("/res/styles/image_preview.css").toExternalForm());
+                System.out.println(String.format(LogMessage.GUI_FXML.get(), "Opciones de " + Ids.values()[i].getID()));
+                accordionLayers[i].getStylesheets().add(getClass().getResource("/styles/layer_options.css").toExternalForm());
                 if(i == 3)
-                    accordionLayers[i].getStylesheets().add(getClass().getResource("/res/styles/mic_style.css").toExternalForm());
+                    accordionLayers[i].getStylesheets().add(getClass().getResource("/styles/mic_style.css").toExternalForm());
                 accordionController[i] = loader.getController();
                 accordionController[i].addObserver(this);
                 accordionController[i].addObserver(buttonControllers[i]);
             }
-            for(int i = 0; i < buttonControllers.length; i++) {
+            for(int k = 0; k < buttonControllers.length; k++) {
                 for(int j = 0; j < buttonControllers.length; j++) {
-                    if(j != i) buttonControllers[i].addObserver(buttonControllers[j]);
+                    if(j != k) buttonControllers[k].addObserver(buttonControllers[j]);
                 }
             }
             optionsContainer.setContent(accordionLayers[0]);
             buttonControllers[0].toggleSelect(true);
         } catch (IOException e) {
+            System.out.println(String.format(LogMessage.GUI_FXML_X.get(), "Opciones de " + Ids.values()[i].getID()));
+
+            Constants.printTimeStamp(System.err);
             e.printStackTrace();
+
+            Platform.runLater(() -> {
+                Main.stopApp(true);
+            });
         }
     }
 
@@ -131,13 +144,17 @@ public class LayersController extends AbstractController {
             case 'C': notifyObservers('C', data);
             break;
 
+            case 'H': notifyObservers('H', data);
+            break;
+
             case 'T':
                 int tweakID = accordionController[selectedLayer].getTweakID();
                 notifyObservers((char)selectedLayer, tweakID);
             break;
 
             case (char)0:
-            case (char)1: notifyObservers('i', data);
+            case (char)1:
+            case (char)2: notifyObservers('i', data);
             break;
 
             case 'z': open();

@@ -1,5 +1,7 @@
 package app.maker.controllers.layerOptions;
 
+import app.Constants;
+import app.Sections.KEYS;
 import app.files.TranslationM;
 import app.maker.FXFileChooser;
 import app.maker.controllers.objects.Infos.Info;
@@ -7,6 +9,8 @@ import app.maker.controllers.objects.builders.MouthInfoBuilder;
 
 import java.io.File;
 import java.net.URI;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
@@ -15,6 +19,7 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.TargetDataLine;
 
 import javafx.application.Platform;
+import javafx.css.PseudoClass;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Accordion;
@@ -44,7 +49,7 @@ public class MouthController extends OptionLayerController {
     @FXML private CheckBox checkboxMicrophone;
     @FXML private Slider sliderMicrophoneChannel, sliderMicrophoneSensitivity;
     @FXML private Region micLevelOverlay;
-    @FXML private HBox hboxTalk;
+    @FXML private HBox hboxMouth, hboxTalk;
     @FXML private Spinner<Integer> spinnerMicrophoneUpdate;
     @FXML private Tooltip tooltipMicrophone;
 
@@ -59,6 +64,7 @@ public class MouthController extends OptionLayerController {
             microphone = (TargetDataLine) AudioSystem.getLine(info);
             microphone.open(format);
         } catch(LineUnavailableException e) {
+            Constants.printTimeStamp(System.err);
             e.printStackTrace();
             throw new RuntimeException("No se pudo inicializar la línea de datos del micrófono");
         }
@@ -81,58 +87,6 @@ public class MouthController extends OptionLayerController {
         stopCapture();
         microphone.stop();
         microphone.close();
-    }
-
-    @Override
-    public void initialize() {
-        updateLanguage();
-
-        optionsRoot = mouthOptionsRoot;
-        firstPane = titledPaneMouth;
-        super.initialize();
-
-        spinnerMicrophoneUpdate.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 120, 60));
-
-        updateEnabledState(checkboxMicrophone.isSelected());
-        checkboxMicrophone.selectedProperty().addListener((obs, oldVal, newVal) -> {
-            updateEnabledState(newVal);
-        });
-    }
-
-    private void updateEnabledState(boolean enabled) {
-        buttonTalk.setDisable(!enabled);
-        imagePreviewTalk.setDisable(!enabled);
-        hboxTalk.setDisable(!enabled);
-        labelMicrophoneChannel.setDisable(!enabled);
-        labelMicrophoneUpdate.setDisable(!enabled);
-        spinnerMicrophoneUpdate.setDisable(!enabled);
-        labelTalkSec.setDisable(!enabled);
-        labelMicrophoneSensitivity.setDisable(!enabled);
-        sliderMicrophoneChannel.setDisable(!enabled);
-        sliderMicrophoneSensitivity.setDisable(!enabled);
-        if(enabled) startCapture();
-        else {
-            stopCapture();
-            micLevelOverlay.setMaxWidth(0);
-        }
-    }
-
-    @FXML
-    private void handleButtonClick(ActionEvent event) {
-        Object source = event.getSource();
-        ImageView imagePreview = (source == buttonMouth)? imagePreviewMouth: imagePreviewTalk;
-        File img = FXFileChooser.getImageChooser().showOpenDialog(null);
-        if(img != null) {
-            imagePreview.setImage(new Image(img.toURI().toString()));
-            notifyObservers((char) getTweakID(), img);
-        }
-    }
-
-    private void updateAmplitude(double amplitude) {
-        Platform.runLater(() -> {
-            double width = sliderMicrophoneSensitivity.getWidth() * amplitude;
-            micLevelOverlay.setMaxWidth(width);
-        });
     }
 
     /**
@@ -159,6 +113,21 @@ public class MouthController extends OptionLayerController {
         // }
         // double rms = Math.sqrt(sum / buffer.length);
         // return Math.min(rms, 1.0);
+    }
+
+    /**
+     * Actualiza la amplitud del micrófono en la interfaz de manera
+     * viusual en la interfaz del usuario.
+     *
+     * @param amplitude El valor a representar acutalmente en la
+     *                  interfaz. El valor debe estar entre
+     *                  <code>0</code> y <code>1</code>.
+     */
+    private void updateAmplitude(double amplitude) {
+        Platform.runLater(() -> {
+            double width = sliderMicrophoneSensitivity.getWidth() * amplitude;
+            micLevelOverlay.setMaxWidth(width);
+        });
     }
 
     private void startCapture() {
@@ -198,32 +167,148 @@ public class MouthController extends OptionLayerController {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void initialize() {
+        hasError = new boolean[2]; // 0: Mouth, 1: Talk
+        updateLanguage();
+
+        optionsRoot = mouthOptionsRoot;
+        firstPane = titledPaneMouth;
+        super.initialize();
+
+        spinnerMicrophoneUpdate.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 120, 60));
+
+        updateEnabledState(checkboxMicrophone.isSelected());
+        checkboxMicrophone.selectedProperty().addListener((obs, oldVal, newVal) -> {
+            updateEnabledState(newVal);
+        });
+    }
+
+    @Override
+    protected void handleError(int index, boolean error, boolean notify) {
+        index = index%2;
+        hasError[index] = error;
+
+        TitledPane currentPane;
+        HBox currentHBox;
+        switch(index) {
+            case 0:
+            default:
+                currentPane = titledPaneMouth;
+                currentHBox = hboxMouth;
+            break;
+
+            case 1:
+                currentPane = titledPaneTalk;
+                currentHBox = hboxTalk;
+            break;
+        }
+        currentPane.pseudoClassStateChanged(PseudoClass.getPseudoClass("error"), hasError[index]);
+        currentHBox.pseudoClassStateChanged(PseudoClass.getPseudoClass("error"), hasError[index]);
+
+        if(notify) {
+            boolean anyError = false;
+            for(boolean b: hasError) if(b) {
+                anyError = true;
+                break;
+            }
+            notifyObservers('e', anyError);
+        }
+    }
+
+    private void updateEnabledState(boolean enabled) {
+        buttonTalk.setDisable(!enabled);
+        imagePreviewTalk.setDisable(!enabled);
+        hboxTalk.setDisable(!enabled);
+        labelMicrophoneChannel.setDisable(!enabled);
+        labelMicrophoneUpdate.setDisable(!enabled);
+        spinnerMicrophoneUpdate.setDisable(!enabled);
+        labelTalkSec.setDisable(!enabled);
+        labelMicrophoneSensitivity.setDisable(!enabled);
+        sliderMicrophoneChannel.setDisable(!enabled);
+        sliderMicrophoneSensitivity.setDisable(!enabled);
+        if(enabled) startCapture();
+        else {
+            stopCapture();
+            micLevelOverlay.setMaxWidth(0);
+
+            handleError(1, false, true);
+        }
+    }
+
+    @FXML
+    private void handleButtonClick(ActionEvent event) {
+        Object source = event.getSource();
+        ImageView imagePreview = source == buttonMouth? imagePreviewMouth: imagePreviewTalk;
+        int index = source == buttonMouth? 0: 1;
+
+        File img = FXFileChooser.getImageChooser().showOpenDialog(null);
+        if(img != null) {
+            imagePreview.setImage(new Image(img.toURI().toString()));
+            notifyObservers((char) getTweakID(), img);
+
+            handleError(index, false, true);
+        }
+    }
+
     @Override
     public boolean readyToSave() {
-        if(imagePreviewMouth.getImage() == null) return false;
-        if(checkboxMicrophone.selectedProperty().getValue() && imagePreviewTalk.getImage() == null)
-            return false;
-        return true;
+        boolean hasBeenNotified = false;
+
+        if(imagePreviewMouth.getImage() == null) {
+            handleError(0, true, !hasBeenNotified);
+            hasBeenNotified = true;
+        }
+        if(checkboxMicrophone.selectedProperty().getValue() && imagePreviewTalk.getImage() == null) {
+            handleError(1, true, !hasBeenNotified);
+            hasBeenNotified = true;
+        }
+
+        return !hasBeenNotified;
     }
 
     @Override
     public boolean setInfo(Info info) {
         boolean result = true;
+        Path relativePath, fullPath;
+        URI fullUri;
 
-        if(info.path[0].length() != 0) {
-            imagePreviewMouth.setImage(new Image(info.path[0]));
-            notifyObservers('l', new File(URI.create(info.path[0])));
-        } else result = false;
-
-        sliderMicrophoneChannel.setValue(info.intParams[0]);
-        spinnerMicrophoneUpdate.getValueFactory().setValue(info.intParams[1]);
-        sliderMicrophoneSensitivity.setValue(info.intParams[2]);
-        checkboxMicrophone.selectedProperty().setValue(info.boolParams[0]);
-        if(info.boolParams[0] && info.path[1].length() != 0) {
-            imagePreviewTalk.setImage(new Image(info.path[1]));
-            checkboxMicrophone.selectedProperty().setValue(info.boolParams[0]);
+        if(info.getString(KEYS.PATH_0).length() != 0) {
+            relativePath = Paths.get(info.getString(KEYS.PATH_0));
+            fullPath = basePath.resolve(relativePath);
+            fullUri = fullPath.toUri();
+            imagePreviewMouth.setImage(new Image(fullUri.toString()));
+            notifyObservers('l', new File(fullUri));
+        } else {
+            result = false;
+            imagePreviewMouth.setImage(null);
+            notifyObservers('l', null);
         }
-        else result = false;
+
+        sliderMicrophoneChannel.setValue(info.getInt(KEYS.CHNLS));
+        spinnerMicrophoneUpdate.getValueFactory().setValue(info.getInt(KEYS.UPS));
+        sliderMicrophoneSensitivity.setValue(info.getInt(KEYS.SENS));
+        checkboxMicrophone.selectedProperty().setValue(info.getBoolean(KEYS.USE));
+        if(info.getBoolean(KEYS.USE)) {
+            startCapture();
+        } else {
+            stopCapture();
+        }
+        if(info.getBoolean(KEYS.USE) && info.getString(KEYS.PATH_1).length() != 0) {
+            relativePath = Paths.get(info.getString(KEYS.PATH_1));
+            fullPath = basePath.resolve(relativePath);
+            fullUri = fullPath.toUri();
+            imagePreviewTalk.setImage(new Image(fullUri.toString()));
+        } else {
+            result = false;
+            imagePreviewTalk.setImage(null);
+        }
+
+        for(int i = 0 ; hasError.length > i; i++) handleError(i, false, false);
+        notifyObservers('e', false);
 
         return result;
     }

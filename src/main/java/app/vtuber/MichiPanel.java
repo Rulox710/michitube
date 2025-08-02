@@ -1,17 +1,23 @@
 package app.vtuber;
 
+import app.Constants;
 import app.Ids;
-import app.Sections;
 import app.Sections.KEYS;
 import app.engine.DeltaTimeManager;
 import app.engine.Observer;
+import app.files.PropertiesM;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.Point;
 import java.awt.RenderingHints;
+import java.awt.geom.Path2D;
 import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URI;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,20 +34,27 @@ public class MichiPanel extends JPanel implements Observer {
                               LAYER_EYES = new Image[2],
                               LAYER_MOUTH = new Image[2],
                               LAYER_TABLE = new Image[1],
-                              LAYER_KEYBOARD = new Image[2],
-                              LAYER_MOUSE = new Image[2];
+                              LAYER_KEYBOARD = new Image[3],
+                              LAYER_MOUSE = new Image[0];
     private final int LAYERS_SIZE = LAYER_BACKGROUND.length + LAYER_BODY.length + LAYER_EYES.length +
                                     LAYER_MOUTH.length + LAYER_TABLE.length + LAYER_KEYBOARD.length +
                                     LAYER_MOUSE.length;
     private final Map<Ids, Image[]> LAYERS_MAP =  new HashMap<>(Ids.values().length);
-    private final Map<Ids, Map<String, Integer>> PARAMS = new HashMap<>();
+    private final Map<Ids, Map<KEYS, Integer>> PARAMS = new HashMap<>();
 
     private final RenderingHints HINTS;
 
     private boolean drawPrimaryHand = true, drawPrimaryMouth = true, drawPrimaryEyes = true;
     private float time = 0f;
+    private Path basePath;
+    private Color handColor = Color.LIGHT_GRAY;
+
+    private final Point SPACE_AREA = new Point();
+    private Point handPoint1 = new Point(), handPoint2 = new Point();
 
     public MichiPanel() {
+        basePath = Paths.get(PropertiesM.getAppProperty("default_dir"));
+
         setOpaque(false);
         HINTS = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
         HINTS.put(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
@@ -58,11 +71,24 @@ public class MichiPanel extends JPanel implements Observer {
         LAYERS_MAP.put(Ids.MOUSE, LAYER_MOUSE);
     }
 
-    public void setImage(Ids layer, int tweak, String imageUri) {
+    public void setHandColor(Color color) {
+        handColor = color;
+    }
+
+    public void setImage(Ids layer, int tweak, String imagePath) {
         try {
-            ImageIcon imageIcon = new ImageIcon(new URL(imageUri));
+            Path relativePath = Paths.get(imagePath);
+            Path fullPath = basePath.resolve(relativePath);
+            URI fullUri = fullPath.toUri();
+            ImageIcon imageIcon = new ImageIcon(fullUri.toURL());
             LAYERS_MAP.get(layer)[tweak] = imageIcon.getImage();
+
+            // System.out.println(String.format(
+            //     "ID: %s Tweak: %d uri: %s",
+            //     layer.getID(), tweak, fullPath.toUri().toString()
+            // ));
         } catch(MalformedURLException e) {
+            Constants.printTimeStamp(System.err);
             System.err.println(String.format(
                 "No se ha encontrado la imagen de la capa: %s, característica: %d",
                 layer, tweak
@@ -72,55 +98,115 @@ public class MichiPanel extends JPanel implements Observer {
     }
 
     public void setParams(Ids layer, int... params) {
-        Map<String, Integer> map = new HashMap<>(4);
+        Map<KEYS, Integer> map = new HashMap<>(4);
+        KEYS[] infoKeys = new KEYS[]
+            {KEYS.XPOS_0, KEYS.YPOS_0, KEYS.WIDTH_0, KEYS.HEIGHT_0};
+
         switch(layer) {
             case BACKGROUND:
             case BODY:
             case TABLE:
-                map.put(KEYS.XPOS.getFormatKEY(0), params[0]);
-                map.put(KEYS.YPOS.getFormatKEY(0), params[1]);
-                map.put(KEYS.WIDTH.getFormatKEY(0), params[2]);
-                map.put(KEYS.HEIGHT.getFormatKEY(0), params[3]);
+                for(int i = 0; i < infoKeys.length; i++)
+                    map.put(infoKeys[i], params[i]);
             break;
 
             case EYES:
                 map = new HashMap<>(10);
 
-                map.put(KEYS.XPOS.getFormatKEY(0), params[0]);
-                map.put(KEYS.YPOS.getFormatKEY(0), params[1]);
-                map.put(KEYS.WIDTH.getFormatKEY(0), params[2]);
-                map.put(KEYS.HEIGHT.getFormatKEY(0), params[3]);
+                for(int i = 0; i < infoKeys.length; i++)
+                    map.put(infoKeys[i], params[i]);
 
                 if(params.length < 5) break;
-                map.put(KEYS.XPOS.getFormatKEY(1), params[4]);
-                map.put(KEYS.YPOS.getFormatKEY(1), params[5]);
-                map.put(KEYS.WIDTH.getFormatKEY(1), params[6]);
-                map.put(KEYS.HEIGHT.getFormatKEY(1), params[7]);
+                infoKeys = new KEYS[]
+                    {KEYS.XPOS_1, KEYS.YPOS_1, KEYS.WIDTH_1, KEYS.HEIGHT_1};
+                for(int i = 0; i < infoKeys.length; i++)
+                    map.put(infoKeys[i], params[i+infoKeys.length]);
 
-                map.put(KEYS.TIMETO.getKEY(), params[8]);
-                map.put(KEYS.TIMEBLINK.getKEY(), params[9]);
+                map.put(KEYS.TIMETO, params[8]);
+                map.put(KEYS.TIMEBLINK, params[9]);
             break;
 
             case MOUTH:
-            case KEYBOARD:
                 map = new HashMap<>(8);
 
-                map.put(KEYS.XPOS.getFormatKEY(0), params[0]);
-                map.put(KEYS.YPOS.getFormatKEY(0), params[1]);
-                map.put(KEYS.WIDTH.getFormatKEY(0), params[2]);
-                map.put(KEYS.HEIGHT.getFormatKEY(0), params[3]);
+                for(int i = 0; i < infoKeys.length; i++)
+                    map.put(infoKeys[i], params[i]);
 
-                if(params.length < 5) break;
-                map.put(KEYS.XPOS.getFormatKEY(1), params[4]);
-                map.put(KEYS.YPOS.getFormatKEY(1), params[5]);
-                map.put(KEYS.WIDTH.getFormatKEY(1), params[6]);
-                map.put(KEYS.HEIGHT.getFormatKEY(1), params[7]);
+                infoKeys = new KEYS[]
+                    {KEYS.XPOS_1, KEYS.YPOS_1, KEYS.WIDTH_1, KEYS.HEIGHT_1};
+                for(int i = 0; i < infoKeys.length; i++)
+                    map.put(infoKeys[i], params[i+infoKeys.length]);
+            break;
+
+            case KEYBOARD:
+                map = new HashMap<>(12);
+
+                for(int i = 0; i < infoKeys.length; i++)
+                    map.put(infoKeys[i], params[i]);
+
+                infoKeys = new KEYS[]
+                    {KEYS.XPOS_1, KEYS.YPOS_1, KEYS.WIDTH_1, KEYS.HEIGHT_1};
+                for(int i = 0; i < infoKeys.length; i++)
+                    map.put(infoKeys[i], params[i+infoKeys.length]);
+
+                infoKeys = new KEYS[]
+                    {KEYS.XPOS_2, KEYS.YPOS_2, KEYS.WIDTH_2, KEYS.HEIGHT_2};
+                for(int i = 0; i < infoKeys.length; i++)
+                    map.put(infoKeys[i], params[i+infoKeys.length*2]);
             break;
 
             case MOUSE:
+                map = new HashMap<>(12);
+
+                infoKeys = new KEYS[] {
+                    KEYS.XPOS, KEYS.YPOS, KEYS.WIDTH, KEYS.HEIGHT,
+                    KEYS.XPOS_A, KEYS.YPOS_A, KEYS.XPOS_B, KEYS.YPOS_B,
+                    KEYS.XPOS_C, KEYS.YPOS_C, KEYS.XPOS_D, KEYS.YPOS_D
+                };
+                for(int i = 0; i < infoKeys.length; i++)
+                    map.put(infoKeys[i], params[i]);
+
+                SPACE_AREA.setLocation(
+                    map.get(KEYS.WIDTH),
+                    map.get(KEYS.HEIGHT)
+                );
+
+                handPoint1.setLocation(
+                    map.get(KEYS.XPOS) + map.get(KEYS.XPOS_B),
+                    map.get(KEYS.YPOS) + map.get(KEYS.YPOS_B)
+                );
+                handPoint2.setLocation(
+                    map.get(KEYS.XPOS) + map.get(KEYS.XPOS_C),
+                    map.get(KEYS.YPOS) + map.get(KEYS.YPOS_C)
+                );
+
             break;
         }
         PARAMS.put(layer, map);
+    }
+
+    /**
+     * Sirve para indicar que tanto movimiento respecto al original
+     * debe tener la mano del lado del ratón.
+     *
+     * @param x Cuanto desplazamiento en el eje x va a tener
+     *          respecto a la posición original.
+     * @param y Cuanto desplazamiento en el eje y va a tener
+     *          respecto a la posición original.
+     */
+    public void moveMouse(double x, double y) {
+        double xPosition = PARAMS.get(Ids.MOUSE).get(KEYS.XPOS) + SPACE_AREA.getX() * (1-x);
+        double yPosition = PARAMS.get(Ids.MOUSE).get(KEYS.YPOS) + SPACE_AREA.getY() * (1-y);
+
+        double offsetX = (PARAMS.get(Ids.MOUSE).get(KEYS.XPOS_C) - PARAMS.get(Ids.MOUSE).get(KEYS.XPOS_B)) / 2;
+        double offsetY = (PARAMS.get(Ids.MOUSE).get(KEYS.YPOS_C) - PARAMS.get(Ids.MOUSE).get(KEYS.YPOS_B)) / 2;
+
+        handPoint1.setLocation(
+            xPosition - offsetX, yPosition - offsetY
+        );
+        handPoint2.setLocation(
+            xPosition + offsetX, yPosition + offsetY
+        );
     }
 
     /**
@@ -134,13 +220,16 @@ public class MichiPanel extends JPanel implements Observer {
         super.paintComponent(g2d);
 
         // for(Ids layer: Ids.values()) {
-        Ids ids[] = {Ids.BACKGROUND, Ids.BODY, Ids.TABLE, Ids.EYES, Ids.MOUTH, Ids.KEYBOARD};
+        Ids ids[] = new Ids[]
+            {Ids.BACKGROUND, Ids.BODY, Ids.TABLE, Ids.EYES, Ids.MOUTH, Ids.KEYBOARD};
         for(Ids layer: ids) {
             Image image = LAYERS_MAP.get(layer)[0];
             int tweak = 0;
+
             switch(layer) {
                 case BACKGROUND:
                 case BODY:
+                break;
                 case TABLE:
 
                 break;
@@ -162,25 +251,75 @@ public class MichiPanel extends JPanel implements Observer {
                 break;
 
                 case KEYBOARD:
+                    g2d.drawImage(
+                        LAYERS_MAP.get(layer)[1],
+                        PARAMS.get(layer).get(KEYS.XPOS_1),
+                        PARAMS.get(layer).get(KEYS.YPOS_1),
+                        PARAMS.get(layer).get(KEYS.WIDTH_1),
+                        PARAMS.get(layer).get(KEYS.HEIGHT_1),
+                        this
+                    );
+
                     if(!drawPrimaryHand) {
-                        image = LAYERS_MAP.get(layer)[1];
-                        tweak = 1;
+                        image = LAYERS_MAP.get(layer)[2];
+                        tweak = 2;
                     }
 
                 break;
 
-                case MOUSE:
+                default:
                 break;
             }
+            KEYS[] infoKeys = switch(tweak) {
+                case 0 -> new KEYS[]
+                    {KEYS.XPOS_0, KEYS.YPOS_0, KEYS.WIDTH_0, KEYS.HEIGHT_0};
+                case 1 -> new KEYS[]
+                    {KEYS.XPOS_1, KEYS.YPOS_1, KEYS.WIDTH_1, KEYS.HEIGHT_1};
+                case 2 -> new KEYS[]
+                    {KEYS.XPOS_2, KEYS.YPOS_2, KEYS.WIDTH_2, KEYS.HEIGHT_2};
+                default -> new KEYS[]
+                    {KEYS.XPOS, KEYS.YPOS, KEYS.WIDTH, KEYS.HEIGHT};
+            };
             g2d.drawImage(
                 image,
-                PARAMS.get(layer).get(KEYS.XPOS.getFormatKEY(tweak)),
-                PARAMS.get(layer).get(KEYS.YPOS.getFormatKEY(tweak)),
-                PARAMS.get(layer).get(KEYS.WIDTH.getFormatKEY(tweak)),
-                PARAMS.get(layer).get(KEYS.HEIGHT.getFormatKEY(tweak)),
+                PARAMS.get(layer).get(infoKeys[0]),
+                PARAMS.get(layer).get(infoKeys[1]),
+                PARAMS.get(layer).get(infoKeys[2]),
+                PARAMS.get(layer).get(infoKeys[3]),
                 this
             );
         }
+        //case MOUSE:
+        g2d.setColor(Color.blue);
+        g2d.drawRect(
+            PARAMS.get(Ids.MOUSE).get(KEYS.XPOS),
+            PARAMS.get(Ids.MOUSE).get(KEYS.YPOS),
+            PARAMS.get(Ids.MOUSE).get(KEYS.WIDTH),
+            PARAMS.get(Ids.MOUSE).get(KEYS.HEIGHT)
+        );
+
+        Path2D path = new Path2D.Double();
+        int xOffset = PARAMS.get(Ids.MOUSE).get(KEYS.XPOS) - 5;
+        int yOffset = PARAMS.get(Ids.MOUSE).get(KEYS.YPOS) - 5;
+
+        path.moveTo(
+            xOffset + PARAMS.get(Ids.MOUSE).get(KEYS.XPOS_A),
+            yOffset + PARAMS.get(Ids.MOUSE).get(KEYS.YPOS_A)
+        );
+        path.lineTo(handPoint1.x, handPoint1.y);
+        path.curveTo(
+            handPoint1.x-10, handPoint1.y+10,
+            handPoint2.x-10, handPoint2.y+10,
+            handPoint2.x, handPoint2.y
+        );
+        path.lineTo(
+            xOffset + PARAMS.get(Ids.MOUSE).get(KEYS.XPOS_D),
+            yOffset + PARAMS.get(Ids.MOUSE).get(KEYS.YPOS_D)
+        );
+
+        g2d.setColor(handColor);
+        g2d.fill(path);
+        g2d.draw(path);
     }
 
     /**
@@ -197,13 +336,15 @@ public class MichiPanel extends JPanel implements Observer {
             break;
 
             case 'r':
+                double[] pair = (double[])data;
+                moveMouse(pair[0], pair[1]);
             break;
 
             case 'u':
-                if(drawPrimaryEyes && time >= PARAMS.get(Ids.EYES).get(KEYS.TIMETO.getKEY())) {
+                if(drawPrimaryEyes && time >= PARAMS.get(Ids.EYES).get(KEYS.TIMETO)) {
                     drawPrimaryEyes = false;
                     time = 0f;
-                } else if(!drawPrimaryEyes && time >= PARAMS.get(Ids.EYES).get(KEYS.TIMEBLINK.getKEY())) {
+                } else if(!drawPrimaryEyes && time >= PARAMS.get(Ids.EYES).get(KEYS.TIMEBLINK)) {
                     drawPrimaryEyes = true;
                     time = 0f;
                 }

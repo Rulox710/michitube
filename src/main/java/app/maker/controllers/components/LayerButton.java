@@ -57,6 +57,8 @@ public class LayerButton extends AbstractController {
     private void setImage(File fimg) {
         if(fimg != null) {
             imagePreview.setImage(new Image(fimg.toURI().toString()));
+        } else {
+            imagePreview.setImage(null);
         }
     }
 
@@ -80,6 +82,12 @@ public class LayerButton extends AbstractController {
      */
     public void toggleSelect(boolean hasFocus) {
         stackpaneContainer.pseudoClassStateChanged(PseudoClass.getPseudoClass("clicked"), hasFocus);
+        imageContainer.pseudoClassStateChanged(PseudoClass.getPseudoClass("clicked"), hasFocus);
+    }
+
+    public void toggleError(boolean hasError) {
+        stackpaneContainer.pseudoClassStateChanged(PseudoClass.getPseudoClass("error"), hasError);
+        imageContainer.pseudoClassStateChanged(PseudoClass.getPseudoClass("error"), hasError);
     }
 
     /**
@@ -112,6 +120,8 @@ public class LayerButton extends AbstractController {
      *                  {@link #toggleSelect}<code>(false)</code>
      *              - <code>l</code>: usa el método
      *                  {@link #setImage}<code>(data)</code>
+     *              - <code>e</code>: usa el método
+     *                  {@link #toggleError}<code>(data)</code>
      */
     @Override
     public void update(char event, Object data) {
@@ -124,6 +134,8 @@ public class LayerButton extends AbstractController {
 
             case 'l': setImage((File) data);
             break;
+
+            case 'e': toggleError((boolean) data);
         }
     }
 }

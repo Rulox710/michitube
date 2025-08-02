@@ -1,9 +1,10 @@
 package app.detectors;
 
+import app.Constants;
+import app.LogMessage;
 import app.engine.DeltaTimeManager;
 import app.engine.Observable;
 import app.engine.Observer;
-import app.files.PropertiesM;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
@@ -42,9 +43,11 @@ public class Microphone extends Observable implements Observer {
             MICROPHONE = (TargetDataLine) AudioSystem.getLine(info);
             MICROPHONE.open(FORMAT);
         } catch(LineUnavailableException e) {
+            Constants.printTimeStamp(System.err);
             e.printStackTrace();
             throw new RuntimeException("No se pudo inicializar la línea de datos del micrófono");
         }
+        System.out.println(LogMessage.DETECT_MICRO.get());
 
         UPS = ups;
         startCapture();
@@ -59,6 +62,8 @@ public class Microphone extends Observable implements Observer {
 
         MICROPHONE.stop();
         MICROPHONE.close();
+
+        System.out.println(LogMessage.DETECT_MICRO_CLOSE.get());
     }
 
     /**

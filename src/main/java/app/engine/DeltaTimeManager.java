@@ -1,7 +1,5 @@
 package app.engine;
 
-import app.files.PropertiesM;
-
 /**
  * Tiene lo necesario para medir que tantas actualizaciones se hacen en
  * el equipo sin importar su calidad.
@@ -14,15 +12,18 @@ public class DeltaTimeManager extends Observable {
     private long lastSecondTime;
 
     private final static int NS_PER_SECOND = 1000000000;
-    private final int MAX_UPDATES_PER_SECOND;
+    private int maxUPS = 60;
     private static DeltaTimeManager deltaTimeManager = new DeltaTimeManager();
 
     /**
      * Constructor privado para poder usar el patrón singleton.
      */
     private DeltaTimeManager() {
-        MAX_UPDATES_PER_SECOND = 60;
         start();
+    }
+
+    public void changeMaxUPS(int ups) {
+        maxUPS = ups;
     }
 
     /**
@@ -55,7 +56,7 @@ public class DeltaTimeManager extends Observable {
                         frameCount = 0;
                         lastSecondTime = currentTime;
                     }
-                    long targetTime = NS_PER_SECOND / MAX_UPDATES_PER_SECOND;
+                    long targetTime = NS_PER_SECOND / maxUPS;
                     long sleepTime = targetTime
                             - (System.nanoTime() - currentTime);
                     if(sleepTime > 0) {

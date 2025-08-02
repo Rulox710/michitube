@@ -9,6 +9,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
+import app.Sections;
+import app.Sections.KEYS;
+
 /**
  * Clase que lee un archivo de texto y convierte su contenido en datos
  * acerca del modelo vtuber si los tiene con un formato dado por
@@ -40,7 +43,7 @@ import java.util.Set;
  */
 public class VTuberReader {
 
-    private final Map<String, Map<String, String>> sections = new LinkedHashMap<>();
+    public final Map<Sections, Map<KEYS, String>> sections = new LinkedHashMap<>();
 
     /**
      * Carga toda la información dentro de un archivo que se pueda del
@@ -54,24 +57,29 @@ public class VTuberReader {
         try (BufferedReader reader = new BufferedReader(new FileReader(path))) {
             String line;
             String currentSection = null;
+            Sections currentEnum = null;
 
             while ((line = reader.readLine()) != null) {
                 line = line.strip();
-                if (line.isEmpty() || line.startsWith("#")) continue;
+                if(line.isEmpty() || line.startsWith("#")) continue;
 
-                if (line.startsWith("[") && line.endsWith("]")) {
+                if(line.startsWith("[") && line.endsWith("]")) {
                     currentSection = line.substring(1, line.length() - 1);
-                    sections.putIfAbsent(currentSection, new LinkedHashMap<>());
-                } else if (currentSection != null && line.contains("=")) {
+                    currentEnum = Sections.fromString(currentSection);
+                    sections.putIfAbsent(currentEnum, new LinkedHashMap<>());
+                } else if(currentSection != null && line.contains("=")) {
                     String[] parts = line.split("=", 2);
-                    sections.get(currentSection).put(parts[0].strip(), parts[1].strip());
+                    sections.get(currentEnum).put(
+                        KEYS.fromString(parts[0].strip()), parts[1].strip()
+                    );
                 }
             }
         }
     }
 
-    public void loadFromMap(Map<String, Map<String, String>> infoMap) {
-        for (Map.Entry<String, Map<String, String>> entry : infoMap.entrySet())
+    public void loadFromMap(Map<Sections, Map<KEYS, String>> infoMap) {
+        //Map.Entry<String, Map<KEYS, String>>
+        for(var entry: infoMap.entrySet())
             sections.put(entry.getKey(), new HashMap<>(entry.getValue()));
     }
 
@@ -85,7 +93,7 @@ public class VTuberReader {
      *
      * @return La cadena guardada en el mapa o cadena vacía.
      */
-    public String get(String section, String key) {
+    public String get(Sections section, KEYS key) {
         return sections.getOrDefault(section, Collections.emptyMap())
                 .getOrDefault(key, "");
     }
@@ -100,7 +108,7 @@ public class VTuberReader {
      *
      * @return El entero guardado en el mapa o <code>-1</code>.
      */
-    public int getInt(String section, String key) {
+    public int getInt(Sections section, KEYS key) {
         String str = get(section, key);
         if(str.length() == 0) return -1;
         return Integer.parseInt(str);
@@ -116,7 +124,7 @@ public class VTuberReader {
      *
      * @return El booleano guardado en el mapa o <code>false</code>.
      */
-    public boolean getBoolean(String section, String key) {
+    public boolean getBoolean(Sections section, KEYS key) {
         String str = get(section, key);
         if(str.length() == 0) return false;
         return Boolean.parseBoolean(str);
@@ -128,7 +136,7 @@ public class VTuberReader {
      * @return El conjunto de todas las claves encontradas en el
      *         archivo.
      */
-    public Set<String> getSections() {
+    public Set<Sections> getSections() {
         return sections.keySet();
     }
 
@@ -139,7 +147,7 @@ public class VTuberReader {
      *
      * @return El mapa que se ha guardado según la clave principal.
      */
-    public Map<String, String> getSection(String section) {
+    public Map<KEYS, String> getSection(String section) {
         return sections.getOrDefault(section, Collections.emptyMap());
     }
 }

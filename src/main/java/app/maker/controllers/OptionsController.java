@@ -1,5 +1,7 @@
 package app.maker.controllers;
 
+import app.engine.DeltaTimeManager;
+import app.files.PropertiesM;
 import app.files.TranslationM;
 
 import javafx.application.Platform;
@@ -19,8 +21,12 @@ public class OptionsController extends AbstractController  {
     public void initialize() {
         updateLanguage();
 
-        fpsSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 120, 60));
-
+        fpsSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(
+            1, 120, Integer.parseInt(PropertiesM.getAppProperty("frames_per_second"))
+        ));
+        fpsSpinner.valueProperty().addListener((obs, oldValue, newValue) -> {
+            notifyObservers('f', newValue);
+        });
         //startCapture();
     }
 

@@ -32,4 +32,10 @@ public enum Ids {
     public String getID() {
         return ID;
     }
+
+    public Sections getEquivalent() {
+        for(Sections section: Sections.values())
+            if(section.getKEY().equals(ID)) return section;
+        return null;
+    }
 }
