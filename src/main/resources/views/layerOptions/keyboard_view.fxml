@@ -1,5 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<!--
+  Copyright 2025 Raúl N. Valdés
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
 <?import javafx.scene.control.Accordion?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
@@ -49,36 +65,6 @@
       </content>
     </TitledPane>
 
-    <TitledPane fx:id="titledPaneKeyboard" text="title_keyboard">
-      <content>
-        <ScrollPane AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0"
-                    AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
-          <content>
-
-            <VBox>
-              <children>
-                <Button fx:id="buttonKeyboard" text="button_select_image"
-                        onAction="#handleButtonClick">
-                  <tooltip>
-                    <Tooltip fx:id="tooltipBKeyboard" text="tooltip_bkeyboard"/>
-                  </tooltip>
-                </Button>
-
-                <HBox fx:id="hboxKeyboard" styleClass="image-preview">
-                  <children>
-                    <ImageView fx:id="imagePreviewKeyboard"
-                               fitWidth="130" fitHeight="105"
-                               preserveRatio="true"/>
-                  </children>
-                </HBox>
-                <Label fx:id="labelKeyboard" text="label_keyboard"/>
-              </children>
-            </VBox>
-          </content>
-        </ScrollPane>
-      </content>
-    </TitledPane>
-
     <TitledPane fx:id="titledPaneOn" text="title_keyboard_on">
       <content>
         <ScrollPane AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0"
@@ -113,6 +99,36 @@
               </children>
             </VBox>
 
+          </content>
+        </ScrollPane>
+      </content>
+    </TitledPane>
+
+    <TitledPane fx:id="titledPaneKeyboard" text="title_keyboard">
+      <content>
+        <ScrollPane AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0"
+                    AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
+          <content>
+
+            <VBox>
+              <children>
+                <Button fx:id="buttonKeyboard" text="button_select_image"
+                        onAction="#handleButtonClick">
+                  <tooltip>
+                    <Tooltip fx:id="tooltipBKeyboard" text="tooltip_bkeyboard"/>
+                  </tooltip>
+                </Button>
+
+                <HBox fx:id="hboxKeyboard" styleClass="image-preview">
+                  <children>
+                    <ImageView fx:id="imagePreviewKeyboard"
+                               fitWidth="130" fitHeight="105"
+                               preserveRatio="true"/>
+                  </children>
+                </HBox>
+                <Label fx:id="labelKeyboard" text="label_keyboard"/>
+              </children>
+            </VBox>
           </content>
         </ScrollPane>
       </content>

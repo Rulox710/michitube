@@ -1,3 +1,19 @@
+/*
+ * Copyright 2025 Raúl N. Valdés
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package app.vtuber;
 
 import app.Constants;
@@ -30,15 +46,17 @@ import javax.swing.JPanel;
 public class MichiPanel extends JPanel implements Observer {
 
     private final Image[] LAYER_BACKGROUND = new Image[1],
-                              LAYER_BODY = new Image[1],
-                              LAYER_EYES = new Image[2],
-                              LAYER_MOUTH = new Image[2],
-                              LAYER_TABLE = new Image[1],
-                              LAYER_KEYBOARD = new Image[3],
-                              LAYER_MOUSE = new Image[0];
+                            LAYER_BODY = new Image[1],
+                            LAYER_EYES = new Image[2],
+                            LAYER_MOUTH = new Image[2],
+                            LAYER_TABLE = new Image[1],
+                            LAYER_KEYBOARD = new Image[3],
+                            LAYER_MOUSE = new Image[0],
+                            LAYER_EXTRA = new Image[1],
+                            LAYER_HAIR = new Image[1];
     private final int LAYERS_SIZE = LAYER_BACKGROUND.length + LAYER_BODY.length + LAYER_EYES.length +
                                     LAYER_MOUTH.length + LAYER_TABLE.length + LAYER_KEYBOARD.length +
-                                    LAYER_MOUSE.length;
+                                    LAYER_MOUSE.length + LAYER_EXTRA.length + LAYER_HAIR.length;
     private final Map<Ids, Image[]> LAYERS_MAP =  new HashMap<>(Ids.values().length);
     private final Map<Ids, Map<KEYS, Integer>> PARAMS = new HashMap<>();
 
@@ -67,8 +85,10 @@ public class MichiPanel extends JPanel implements Observer {
         LAYERS_MAP.put(Ids.EYES, LAYER_EYES);
         LAYERS_MAP.put(Ids.MOUTH, LAYER_MOUTH);
         LAYERS_MAP.put(Ids.TABLE, LAYER_TABLE);
+        LAYERS_MAP.put(Ids.HAIR, LAYER_HAIR);
         LAYERS_MAP.put(Ids.KEYBOARD, LAYER_KEYBOARD);
         LAYERS_MAP.put(Ids.MOUSE, LAYER_MOUSE);
+        LAYERS_MAP.put(Ids.EXTRA, LAYER_EXTRA);
     }
 
     public void setHandColor(Color color) {
@@ -77,6 +97,7 @@ public class MichiPanel extends JPanel implements Observer {
 
     public void setImage(Ids layer, int tweak, String imagePath) {
         try {
+
             Path relativePath = Paths.get(imagePath);
             Path fullPath = basePath.resolve(relativePath);
             URI fullUri = fullPath.toUri();
@@ -106,6 +127,8 @@ public class MichiPanel extends JPanel implements Observer {
             case BACKGROUND:
             case BODY:
             case TABLE:
+            case EXTRA:
+            case HAIR:
                 for(int i = 0; i < infoKeys.length; i++)
                     map.put(infoKeys[i], params[i]);
             break;
@@ -145,12 +168,12 @@ public class MichiPanel extends JPanel implements Observer {
                     map.put(infoKeys[i], params[i]);
 
                 infoKeys = new KEYS[]
-                    {KEYS.XPOS_1, KEYS.YPOS_1, KEYS.WIDTH_1, KEYS.HEIGHT_1};
+                    {KEYS.XPOS_2, KEYS.YPOS_2, KEYS.WIDTH_2, KEYS.HEIGHT_2};
                 for(int i = 0; i < infoKeys.length; i++)
                     map.put(infoKeys[i], params[i+infoKeys.length]);
 
                 infoKeys = new KEYS[]
-                    {KEYS.XPOS_2, KEYS.YPOS_2, KEYS.WIDTH_2, KEYS.HEIGHT_2};
+                    {KEYS.XPOS_1, KEYS.YPOS_1, KEYS.WIDTH_1, KEYS.HEIGHT_1};
                 for(int i = 0; i < infoKeys.length; i++)
                     map.put(infoKeys[i], params[i+infoKeys.length*2]);
             break;
@@ -219,51 +242,83 @@ public class MichiPanel extends JPanel implements Observer {
 
         super.paintComponent(g2d);
 
-        // for(Ids layer: Ids.values()) {
-        Ids ids[] = new Ids[]
-            {Ids.BACKGROUND, Ids.BODY, Ids.TABLE, Ids.EYES, Ids.MOUTH, Ids.KEYBOARD};
-        for(Ids layer: ids) {
+         for(Ids layer: Ids.values()) {
+        // Ids ids[] = new Ids[]
+        //     {Ids.BACKGROUND, Ids.BODY, Ids.TABLE, Ids.KEYBOARD, Ids.HAIR, Ids.EYES, Ids.MOUTH, Ids.EXTRA};
+        // for(Ids layer: ids) {
+
+            if(layer == Ids.MOUSE) {
+                g2d.setColor(Color.blue);
+                g2d.drawRect(
+                    PARAMS.get(Ids.MOUSE).get(KEYS.XPOS),
+                    PARAMS.get(Ids.MOUSE).get(KEYS.YPOS),
+                    PARAMS.get(Ids.MOUSE).get(KEYS.WIDTH),
+                    PARAMS.get(Ids.MOUSE).get(KEYS.HEIGHT)
+                );
+
+                Path2D path = new Path2D.Double();
+                int xOffset = PARAMS.get(Ids.MOUSE).get(KEYS.XPOS) - 5;
+                int yOffset = PARAMS.get(Ids.MOUSE).get(KEYS.YPOS) - 5;
+
+                path.moveTo(
+                    xOffset + PARAMS.get(Ids.MOUSE).get(KEYS.XPOS_A),
+                    yOffset + PARAMS.get(Ids.MOUSE).get(KEYS.YPOS_A)
+                );
+                path.lineTo(handPoint1.x, handPoint1.y);
+                path.curveTo(
+                    handPoint1.x-10, handPoint1.y+10,
+                    handPoint2.x-10, handPoint2.y+10,
+                    handPoint2.x, handPoint2.y
+                );
+                path.lineTo(
+                    xOffset + PARAMS.get(Ids.MOUSE).get(KEYS.XPOS_D),
+                    yOffset + PARAMS.get(Ids.MOUSE).get(KEYS.YPOS_D)
+                );
+
+                g2d.setColor(handColor);
+                g2d.fill(path);
+                g2d.setColor(Color.BLACK);
+                g2d.draw(path);
+
+                continue;
+            }
+
             Image image = LAYERS_MAP.get(layer)[0];
             int tweak = 0;
 
             switch(layer) {
                 case BACKGROUND:
                 case BODY:
-                break;
                 case TABLE:
+                case EXTRA:
+                case HAIR:
 
                 break;
 
                 case EYES:
-                    if(!drawPrimaryEyes) {
-                        image = LAYERS_MAP.get(layer)[1];
-                        tweak = 1;
-                    }
+                    if(!drawPrimaryEyes)
+                        image = LAYERS_MAP.get(layer)[tweak = 1];
 
                 break;
 
                 case MOUTH:
-                    if(!drawPrimaryMouth) {
-                        image = LAYERS_MAP.get(layer)[1];
-                        tweak = 1;
-                    }
+                    if(!drawPrimaryMouth)
+                        image = LAYERS_MAP.get(layer)[tweak = 1];
 
                 break;
 
                 case KEYBOARD:
                     g2d.drawImage(
-                        LAYERS_MAP.get(layer)[1],
-                        PARAMS.get(layer).get(KEYS.XPOS_1),
-                        PARAMS.get(layer).get(KEYS.YPOS_1),
-                        PARAMS.get(layer).get(KEYS.WIDTH_1),
-                        PARAMS.get(layer).get(KEYS.HEIGHT_1),
+                        LAYERS_MAP.get(layer)[2],
+                        PARAMS.get(layer).get(KEYS.XPOS_2),
+                        PARAMS.get(layer).get(KEYS.YPOS_2),
+                        PARAMS.get(layer).get(KEYS.WIDTH_2),
+                        PARAMS.get(layer).get(KEYS.HEIGHT_2),
                         this
                     );
 
-                    if(!drawPrimaryHand) {
-                        image = LAYERS_MAP.get(layer)[2];
-                        tweak = 2;
-                    }
+                    if(!drawPrimaryHand)
+                        image = LAYERS_MAP.get(layer)[tweak = 1];
 
                 break;
 
@@ -289,37 +344,6 @@ public class MichiPanel extends JPanel implements Observer {
                 this
             );
         }
-        //case MOUSE:
-        g2d.setColor(Color.blue);
-        g2d.drawRect(
-            PARAMS.get(Ids.MOUSE).get(KEYS.XPOS),
-            PARAMS.get(Ids.MOUSE).get(KEYS.YPOS),
-            PARAMS.get(Ids.MOUSE).get(KEYS.WIDTH),
-            PARAMS.get(Ids.MOUSE).get(KEYS.HEIGHT)
-        );
-
-        Path2D path = new Path2D.Double();
-        int xOffset = PARAMS.get(Ids.MOUSE).get(KEYS.XPOS) - 5;
-        int yOffset = PARAMS.get(Ids.MOUSE).get(KEYS.YPOS) - 5;
-
-        path.moveTo(
-            xOffset + PARAMS.get(Ids.MOUSE).get(KEYS.XPOS_A),
-            yOffset + PARAMS.get(Ids.MOUSE).get(KEYS.YPOS_A)
-        );
-        path.lineTo(handPoint1.x, handPoint1.y);
-        path.curveTo(
-            handPoint1.x-10, handPoint1.y+10,
-            handPoint2.x-10, handPoint2.y+10,
-            handPoint2.x, handPoint2.y
-        );
-        path.lineTo(
-            xOffset + PARAMS.get(Ids.MOUSE).get(KEYS.XPOS_D),
-            yOffset + PARAMS.get(Ids.MOUSE).get(KEYS.YPOS_D)
-        );
-
-        g2d.setColor(handColor);
-        g2d.fill(path);
-        g2d.draw(path);
     }
 
     /**

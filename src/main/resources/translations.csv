@@ -82,9 +82,16 @@ button_body,VTuber's body, Cuerpo del VTuber
 title_body_image,Use an image (for body),Usar una imágen (para el cuerpo)
 label_body_image,*The chosen image will be used as the VTuber's body. It will be the second image to be drawn. An image must be selected.,*La imagen seleccionada se usará como el cuerpo del VTuber. Será la segunda imagen en dibujarse. Se debe seleccionar una imagen.
 
+button_table,"Table","Mesa"
+title_table_image,Use an Image (for table),Usar una imágen (para la mesa)
+checkbox_table,Draw a "table",Dibujar una "mesa"
+tooltip_ctable,Draw or not draw a "table",Dibujar o no una "mesa"
+tooltip_btable,Select a "table" image,Selecciona una imagen de una "mesa"
+label_table_image,*The chosen image will be used as the VTuber's "table" (or what you want to be painted before the hands). It will be the third image to be drawn. If the checkbox isn't checked then there will be not a "table".,*La imagen seleccionada se usará como la "mesa" del VTuber (o lo que sea que quieras que se dibuje antes que las manos). Será la tercera imagen en dibujarse. Si la casilla de verificación no está marcada entonces no habrá una "mesa".
+
 button_eyes,VTuber's eyes,Ojos del VTuber
 title_eyes,Use an Image (for eyes),Usar una imágen (para los ojos)
-label_eyes,*The chosen image will be used as the VTuber's eyes. It will be the third image to be drawn. An image must be selected.,*La imagen seleccionada se usará como los ojos del VTuber. Será la tercera imagen en dibujarse. Se debe seleccionar una imagen.
+label_eyes,*The chosen image will be used as the VTuber's eyes. It will be the fourth image to be drawn. An image must be selected.,*La imagen seleccionada se usará como los ojos del VTuber. Será la cuarta imagen en dibujarse. Se debe seleccionar una imagen.
 title_blink,Use an Image (for blinking),Usar una imágen (para el parpadeo)
 checkbox_blink,Use blinking,Usar parpadeo
 tooltip_blink,Use or not use an image to blink,Usar o no una imagen para el parpadeo
@@ -94,7 +101,7 @@ label_blink,*The chosen image will replace the VTuber's eyes for a few seconds; 
 
 button_mouth,Vtuber's mouth,Boca del VTuber
 title_mouth,Use an Image (for mouth),Usar una imágen (para la boca)
-label_mouth,*The chosen image will be used as the VTuber's mouth. It will be the fourth image to be drawn. An image must be selected.,*La imagen seleccionada se usará como los ojos del VTuber. Será la cuarta imagen en dibujarse. Se debe seleccionar una imagen.
+label_mouth,*The chosen image will be used as the VTuber's mouth. It will be the fifth image to be drawn. An image must be selected.,*La imagen seleccionada se usará como los ojos del VTuber. Será la quinta imagen en dibujarse. Se debe seleccionar una imagen.
 title_talk,Use an Image (for talking),Usar una imágen (para hablar)
 checkbox_microphone_detection,Detect microphone,Detectar micrófono
 tooltip_microphone_detection,Use or not use the microphone to talk,Usar o no el micrófono para hablar
@@ -104,13 +111,6 @@ label_microphone_channel_2,Stereo,Estéreo
 label_microphone_ups,Updates:,Actualizaciones:
 label_microphone_sensitivity,Sensitivity,Sensibilidad
 label_talk,*The chosen image will replace the VTuber's mouth when the microphone sound exceeds a threshold; talking. If the checkbox isn't checked then there will be no talking,*La imagen elegida reemplazará la boca del VTuber cuando el sonido del micrófono supere un umbral para que parezca que habla. Si la casilla de verificación no está marcada entonces no se hablará.
-
-button_table,"Table","Mesa"
-title_table_image,Use an Image (for table),Usar una imágen (para la mesa)
-checkbox_table,Draw a "table",Dibujar una "mesa"
-tooltip_ctable,Draw or not draw a "table",Dibujar o no una "mesa"
-tooltip_btable,Select a "table" image,Selecciona una imagen de una "mesa"
-label_table_image,*The chosen image will be used as the VTuber's "table" (or what you want to be painted before the hands). It will be the fifth image to be drawn. If the checkbox isn't checked then there will be not a "table".,*La imagen seleccionada se usará como la "mesa" del VTuber (o lo que sea que quieras que se dibuje antes que las manos). Será la quinta imagen en dibujarse. Si la casilla de verificación no está marcada entonces no habrá una "mesa".
 
 button_keyboard,Vtuber's hand & Keyboard,Mano del VTuber & Teclado
 title_keyboard_off,Use an Image (for hand),Usar una imágen (para la mano)
@@ -134,6 +134,18 @@ label_area,Initial position,Posición inical
 checkbox_movement,Detect mouse,Detectar ratón
 tooltip_movement,Use or not use the mouse to move the hand,Usar o no el ratón para mover la mano
 label_area,*It defines a movement area for the "hand" paint and if the checkbox is checked allows movement based on the mouse.,*Define un área de movimiento para el dibujo de la "mano" y si la casilla de verificación está marcada permite movimiento según el ratón.
+
+button_hair,VTuber's hair, Cabello del VTuber
+title_hair_image,Use an image (for anything),Usar una imágen (para cualquier cosa)
+checkbox_hair_image,Draw hair,Dibujar cabello
+tooltip_hair_cimage,To draw or not draw a hair image,Dibujar o no una imagen del cabello
+label_hair_image,*The chosen image will be used as the VTuber's hair. It will be the eighth image to be drawn. If the checkbox isn't checked then there will be no hair.,*La imagen seleccionada se usará como el cabello del VTuber. Será la octava imagen en dibujarse. Si la casilla de verificación no está marcada entonces no tendrá cabello.
+
+button_extra,Extra,Extra
+title_extra_image,Use an image (for anything),Usar una imágen (para cualquier cosa)
+label_extra_image,*The chosen image will be the drawn last. If the checkbox isn't checked then it will be ignored.,*La imagen seleccionada será la última en dibujarse. Si la casilla de verificación no está marcada entonces se ignorará.
+checkbox_extra_image,Extra image,Imagen Extra
+tooltip_extra_cimage,Draw or not use an extra image,Dibujar o no una imagen extra
 
 tooltip_resize,Change the VTuber canvas size,Cambiar el tamaño del lienzo del VTuber
 

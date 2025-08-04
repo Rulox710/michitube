@@ -1,3 +1,19 @@
+/*
+ * Copyright 2025 Raúl N. Valdés
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package app.files;
 
 import app.Constants;
@@ -172,7 +188,7 @@ public final class VTuberLoader {
 
         InfoBuilder layerBuilder = new BasicInfoBuilder();
 
-        KEYS[] paths_key = new KEYS[]{KEYS.PATH_0, KEYS.PATH_1};
+        KEYS[] paths_key = new KEYS[]{KEYS.PATH_0, KEYS.PATH_1, KEYS.PATH_2};
         switch(id) {
             case BACKGROUND:
                 layerBuilder = new BackgroundInfoBuilder();
@@ -242,7 +258,9 @@ public final class VTuberLoader {
                         ));
             break;
 
+            case HAIR:
             case TABLE:
+            case EXTRA:
                 layerBuilder.setUsage(vtuberReader.getBoolean(
                     section, KEYS.USE
                 ));
@@ -372,7 +390,9 @@ public final class VTuberLoader {
                     );
                 break;
 
+                case HAIR:
                 case TABLE:
+                case EXTRA:
                     fileFound = new boolean[1];
                     if(vTuberReader.getBoolean(section, KEYS.USE))
                         fileFound[0] = sendImageInfo(
@@ -389,14 +409,14 @@ public final class VTuberLoader {
                     fileFound[0] = sendImageInfo(
                         vTuberReader, sheetController, id, section, 0
                     );
-                    fileFound[1] = sendImageInfo(
-                        vTuberReader, sheetController, id, section, 1
+                    fileFound[2] = sendImageInfo(
+                        vTuberReader, sheetController, id, section, 2
                     );
                     if(vTuberReader.getBoolean(section, KEYS.USE))
-                        fileFound[2] = sendImageInfo(
+                        fileFound[1] = sendImageInfo(
                             vTuberReader, sheetController, id, section, 1
                         );
-                    else sheetController.deleteImageInfo(id, 2);
+                    else sheetController.deleteImageInfo(id, 1);
 
                     sendLayerInfo(
                         vTuberReader, layersController, id, section,

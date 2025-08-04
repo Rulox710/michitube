@@ -1,3 +1,19 @@
+/*
+ * Copyright 2025 Raúl N. Valdés
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package app.maker.controllers.layerOptions;
 
 import app.Sections.KEYS;
@@ -134,11 +150,11 @@ public class KeyboardController extends OptionLayerController {
             hasBeenNotified = true;
         }
         if(imagePreviewKeyboard.getImage() == null) {
-            handleError(1, true, !hasBeenNotified);
+            handleError(2, true, !hasBeenNotified);
             hasBeenNotified = true;
         }
         if(checkboxKeyboardDetection.selectedProperty().getValue() && imagePreviewOn.getImage() == null) {
-            handleError(2, true, !hasBeenNotified);
+            handleError(1, true, !hasBeenNotified);
             hasBeenNotified = true;
         }
 
@@ -163,8 +179,8 @@ public class KeyboardController extends OptionLayerController {
             notifyObservers('l', null);
         }
 
-        if(info.getString(KEYS.PATH_1).length() != 0) {
-            relativePath = Paths.get(info.getString(KEYS.PATH_1));
+        if(info.getString(KEYS.PATH_2).length() != 0) {
+            relativePath = Paths.get(info.getString(KEYS.PATH_2));
             fullPath = basePath.resolve(relativePath);
             fullUri = fullPath.toUri();
             imagePreviewKeyboard.setImage(new Image(fullUri.toString()));
@@ -174,8 +190,8 @@ public class KeyboardController extends OptionLayerController {
         }
 
         checkboxKeyboardDetection.selectedProperty().setValue(info.getBoolean(KEYS.USE));
-        if(info.getBoolean(KEYS.USE) && info.getString(KEYS.PATH_2).length() != 0) {
-            relativePath = Paths.get(info.getString(KEYS.PATH_2));
+        if(info.getBoolean(KEYS.USE) && info.getString(KEYS.PATH_1).length() != 0) {
+            relativePath = Paths.get(info.getString(KEYS.PATH_1));
             fullPath = basePath.resolve(relativePath);
             fullUri = fullPath.toUri();
             imagePreviewOn.setImage(new Image(fullUri.toString()));

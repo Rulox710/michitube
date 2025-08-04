@@ -1,3 +1,19 @@
+/*
+ * Copyright 2025 Raúl N. Valdés
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package app.vtuber;
 
 import app.Ids;
@@ -23,9 +39,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Map;
 
 import javax.swing.JFrame;
 
@@ -43,8 +57,6 @@ public class VTuberWindow extends Observable implements KeyListener {
     private Microphone micDetector;
     private Keyboard keyDetector;
     private Mouse mouseDetector;
-
-    private int fps;
 
     private final int[] TARGET_SEQUENCE_EXIT = {
         KeyEvent.VK_CONTROL, KeyEvent.VK_SHIFT, KeyEvent.VK_C
@@ -82,11 +94,16 @@ public class VTuberWindow extends Observable implements KeyListener {
         window.setResizable(false);
         window.setUndecorated(undecorated);
 
-        int[] color = getColor(infoMap.get(Sections.BACKGROUND, KEYS.COLOR));
-        Color backgroundColor = new Color(color[0], color[1], color[2], color[3]);
+        if(infoMap.getBoolean(Sections.BACKGROUND, KEYS.USECOLOR)) {
+            int[] color = getColor(infoMap.get(Sections.BACKGROUND, KEYS.COLOR));
+            Color backgroundColor = new Color(color[0], color[1], color[2], color[3]);
+            window.getContentPane().setBackground(backgroundColor);
+        } else {
+            window.setUndecorated(undecorated = !undecorated);
+            window.setBackground(new Color(0, 0, 0, 0));
+            window.getContentPane().setBackground(Color.GREEN);
+        }
 
-        window.getContentPane().setBackground(backgroundColor);
-        //window.setBackground(new Color(0, 0, 0, 0));
         window.setTitle(TranslationM.getTranslatedLabel("gui_title"));
 
         window.addFocusListener(new FocusListener() {
@@ -142,6 +159,8 @@ public class VTuberWindow extends Observable implements KeyListener {
                 break;
 
                 case TABLE:
+                case EXTRA:
+                case HAIR:
                     if(!infoMap.getBoolean(section, KEYS.USE)) break;
                     for(int i = 0; i < 4; i++)
                         params[i] = infoMap.getInt(section, infoKeys[i]);
@@ -197,19 +216,19 @@ public class VTuberWindow extends Observable implements KeyListener {
                     panel.setImage(id, 0, infoMap.get(section, infoKeys[4]));
 
                     infoKeys = new KEYS[]
-                        {KEYS.XPOS_1, KEYS.YPOS_1, KEYS.WIDTH_1, KEYS.HEIGHT_1, KEYS.PATH_1};
+                        {KEYS.XPOS_2, KEYS.YPOS_2, KEYS.WIDTH_2, KEYS.HEIGHT_2, KEYS.PATH_2};
 
                     for(int i = 0; i < 4; i++)
                         params[i+infoKeys.length-1] = infoMap.getInt(section, infoKeys[i]);
-                    panel.setImage(id, 1, infoMap.get(section, infoKeys[4]));
+                    panel.setImage(id, 2, infoMap.get(section, infoKeys[4]));
 
                     infoKeys = new KEYS[]
-                        {KEYS.XPOS_2, KEYS.YPOS_2, KEYS.WIDTH_2, KEYS.HEIGHT_2, KEYS.PATH_2};
+                        {KEYS.XPOS_1, KEYS.YPOS_1, KEYS.WIDTH_1, KEYS.HEIGHT_1, KEYS.PATH_1};
 
                     if(!infoMap.getBoolean(section, KEYS.USE)) break;
                     for(int i = 0; i < 4; i++)
                         params[i+(infoKeys.length-1)*2] = infoMap.getInt(section, infoKeys[i]);
-                    panel.setImage(id, 2, infoMap.get(section, infoKeys[4]));
+                    panel.setImage(id, 1, infoMap.get(section, infoKeys[4]));
                 break;
 
                 case MOUSE:

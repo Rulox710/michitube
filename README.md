@@ -2,41 +2,60 @@ Michi Vtuber con Java.
 ======================
 
 ## Acerda de
-Este programa genera una animación simple de un gato que tiene movimientos de acuerdo a las actividades en tiempo real con el ratón, teclado y micrófono de la computadora.
+Esta aplicación sirve para crear una animación de un "gato" que tiene movimientos de acuerdo a las actividades en tiempo real con el ratón, teclado y micrófono de la computadora.
 <div style="text-align:center;">
   <img src="./res/example.gif" alt="Gif de cómo se ve el programa" width="300" height="200">
 </div>
-Se creó con el propósito de ser usado por un streamer de twitch como un regalo, no esperando una compensación a cambio. Por otro lado, cualquiera que lo desee puede modificar este programa para su propio uso.
+Inicialmente se creó con el propósito de ser usado por un streamer de twitch como un regalo, no esperando una compensación a cambio, pero únicamente podía usarse con el modelo por defecto (ahora el que se usa como ejemplo). Después se modificó para mostrar una interfaz simple que permite que se asignen disitintas propiedades y recursos para crear un modelo más acorde a las necesidades del usuario.
 
 ## Uso
-Nótese que al ser un programa de Java, requiere que tengan Java Runtime Environment (JRE). La versión recomendada generalmente es Version 8. Puede ser enconttrada en la propia [página de Java](https://www.java.com/es/download/manual.jsp)
+Nótese que al ser un programa de Java, requiere que tengan Java Runtime Environment (JRE). Se necesita de java 17 como mínimo si se va a usar el archivo jar. De momento los usuarios de windows puede usar un ejecutable `.exe` que contiene todas las librerías necesarias.
 
 ### Compilación
 Para compilar el programa use cualquiera de los scripts proporcionados, ya sea `program.bat` para el SO Windows o `program.sh` para SO afines a Unix.
 
-### Ejecutable
-La versión más actual del programa (1.0.0) puede ser encontrada en la pestaña de [lanzamientos](https://gitlab.com/rnunovaldes/vtube-michi/-/releases/1.0.0) en la [página del proyecto](https://gitlab.com/rnunovaldes/vtube-michi).
-
 ### Antes de la ejecución
-En la carpeta `/res` se encuentra el archivo `config.properties` en el cual se pueden establecer distintos parámetros para el programa, que no pueden ser cambiados durante el tiempo de ejecución, los cuales son:
- * `window_height` Indica el alto de la ventana en píxeles. Debe ser un número natural.
- * `window_width` Indica el ancho de la ventana en píxeles. Debe ser un número natural.
- * `window_location` Indica donde se va a iniciar la ventana. Puede ser `ne` para noreste, `nw` para noroeste, `se` para sureste o `sw` para suroeste.
- * `windows_taskbar_height` Indica que tan grande es la altura en píxeles la barra de tareas para poder colocar inicialmente la ventana del programa sin que se solape con esta. Debe ser un número natural.
- * `mouse_detection` Indica si se va a registrar el movimiento del ratón o no. Deber ser `true` o `false`.
- * `keyboard_detection` Indica si se va a registrar las acciones del teclado o no. Deber ser `true` o `false`.
- * `microphone_detection` Indica si se va a registrar la intensidad del sonido proveniente del micrófono. Deber ser `true` o `false`.
- * `microphone_channels` Indica cuantos canales tiene el micrófono, o sea, si es mono, estereo, quad, etc. Es ignorado si `microphone_detection=false`. Debe ser un número natural.
- * `microphone_ups` Indica cuantas veces por segundo se comprueba el micrófono, principalmente para ahorrar recursos de la computadora. Es ignorado si `microphone_detection=false`. Debe ser un número natural.
- * `microphone_threshold` Indica La intensidad de los sonidos provenientes del micrófono para ser considerados por la detección de sonido. Es ignorado si `microphone_detection=false`. Debe ser un número natural.
- * `frames_per_second` Indica cuantos fotogramas son pintados por segundo, principalmente para ahorrar recursos de la computadora. Debe ser un número natural.
+Si se desea, se pueden pasar las siguientes banderas:
+ * `--log`: Desde donde se ejecuta el programa, crea una carpeta llamada `\out` con un archivo llamado `michi_out.log` donde se registran todos los pasos de la aplicación durante la ejecución.
+ * `--debug`: Desde donde se ejecuta el programa, crea una carpeta llamada `\out` con un archivo llamado `michi_err.log` donde se registran todos los errores en tiempo de ejecución de la aplicación.
+ * `--verbose`: Realiza las dos cosas anteriores.
 
- En caso de que este archivo sea eliminado, modificado incorrectamente, corrompido o inaccesible, se creará uno nuevo o modificará el existente para que pueda ser usado de nuevo con los valores por defecto para los parámetros afectados.
+En relación a los archivos de guardado, de momento solo pueden guardar los recursos como enlaces, así que si el recurso original se mueve, borra o es innaccesible, entonces no funcionará correctamente. A futuro se planea agregar la posibilidad de comprimir las imágenes y guardarlas dentro del archivo de guardado.
+Estos archivos tienen los siguientes parámetros:
+ * `P`: La ruta relativa (a la carpeta por defecto) del recurso. (cadena)
+ * `X`: La coordenada X del recurso. (entero)
+ * `Y`: La coordenada Y del recurso. (entero)
+ * `W`: El ancho del recurso. (entero)
+ * `H`: El alto del recurso. (entero)
+ * `use`: Si cierta característica se utiliza. (booleano)
+ * `image` : Si se utiliza la imagen. (booleano)
+ * `color`: Si se utiliza un color. (booleano)
+ * `C`: El color en hexadecimal que se usa. (cadena)
+ * `channels`: Canales que dispone el micrófono. (1 o 2)
+ * `updates`: Actualizacions por segundo del micrófono. (entero)
+ * `sensitivity`: La sensibilidad del micrófono. (entero)
+ * `timeto`: Tiempo que le toma al modelo en parpadear. (entero)
+ * `timeblink`: Tiempo que le toma al modelo en volver a abrir los ojos. (entero)
+ En caso de que este archivo sea modificado incorrectamente desde un editor de texto el programa ignorará todos los parámetros malformados.
 
- ### En tiempo de ejeción
-Mientras la ventana esté activa puede registrar el teclado, ratón y micrófono del usuario si lo indicó en el `config`, y si además esta ventana tiene el foco principal, tiene 2 atajos del teclado:
+Además, las características del programa persistentes serán guardadas en la carpeta del usuario actual:
+ * Windows: Se usa la variable de entorno APPDATA + MichiTube, que normalmente apunta a una ruta como: `C:\Users\TuUsuario\AppData\Roaming\MichiTube\`
+ * macOS: Se guardan en: `~/Library/Application Support/MichiTube/`
+ * Linux (y otros Unix-like): Se utiliza: `~/.config/MichiTube/`
+El archivo creado es `config.properties` y contiene los siguientes parámetros:
+ * `default_dir`: El directorio por defecto para buscar recursos desde la aplicación. (una cadena que representa una ruta)
+ * `language`: El idioma de la aplicación. (una cadena de dos letras que la representa)
+ * `frames_per_second`: La cantidad de actualizaciones por segundo que realiza el modelo en ejecución. (un entero)
+ * `windows_taskbar_height`: Un margen que se le deja a la ventana para no solaparse con la barra de tareas de Windows. (un entero)
+ en caso de que este archivo no exista se crea uno con parámetros por dejecto y en caso de mal formación se modifican los parámetros para que tenga valores correctos.
+
+### En tiempo de ejeción
+Mientras la ventana de edición esté abierta, se podrá crear el modelo VTuber con disitintas imagenes y ajustando los distintis parámetros según las necesidades. Cuando el modelo esté listo se podrá guardar en un archivo `.sav`, en caso de errores se indicará visualmente en la interfaz. También se puede comenzar la ejecución del modelo desde la pestaña ▶ Iniciar.
+
+Mientras la ventana del modelo esté activa puede registrar el teclado, ratón y micrófono del usuario si lo indicó así lo inidicó en la ventana de edición, y si además esta ventana tiene el foco principal, tiene 2 atajos del teclado:
  * Terminar el programa: Si se pulsa la secuencia de botones `CTRL-SHIFT-C` en ese orden, ya sea manteniendolos presionados o cada uno por separado, el programa termina.
  * Activar decoracion: Si se pulsa la secuencia de botones `CTRL-SHIFT-D` en ese orden, ya sea manteniendolos presionados o cada uno por separado, se activan los bordes de la ventana, permitiendo el movimiento de esta a la ubicación deseada, además de colocar un fondo color verde RGB(0, 255, 0).
+Cuando los bordes están activos, el botón de cerrado no termina la aplicación, sino que vuelve a abrir la ventana de edición.
 
 ## Programa
 <div style="display: flex; align-items: center;">
@@ -62,7 +81,7 @@ Este proyecto utiliza:
   [COPYING.LESSER](legal/jnativehook-2.2.2/COPYING.LESSER.md)
 
 - **JavaFX** (https://openjfx.io/)
-  Licencia GPL v2 con la excepción Classpath
+  Licencia GPL v2 + OpenJDK Assembly Exception
   JavaFX.Base [LICENCE](legal/javafx-17.0.15/javafx.base/LICENSE)
   JavaFX.Controls [LICENCE](legal/javafx-17.0.15/javafx.controls/LICENSE)
   JavaFX.FXML [LICENCE](legal/javafx-17.0.15/javafx.fxml/LICENSE)

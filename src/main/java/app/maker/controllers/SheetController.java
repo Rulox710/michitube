@@ -1,3 +1,19 @@
+/*
+ * Copyright 2025 Raúl N. Valdés
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package app.maker.controllers;
 
 import app.Ids;
@@ -42,14 +58,16 @@ public class SheetController extends AbstractController {
 
     private final DraggableResizableImageView[] LAYER_BACKGROUND = new DraggableResizableImageView[1],
                               LAYER_BODY = new DraggableResizableImageView[1],
+                              LAYER_TABLE = new DraggableResizableImageView[1],
+                              LAYER_HAIR = new DraggableResizableImageView[1],
                               LAYER_EYES = new DraggableResizableImageView[2],
                               LAYER_MOUTH = new DraggableResizableImageView[2],
-                              LAYER_TABLE = new DraggableResizableImageView[1],
                               LAYER_KEYBOARD = new DraggableResizableImageView[3],
-                              LAYER_MOUSE = new DraggableResizableImageView[0];
+                              LAYER_MOUSE = new DraggableResizableImageView[0],
+                              LAYER_EXTRA = new DraggableResizableImageView[1];
     private final int LAYERS_SIZE = LAYER_BACKGROUND.length + LAYER_BODY.length + LAYER_EYES.length +
                                     LAYER_MOUTH.length + LAYER_TABLE.length + LAYER_KEYBOARD.length +
-                                    LAYER_MOUSE.length;
+                                    LAYER_MOUSE.length + LAYER_EXTRA.length + LAYER_HAIR.length;
     private final Map<Ids, DraggableResizableImageView[]> LAYERS_MAP =  new HashMap<>(Ids.values().length);
 
     private MouseComponentArea mouseArea;
@@ -60,11 +78,13 @@ public class SheetController extends AbstractController {
     public SheetController() {
         LAYERS_MAP.put(Ids.BACKGROUND, LAYER_BACKGROUND);
         LAYERS_MAP.put(Ids.BODY, LAYER_BODY);
+        LAYERS_MAP.put(Ids.TABLE, LAYER_TABLE);
+        LAYERS_MAP.put(Ids.HAIR, LAYER_HAIR);
         LAYERS_MAP.put(Ids.EYES, LAYER_EYES);
         LAYERS_MAP.put(Ids.MOUTH, LAYER_MOUTH);
-        LAYERS_MAP.put(Ids.TABLE, LAYER_TABLE);
         LAYERS_MAP.put(Ids.KEYBOARD, LAYER_KEYBOARD);
         LAYERS_MAP.put(Ids.MOUSE, LAYER_MOUSE);
+        LAYERS_MAP.put(Ids.EXTRA, LAYER_EXTRA);
     }
 
     public void selectLayer(Ids layerID, int tweakID) {
@@ -84,8 +104,7 @@ public class SheetController extends AbstractController {
             case MOUSE:
                 mouseArea.setFocus(true, currentTweak == 1, currentTweak == 2);
             break;
-        default:
-            mouseArea.setFocus(false);
+        default: mouseArea.setFocus(false);
         break;
         }
     }
@@ -300,13 +319,13 @@ public class SheetController extends AbstractController {
     }
 
     public Map<Ids, Info[]> getInfoMap() {
-        final Map<Ids, Info[]> INFO_MAP = new HashMap<>(Ids.values().length);
+        Map<Ids, Info[]> INFO_MAP = new HashMap<>(Ids.values().length);
         for(Map.Entry<Ids, DraggableResizableImageView[]> entry: LAYERS_MAP.entrySet()) {
             Ids key = entry.getKey();
             DraggableResizableImageView[] views = entry.getValue();
 
             Info[] infos = new Info[views.length];
-            for (int i = 0; i < views.length; i++) {
+            for(int i = 0; i < views.length; i++) {
                 DraggableResizableImageView view = views[i];
                 infos[i] = view != null? view.getImageInfo(): null;
             }
@@ -335,6 +354,8 @@ public class SheetController extends AbstractController {
             case (char)4:
             case (char)5:
             case (char)6:
+            case (char)7:
+            case (char)8:
                 Ids layer = Ids.values()[(int)event];
                 selectLayer(layer, (int)data);
             break;

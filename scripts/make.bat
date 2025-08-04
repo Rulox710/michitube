@@ -39,8 +39,7 @@ jpackage ^
   --java-options "-Dfile.encoding=UTF-8" ^
   --runtime-image ../build/runtime ^
   --icon %ICO% ^
-  --app-version 1.0.0 ^
-  --win-console
+  --app-version 1.0.0
 
 @REM jpackage --name %NAME% --app-version 1.0.0 --vendor "UserRulox" ^
 @REM   --input %JAR_DIR% ^

@@ -40,16 +40,16 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 
-public class TableController extends OptionLayerController {
+public class HairController extends OptionLayerController {
 
-    @FXML private Accordion tableOptionsRoot;
+    @FXML private Accordion hairOptionsRoot;
     @FXML private TitledPane titledPaneImage;
     @FXML private Label labelImage;
     @FXML private Button buttonImage;
     @FXML private ImageView imagePreview;
-    @FXML private CheckBox checkboxTable;
-    @FXML private Tooltip tooltipTable, tooltipBTable;
     @FXML private HBox hboxImage;
+    @FXML private CheckBox checkboxImage;
+    @FXML private Tooltip tooltipCImage;
 
     /**
      * {@inheritDoc}
@@ -59,13 +59,13 @@ public class TableController extends OptionLayerController {
         hasError = new boolean[1]; // 0: Image
         updateLanguage();
 
-        optionsRoot = tableOptionsRoot;
+        optionsRoot = hairOptionsRoot;
         firstPane = titledPaneImage;
         super.initialize();
 
-        updateEnabledState(checkboxTable.isSelected());
-        checkboxTable.selectedProperty().addListener((obs, oldVal, newVal) -> {
-            updateEnabledState(newVal);
+        updateEnabledState(checkboxImage, checkboxImage.isSelected());
+        checkboxImage.selectedProperty().addListener((obs, oldVal, newVal) -> {
+            updateEnabledState(checkboxImage, newVal);
         });
     }
 
@@ -89,12 +89,13 @@ public class TableController extends OptionLayerController {
         if(notify) notifyObservers('e', hasError[0]);
     }
 
-    private void updateEnabledState(boolean enabled) {
-        buttonImage.setDisable(!enabled);
-        hboxImage.setDisable(!enabled);
-        imagePreview.setDisable(!enabled);
-
-        if(!enabled) handleError(0, false, true);
+    private void updateEnabledState(CheckBox checkbox, boolean enabled) {
+        if(checkbox == checkboxImage) {
+            buttonImage.setDisable(!enabled);
+            hboxImage.setDisable(!enabled);
+            imagePreview.setDisable(!enabled);
+            if(!enabled) handleError(0, false, true);
+        }
     }
 
     @FXML
@@ -110,9 +111,10 @@ public class TableController extends OptionLayerController {
 
     @Override
     public boolean readyToSave() {
-        if(checkboxTable.selectedProperty().getValue() && imagePreview.getImage() == null)
+        if(checkboxImage.selectedProperty().getValue() && imagePreview.getImage() == null)
             handleError(0, true, true);
         return !hasError[0];
+
     }
 
     @Override
@@ -121,7 +123,7 @@ public class TableController extends OptionLayerController {
         Path relativePath, fullPath;
         URI fullUri;
 
-        checkboxTable.selectedProperty().setValue(info.getBoolean(KEYS.USE));
+        checkboxImage.selectedProperty().setValue(info.getBoolean(KEYS.USE));
         if(info.getBoolean(KEYS.USE) && info.getString(KEYS.PATH_0).length() != 0) {
             relativePath = Paths.get(info.getString(KEYS.PATH_0));
             fullPath = basePath.resolve(relativePath);
@@ -142,18 +144,17 @@ public class TableController extends OptionLayerController {
     @Override
     public Info getInfo() {
         BasicInfoBuilder builder = new BasicInfoBuilder();
-        builder.setUsage(checkboxTable.selectedProperty().getValue());
+        builder.setUsage(checkboxImage.selectedProperty().getValue());
 
         return builder.getResult();
     }
 
     @Override
     public void updateLanguage() {
-        titledPaneImage.setText(TranslationM.getTranslatedLabel("title_table_image"));
-        checkboxTable.setText(TranslationM.getTranslatedLabel("checkbox_table"));
-        tooltipTable.setText(TranslationM.getTranslatedLabel("tooltip_ctable"));
+        titledPaneImage.setText(TranslationM.getTranslatedLabel("title_hair_image"));
         buttonImage.setText(TranslationM.getTranslatedLabel("button_select_image"));
-        tooltipBTable.setText(TranslationM.getTranslatedLabel("tooltip_btable"));
-        labelImage.setText(TranslationM.getTranslatedLabel("label_table_image"));
+        labelImage.setText(TranslationM.getTranslatedLabel("label_hair_image"));
+        checkboxImage.setText(TranslationM.getTranslatedLabel("checkbox_hair_image"));
+        tooltipCImage.setText(TranslationM.getTranslatedLabel("tooltip_hair_cimage"));
     }
 }

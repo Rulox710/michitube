@@ -1,3 +1,19 @@
+/*
+ * Copyright 2025 Raúl N. Valdés
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package app.maker.controllers;
 
 import app.Constants;
@@ -74,22 +90,23 @@ public class LayersController extends AbstractController {
     @Override
     public void initialize() {
         int i = 0;
+        Ids[] ids = Ids.values();
         try {
-            for(; i < Ids.values().length; i++) {
+            for(; i < ids.length; i++) {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/components/layer_button.fxml"));
                 stackpaneLayers[i] = loader.load();
-                System.out.println(String.format(LogMessage.GUI_FXML.get(), "Botón de " + Ids.values()[i].getID()));
+                System.out.println(String.format(LogMessage.GUI_FXML.get(), "Botón de " + ids[i].getID()));
                 stackpaneLayers[i].getStylesheets().add(getClass().getResource("/styles/layer_button.css").toExternalForm());
                 buttonControllers[i] = loader.getController();
-                buttonControllers[i].setTranslationId(String.format("button_%s", Ids.values()[i].getID()));
+                buttonControllers[i].setTranslationId(String.format("button_%s", ids[i].getID()));
                 parentContainer.getChildren().add(stackpaneLayers[i]);
                 buttonControllers[i].addObserver(this);
 
-                loader = new FXMLLoader(getClass().getResource(String.format("/views/layerOptions/%s_view.fxml", Ids.values()[i].getID())));
+                loader = new FXMLLoader(getClass().getResource(String.format("/views/layerOptions/%s_view.fxml", ids[i].getID())));
                 accordionLayers[i] = loader.load();
-                System.out.println(String.format(LogMessage.GUI_FXML.get(), "Opciones de " + Ids.values()[i].getID()));
+                System.out.println(String.format(LogMessage.GUI_FXML.get(), "Opciones de " + ids[i].getID()));
                 accordionLayers[i].getStylesheets().add(getClass().getResource("/styles/layer_options.css").toExternalForm());
-                if(i == 3)
+                if(Ids.MOUTH == ids[i])
                     accordionLayers[i].getStylesheets().add(getClass().getResource("/styles/mic_style.css").toExternalForm());
                 accordionController[i] = loader.getController();
                 accordionController[i].addObserver(this);
@@ -103,7 +120,7 @@ public class LayersController extends AbstractController {
             optionsContainer.setContent(accordionLayers[0]);
             buttonControllers[0].toggleSelect(true);
         } catch (IOException e) {
-            System.out.println(String.format(LogMessage.GUI_FXML_X.get(), "Opciones de " + Ids.values()[i].getID()));
+            System.out.println(String.format(LogMessage.GUI_FXML_X.get(), "Opciones de " + ids[i].getID()));
 
             Constants.printTimeStamp(System.err);
             e.printStackTrace();

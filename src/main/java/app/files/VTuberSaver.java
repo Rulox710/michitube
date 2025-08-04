@@ -1,3 +1,19 @@
+/*
+ * Copyright 2025 Raúl N. Valdés
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package app.files;
 
 import app.Constants;
@@ -182,7 +198,9 @@ public class VTuberSaver {
                     receiveImageInfo(vtuberWriter, sheetController, id, section, 1);
                 break;
 
+                case HAIR:
                 case TABLE:
+                case EXTRA:
                     vtuberWriter.put(section, KEYS.USE, optionInfo.getBoolean(KEYS.USE));
                     if(!optionInfo.getBoolean(KEYS.USE)) continue;
                     receiveImageInfo(vtuberWriter, sheetController, id, section, 0);
@@ -190,10 +208,10 @@ public class VTuberSaver {
 
                 case KEYBOARD:
                     receiveImageInfo(vtuberWriter, sheetController, id, section, 0);
-                    receiveImageInfo(vtuberWriter, sheetController, id, section, 1);
+                    receiveImageInfo(vtuberWriter, sheetController, id, section, 2);
                     vtuberWriter.put(section, KEYS.USE, optionInfo.getBoolean(KEYS.USE));
                     if(!optionInfo.getBoolean(KEYS.USE)) continue;
-                    receiveImageInfo(vtuberWriter, sheetController, id, section, 2);
+                    receiveImageInfo(vtuberWriter, sheetController, id, section, 1);
                 break;
 
                 case MOUSE:
