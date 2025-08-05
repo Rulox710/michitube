@@ -149,11 +149,11 @@ public class KeyboardController extends OptionLayerController {
             handleError(0, true, !hasBeenNotified);
             hasBeenNotified = true;
         }
-        if(imagePreviewKeyboard.getImage() == null) {
+        if(checkboxKeyboardDetection.selectedProperty().getValue() && imagePreviewOn.getImage() == null) {
             handleError(2, true, !hasBeenNotified);
             hasBeenNotified = true;
         }
-        if(checkboxKeyboardDetection.selectedProperty().getValue() && imagePreviewOn.getImage() == null) {
+        if(imagePreviewKeyboard.getImage() == null) {
             handleError(1, true, !hasBeenNotified);
             hasBeenNotified = true;
         }

@@ -80,8 +80,8 @@ public class MenubarController extends AbstractController {
             default -> null;
         };
         if(file == null) return;
-        if(type == 'd') FXFileChooser.changeInitialDirectory();
         notifyObservers(type, file);
+        if(type == 'd') FXFileChooser.changeInitialDirectory();
     }
 
     /**

@@ -70,9 +70,9 @@ public final class PropertiesM {
         String property = APP_CONFIG_PROPERTIES.getProperty("language");
         if(!isValidLanguage(property)) {
             System.out.println(String.format(
-                LogMessage.PROPERTIES_LANG_X.get(), LANGUAGES.ES.toString()
+                LogMessage.PROPERTIES_LANG_X.get(), LANGUAGES.ES.name()
             ));
-            APP_CONFIG_PROPERTIES.setProperty("language", LANGUAGES.ES.toString());
+            APP_CONFIG_PROPERTIES.setProperty("language", LANGUAGES.ES.name());
         } else
             System.out.println(String.format(
                 LogMessage.PROPERTIES_LANG_O.get(), property
