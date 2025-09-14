@@ -27,8 +27,8 @@ public class EyesInfoBuilder extends InfoBuilder {
 
     private boolean usage;
     private int [] intParams = new int[2];
-    private String[] strParams = {"", ""};
-    private int counterI = 0, counterS = 0;
+    private String[] strParams = {"", ""}, rleParams = {"", ""};
+    private int counterI = 0, counterS = 0, counterR = 0;
 
     /**
      * Agrega las rutas de las imágenes de los ojos.
@@ -45,6 +45,21 @@ public class EyesInfoBuilder extends InfoBuilder {
     public void setPath(String path) {
         strParams[counterS] = path;
         counterS++;
+    }
+
+    /**
+     * Agrega las imágenes de los ojos en formato RLE.
+     * Pueden agregarse hasta dos parámetros.
+     *
+     * -El primero indica la imagen por defecto.
+     * -El segundo indica la imagen cuando se realiza el parpadeo.
+     *
+     * @param rle Imagen RLE.
+     */
+    @Override
+    public void setRLE(String rle) {
+        rleParams[counterR] = rle;
+        counterR++;
     }
 
     /**
@@ -91,7 +106,11 @@ public class EyesInfoBuilder extends InfoBuilder {
      */
     @Override
     public Info getResult() {
-        return new EyesInfo(strParams[0], usage, intParams[0], intParams[1], strParams[1]);
+        return new EyesInfo(
+            strParams[0], rleParams[0], usage,
+            intParams[0], intParams[1],
+            strParams[1], rleParams[1]
+        );
     }
 
 }

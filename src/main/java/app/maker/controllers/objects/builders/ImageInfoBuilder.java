@@ -26,24 +26,22 @@ import app.maker.controllers.objects.Infos.ImageInfo;
 public class ImageInfoBuilder extends InfoBuilder {
 
     private int x, y, width, height;
-    private String path;
+    private String path, rle;
 
     /**
-     * {@inheritDoc} No permite valores menores a <code>1</code> y
-     * éste es pasado, se cambia a <code>0</code>.
+     * {@inheritDoc}
      */
     @Override
     public void setXPos(int xPos) {
-        x = (xPos < 1)? 0: xPos;
+        x = xPos;
     }
 
     /**
-     * {@inheritDoc} No permite valores menores a <code>1</code> y
-     * éste es pasado, se cambia a <code>0</code>.
+     * {@inheritDoc}
      */
     @Override
     public void setYPos(int yPos) {
-        y = (yPos < 1)? 0: yPos;
+        y = yPos;
     }
 
     /**
@@ -73,9 +71,20 @@ public class ImageInfoBuilder extends InfoBuilder {
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setRLE(String rle) {
+        this.rle = rle;
+    }
+
+    /**
      * {@inheritDoc} En este caso, es un objeto tipo {@link ImageInfo}.
+     * En caso de que no tenga ruta a una imagen y tampoco una imagen
+     * en formato RLE devuelve <code>null</code>.
      */
     public Info getResult() {
-        return new ImageInfo(x, y, width, height, path);
+        if(path == null && rle == null) return null;
+        return new ImageInfo(x, y, width, height, path, rle);
     }
 }

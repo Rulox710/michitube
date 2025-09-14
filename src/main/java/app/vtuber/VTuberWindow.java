@@ -148,14 +148,16 @@ public class VTuberWindow extends Observable implements KeyListener {
         for(Ids id: Ids.values()) {
             Sections section = id.getEquivalent();
             KEYS[] infoKeys = new KEYS[]
-                {KEYS.XPOS_0, KEYS.YPOS_0, KEYS.WIDTH_0, KEYS.HEIGHT_0, KEYS.PATH_0};
+                {KEYS.XPOS_0, KEYS.YPOS_0, KEYS.WIDTH_0, KEYS.HEIGHT_0, KEYS.RLE_0};
 
             switch(id) {
                 case BACKGROUND:
                     if(!infoMap.getBoolean(section, KEYS.IMAGE)) break;
                     for(int i = 0; i < 4; i++)
                         params[i] = infoMap.getInt(section, infoKeys[i]);
-                    panel.setImage(id, 0, infoMap.get(section, infoKeys[4]));
+                    panel.setImage(
+                        id, 0, infoMap.get(section, infoKeys[4])
+                    );
                 break;
 
                 case TABLE:
@@ -164,13 +166,17 @@ public class VTuberWindow extends Observable implements KeyListener {
                     if(!infoMap.getBoolean(section, KEYS.USE)) break;
                     for(int i = 0; i < 4; i++)
                         params[i] = infoMap.getInt(section, infoKeys[i]);
-                    panel.setImage(id, 0, infoMap.get(section, infoKeys[4]));
+                    panel.setImage(
+                        id, 0, infoMap.get(section, infoKeys[4])
+                    );
                 break;
 
                 case BODY:
                     for(int i = 0; i < 4; i++)
                         params[i] = infoMap.getInt(section, infoKeys[i]);
-                    panel.setImage(id, 0, infoMap.get(section, infoKeys[4]));
+                    panel.setImage(
+                        id, 0, infoMap.get(section, infoKeys[4])
+                    );
                 break;
 
                 case EYES:
@@ -178,15 +184,19 @@ public class VTuberWindow extends Observable implements KeyListener {
 
                     for(int i = 0; i < 4; i++)
                         params[i] = infoMap.getInt(section, infoKeys[i]);
-                    panel.setImage(id, 0, infoMap.get(section, infoKeys[4]));
+                    panel.setImage(
+                        id, 0, infoMap.get(section, infoKeys[4])
+                    );
 
                     infoKeys = new KEYS[]
-                        {KEYS.XPOS_1, KEYS.YPOS_1, KEYS.WIDTH_1, KEYS.HEIGHT_1, KEYS.PATH_1};
+                        {KEYS.XPOS_1, KEYS.YPOS_1, KEYS.WIDTH_1, KEYS.HEIGHT_1, KEYS.RLE_1};
 
                     if(!infoMap.getBoolean(section, KEYS.USE)) break;
                     for(int i = 0; i < 4; i++)
                         params[i+(infoKeys.length-1)] = infoMap.getInt(section, infoKeys[i]);
-                    panel.setImage(id, 1, infoMap.get(section, infoKeys[4]));
+                    panel.setImage(
+                        id, 1, infoMap.get(section, infoKeys[4])
+                    );
 
                     params[8] = infoMap.getInt(section, KEYS.TIMETO);
                     params[9] = infoMap.getInt(section, KEYS.TIMEBLINK);
@@ -197,15 +207,19 @@ public class VTuberWindow extends Observable implements KeyListener {
 
                     for(int i = 0; i < 4; i++)
                         params[i] = infoMap.getInt(section, infoKeys[i]);
-                    panel.setImage(id, 0, infoMap.get(section, infoKeys[4]));
+                    panel.setImage(
+                        id, 0, infoMap.get(section, infoKeys[4])
+                    );
 
                     infoKeys = new KEYS[]
-                        {KEYS.XPOS_1, KEYS.YPOS_1, KEYS.WIDTH_1, KEYS.HEIGHT_1, KEYS.PATH_1};
+                        {KEYS.XPOS_1, KEYS.YPOS_1, KEYS.WIDTH_1, KEYS.HEIGHT_1, KEYS.RLE_1};
 
                     if(!infoMap.getBoolean(section, KEYS.USE)) break;
                     for(int i = 0; i < 4; i++)
                         params[i+(infoKeys.length-1)] = infoMap.getInt(section, infoKeys[i]);
-                    panel.setImage(id, 1, infoMap.get(section, infoKeys[4]));
+                    panel.setImage(
+                        id, 1, infoMap.get(section, infoKeys[4])
+                    );
                 break;
 
                 case KEYBOARD:
@@ -213,22 +227,28 @@ public class VTuberWindow extends Observable implements KeyListener {
 
                     for(int i = 0; i < 4; i++)
                         params[i] = infoMap.getInt(section, infoKeys[i]);
-                    panel.setImage(id, 0, infoMap.get(section, infoKeys[4]));
+                    panel.setImage(
+                        id, 0, infoMap.get(section, infoKeys[4])
+                    );
 
                     infoKeys = new KEYS[]
-                        {KEYS.XPOS_2, KEYS.YPOS_2, KEYS.WIDTH_2, KEYS.HEIGHT_2, KEYS.PATH_2};
+                        {KEYS.XPOS_2, KEYS.YPOS_2, KEYS.WIDTH_2, KEYS.HEIGHT_2, KEYS.RLE_2};
 
                     for(int i = 0; i < 4; i++)
                         params[i+infoKeys.length-1] = infoMap.getInt(section, infoKeys[i]);
-                    panel.setImage(id, 2, infoMap.get(section, infoKeys[4]));
+                    panel.setImage(
+                        id, 2, infoMap.get(section, infoKeys[4])
+                    );
 
                     infoKeys = new KEYS[]
-                        {KEYS.XPOS_1, KEYS.YPOS_1, KEYS.WIDTH_1, KEYS.HEIGHT_1, KEYS.PATH_1};
+                        {KEYS.XPOS_1, KEYS.YPOS_1, KEYS.WIDTH_1, KEYS.HEIGHT_1, KEYS.RLE_1};
 
                     if(!infoMap.getBoolean(section, KEYS.USE)) break;
                     for(int i = 0; i < 4; i++)
                         params[i+(infoKeys.length-1)*2] = infoMap.getInt(section, infoKeys[i]);
-                    panel.setImage(id, 1, infoMap.get(section, infoKeys[4]));
+                    panel.setImage(
+                        id, 1, infoMap.get(section, infoKeys[4])
+                    );
                 break;
 
                 case MOUSE:

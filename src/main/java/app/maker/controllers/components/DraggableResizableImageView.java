@@ -16,17 +16,20 @@
 
 package app.maker.controllers.components;
 
+import app.fileUtils.ImageConverter;
 import app.files.PropertiesM;
 import app.maker.controllers.objects.Infos.Info;
 import app.maker.controllers.objects.Objects.Delta;
 import app.maker.controllers.objects.Objects.DirectionLock;
 import app.maker.controllers.objects.builders.ImageInfoBuilder;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 import javafx.scene.Cursor;
 import javafx.scene.effect.ColorAdjust;
@@ -35,7 +38,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 
 /**
- * Compoente que tiene una imagen y permite moverla en los ejes y
+ * Componete que tiene una imagen y permite moverla en los ejes y
  * cambiar su tamaño.
  */
 public class DraggableResizableImageView extends Pane {
@@ -43,7 +46,9 @@ public class DraggableResizableImageView extends Pane {
     private final ImageView imageView;
     private final Region resizeHandle;
     private final int MIN_SIZE = 10, OFFSET = 20, HANDLE_SIZE = 10;
-    private final String PATH;
+    private String PATH = "", RLE = "";
+    private File fimg;
+    private final ImageConverter CONVERTER = new ImageConverter();
 
     /**
      * Constructor de la clase. Una vez creado, no hay forma de
@@ -51,15 +56,31 @@ public class DraggableResizableImageView extends Pane {
      * su posición.
      *
      * @param fimg El archivo con la imagen a colocar.
+     * @param rle La cadena en formato rle que representa una imagen.
      * @param maxWidth Máximo ancho de la imagen inicialmente.
      * @param maxHeight Máximo alto de la imagen inicialmente.
+     *
+     * @throws Exception Se lanza la excepción en caso de que no se
+     *                   haya asignado ningún archivo o cadena rle.
      */
     public DraggableResizableImageView(
-            File fimg, double maxWidth, double maxHeight
-        ) {
+            File fimg, String rle, double maxWidth, double maxHeight
+        ) throws Exception {
 
-        PATH = fimg.toURI().toString();
-        Image image = new Image(PATH);
+        Image image = null;
+        if(fimg.exists()) {
+            this.fimg = fimg;
+            PATH = fimg.toURI().toString();
+            image = new Image(PATH);
+        }
+        if(!rle.isEmpty()) {
+            RLE = rle;
+            CONVERTER.setRLE(rle, false);
+            BufferedImage bImage = CONVERTER.convertRLEtoImage();
+            if(bImage != null) image = SwingFXUtils.toFXImage(bImage, null);
+        }
+        if(image == null) throw new Exception();
+
         double width = (image.getWidth() < maxWidth-OFFSET)?
                 image.getWidth(): maxWidth-OFFSET;
         double height = (image.getHeight() < maxHeight-OFFSET)?
@@ -75,7 +96,7 @@ public class DraggableResizableImageView extends Pane {
         setupResizeBehavior();
         setupDragBehavior();
 
-        getChildren().addAll(imageView, resizeHandle);
+        getChildren().addAll(imageView);
     }
 
     /**
@@ -84,21 +105,38 @@ public class DraggableResizableImageView extends Pane {
      * su posición.
      *
      * @param fimg El archivo con la imagen a colocar.
+     * @param rle La cadena en formato rle que representa una imagen.
      * @param xPos Posición en el eje x inicialmente.
      * @param yPos Posición en el eje y inicialmente.
      * @param width Ancho de la imagen inicialmente.
      * @param height Alto de la imagen inicialmente.
+     *
+     * @throws Exception Se lanza la excepción en caso de que no se
+     *                   haya asignado ningún archivo o cadena rle.
      */
     public DraggableResizableImageView(
-            File fimg, int xPos, int yPos, int width, int height
-        ) {
+            File fimg, String rle, int xPos, int yPos, int width, int height
+        ) throws Exception {
 
-        PATH = fimg.toURI().toString();
+        Image image = null;
+
+        if(fimg.exists()) {
+            this.fimg = fimg;
+            PATH = fimg.toURI().toString();
+            image = new Image(PATH);
+        }
+        if(!rle.isEmpty()) {
+            RLE = rle;
+            CONVERTER.setRLE(rle, false);
+            BufferedImage bImage = CONVERTER.convertRLEtoImage();
+            if(bImage != null) image = SwingFXUtils.toFXImage(bImage, null);
+        }
+        if(image == null) throw new Exception();
+
         setLayoutX(xPos);
         setLayoutY(yPos);
         setPrefSize(width, height);
 
-        Image image = new Image(PATH);
         imageView = new ImageView(image);
         imageView.setCursor(Cursor.MOVE);
         imageView.fitHeightProperty().bind(prefHeightProperty());
@@ -108,7 +146,7 @@ public class DraggableResizableImageView extends Pane {
         setupResizeBehavior();
         setupDragBehavior();
 
-        getChildren().addAll(imageView, resizeHandle);
+        getChildren().addAll(imageView);
     }
 
     /**
@@ -123,10 +161,17 @@ public class DraggableResizableImageView extends Pane {
         handle.setPrefSize(HANDLE_SIZE, HANDLE_SIZE);
         handle.setCursor(Cursor.SE_RESIZE);
 
-        handle.layoutXProperty().bind(imageView.fitWidthProperty().subtract(HANDLE_SIZE/2));
-        handle.layoutYProperty().bind(imageView.fitHeightProperty().subtract(HANDLE_SIZE/2));
+        // handle.layoutXProperty().bind(imageView.fitWidthProperty().subtract(HANDLE_SIZE/2));
+        // handle.layoutYProperty().bind(imageView.fitHeightProperty().subtract(HANDLE_SIZE/2));
+
+        handle.setLayoutX(getLayoutX() + imageView.getFitWidth() - HANDLE_SIZE/2);
+        handle.setLayoutY(getLayoutY() + imageView.getFitHeight() - HANDLE_SIZE/2);
 
         return handle;
+    }
+
+    public Region getHandle() {
+        return resizeHandle;
     }
 
     /**
@@ -151,12 +196,13 @@ public class DraggableResizableImageView extends Pane {
                 case PRIMARY:
                     dragDelta.x = event.getSceneX() - startDelta.x;
                     dragDelta.y = event.getSceneY() - startDelta.y;
-
                     newWidth = Math.max(MIN_SIZE, startImage.x + dragDelta.x);
                     newHeight = Math.max(MIN_SIZE, startImage.y + dragDelta.y);
 
                     setPrefWidth(newWidth);
                     setPrefHeight(newHeight);
+                    resizeHandle.setLayoutX(getLayoutX() + newWidth - HANDLE_SIZE/2);
+                    resizeHandle.setLayoutY(getLayoutY() + newHeight - HANDLE_SIZE/2);
                 break;
 
                 case SECONDARY:
@@ -170,6 +216,8 @@ public class DraggableResizableImageView extends Pane {
                     if(newHeight >= MIN_SIZE && newWidth >= MIN_SIZE) {
                         setPrefWidth(newWidth);
                         setPrefHeight(newHeight);
+                        resizeHandle.setLayoutX(getLayoutX() + newWidth - HANDLE_SIZE/2);
+                        resizeHandle.setLayoutY(getLayoutY() + newHeight - HANDLE_SIZE/2);
                     }
                 break;
 
@@ -205,6 +253,9 @@ public class DraggableResizableImageView extends Pane {
                 case PRIMARY:
                     setLayoutX(event.getSceneX() + dragDelta.x);
                     setLayoutY(event.getSceneY() + dragDelta.y);
+
+                    resizeHandle.setLayoutX(imageView.getFitWidth() + event.getSceneX() + dragDelta.x - HANDLE_SIZE/2);
+                    resizeHandle.setLayoutY(imageView.getFitHeight() + event.getSceneY() + dragDelta.y - HANDLE_SIZE/2);
                 break;
 
                 case SECONDARY:
@@ -214,10 +265,14 @@ public class DraggableResizableImageView extends Pane {
                         directionLock.locked = true;
                     }
 
-                    if (directionLock.horizontal)
+                    if (directionLock.horizontal) {
                         setLayoutX(event.getSceneX() + dragDelta.x);
-                    else if (directionLock.vertical)
+                        resizeHandle.setLayoutX(imageView.getFitWidth() + event.getSceneX() + dragDelta.x - HANDLE_SIZE/2);
+                    }
+                    else if (directionLock.vertical) {
                         setLayoutY(event.getSceneY() + dragDelta.y);
+                        resizeHandle.setLayoutY(imageView.getFitHeight() + event.getSceneY() + dragDelta.y - HANDLE_SIZE/2);
+                    }
                 break;
 
                 default:
@@ -235,11 +290,11 @@ public class DraggableResizableImageView extends Pane {
     public void setFocus(boolean hasFocus) {
         if(hasFocus) {
             setStyle("-fx-border-color: white;");
-            resizeHandle.setStyle("-fx-background-color: white; -fx-border-color: black");
+            //resizeHandle.setStyle("-fx-background-color: white; -fx-border-color: black");
             imageView.setEffect(null);
         } else {
             setStyle("-fx-border-color: transparent;");
-            resizeHandle.setStyle("-fx-background-color: transparent; -fx-border-color: transparent");
+            //resizeHandle.setStyle("-fx-background-color: transparent; -fx-border-color: transparent");
             ColorAdjust adjust = new ColorAdjust();
             adjust.setBrightness(-0.4);      // más oscuro
             adjust.setSaturation(-0.5);      // menos saturado
@@ -253,22 +308,32 @@ public class DraggableResizableImageView extends Pane {
      * y cadenas según las necesidades específicas. En este caso el
      * objeto es del tipo {@link ImageInfoBuilder}.
      *
+     * @param asSoft Indica si se quieren rutas relativas
+     *               <code>true</code> o imagenes en RLE
+     *               <code>false</code>.
+     *
      * @return El objeto que trasporta toda la información relevante
      *         del componente.
      */
     public Info getImageInfo() {
+        ImageInfoBuilder builder = new ImageInfoBuilder();
+
         Path basePath = Paths.get(PropertiesM.getAppProperty("default_dir"));
         URI fileUri = URI.create(PATH);
         Path fullPath = Paths.get(fileUri);
         Path relativePath = basePath.relativize(fullPath);
+        builder.setPath(relativePath.toString());
 
-        ImageInfoBuilder builder = new ImageInfoBuilder();
+        if(RLE.isEmpty()) {
+            CONVERTER.setFile(fimg);
+            builder.setRLE(CONVERTER.getRLEString(false));
+        } else builder.setRLE(RLE);
 
         builder.setXPos((int) Math.round(getLayoutX()));
         builder.setYPos((int) Math.round(getLayoutY()));
         builder.setWidth((int) Math.round(imageView.getFitWidth()));
         builder.setHeight((int) Math.round(imageView.getFitHeight()));
-        builder.setPath(relativePath.toString());
+
         return builder.getResult();
     }
 }

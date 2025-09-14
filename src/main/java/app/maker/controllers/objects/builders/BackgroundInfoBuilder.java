@@ -25,7 +25,7 @@ import app.maker.controllers.objects.Infos.Info;
  */
 public class BackgroundInfoBuilder extends InfoBuilder {
 
-    private String color, path = "";
+    private String color, path = "", rle = "";
     private boolean[] usage = new boolean[2];
     private int counter = 0;
 
@@ -43,6 +43,14 @@ public class BackgroundInfoBuilder extends InfoBuilder {
     @Override
     public void setPath(String path) {
         this.path = path;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setRLE(String rle) {
+        this.rle = rle;
     }
 
     /**
@@ -67,7 +75,7 @@ public class BackgroundInfoBuilder extends InfoBuilder {
      */
     @Override
     public Info getResult() {
-        return new BackgroundInfo(usage[0], path, usage[1], color);
+        return new BackgroundInfo(usage[0], path, rle, usage[1], color);
     }
 
 }

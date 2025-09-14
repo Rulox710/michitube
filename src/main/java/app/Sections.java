@@ -110,6 +110,11 @@ public enum Sections {
         PATH_1("P_1"),
         PATH_2("P_2"),
 
+        RLE("RLE"),
+        RLE_0("RLE_0"),
+        RLE_1("RLE_1"),
+        RLE_2("RLE_2"),
+
         COLOR("C"),
         USE("use"),
         IMAGE("image"),

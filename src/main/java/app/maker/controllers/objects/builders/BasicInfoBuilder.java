@@ -26,8 +26,8 @@ import app.maker.controllers.objects.Infos.Info;
 public class BasicInfoBuilder extends InfoBuilder {
 
     private boolean usage;
-    private String[] strParams = {"", "", ""};
-    private int counterS = 0;
+    private String[] strParams = {"", "", ""}, rleParams = {"", "", ""};
+    private int counterS = 0, counterR = 0;
 
     /**
      * Agrega las rutas de las imágenes de la boca.
@@ -47,6 +47,23 @@ public class BasicInfoBuilder extends InfoBuilder {
     }
 
     /**
+     * Agrega las rutas de las imágenes de la boca.
+     * Pueden agregarse hasta dos parámetros.
+     *
+     * -El primero indica la ruta del archivo de la imagen por
+     *  defecto.
+     * -El segundo indica la ruta del archivo de la imagen cuando se
+     *  usa una característica.
+     *
+     * @param path Ruta del archivo de la imagen.
+     */
+    @Override
+    public void setRLE(String rle) {
+        rleParams[counterR] = rle;
+        counterR++;
+    }
+
+    /**
      * Indica si se usa o no una característica.
      *
      * @param param Si se usa o no la característica.
@@ -61,6 +78,10 @@ public class BasicInfoBuilder extends InfoBuilder {
      */
     @Override
     public Info getResult() {
-        return new BasicInfo(strParams[0], strParams[1], usage, strParams[2]);
+        return new BasicInfo(
+            strParams[0], rleParams[0],
+            strParams[1], rleParams[1], usage,
+            strParams[2], rleParams[2]
+        );
     }
 }

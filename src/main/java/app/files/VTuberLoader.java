@@ -137,13 +137,13 @@ public final class VTuberLoader {
 
         final KEYS[] INFO_KEYS = switch(tweak) {
             case 0 -> new KEYS[]
-                {KEYS.XPOS_0, KEYS.YPOS_0, KEYS.WIDTH_0, KEYS.HEIGHT_0, KEYS.PATH_0};
+                {KEYS.XPOS_0, KEYS.YPOS_0, KEYS.WIDTH_0, KEYS.HEIGHT_0, KEYS.PATH_0, KEYS.RLE_0};
             case 1 -> new KEYS[]
-                {KEYS.XPOS_1, KEYS.YPOS_1, KEYS.WIDTH_1, KEYS.HEIGHT_1, KEYS.PATH_1};
+                {KEYS.XPOS_1, KEYS.YPOS_1, KEYS.WIDTH_1, KEYS.HEIGHT_1, KEYS.PATH_1, KEYS.RLE_1};
             case 2 -> new KEYS[]
-                {KEYS.XPOS_2, KEYS.YPOS_2, KEYS.WIDTH_2, KEYS.HEIGHT_2, KEYS.PATH_2};
+                {KEYS.XPOS_2, KEYS.YPOS_2, KEYS.WIDTH_2, KEYS.HEIGHT_2, KEYS.PATH_2, KEYS.RLE_2};
             default -> new KEYS[]
-                {KEYS.XPOS, KEYS.YPOS, KEYS.WIDTH, KEYS.HEIGHT, KEYS.PATH};
+                {KEYS.XPOS, KEYS.YPOS, KEYS.WIDTH, KEYS.HEIGHT, KEYS.PATH, KEYS.RLE};
         };
 
         imageBuilder.setXPos(vtuberReader.getInt(section, INFO_KEYS[0]));
@@ -151,6 +151,7 @@ public final class VTuberLoader {
         imageBuilder.setWidth(vtuberReader.getInt(section, INFO_KEYS[2]));
         imageBuilder.setHeight(vtuberReader.getInt(section, INFO_KEYS[3]));
         imageBuilder.setPath(vtuberReader.get(section, INFO_KEYS[4]));
+        imageBuilder.setRLE(vtuberReader.get(section, INFO_KEYS[5]));
 
         boolean fileFound = sheetController.setInfoImage(
             id, tweak, imageBuilder.getResult()
@@ -188,7 +189,8 @@ public final class VTuberLoader {
 
         InfoBuilder layerBuilder = new BasicInfoBuilder();
 
-        KEYS[] paths_key = new KEYS[]{KEYS.PATH_0, KEYS.PATH_1, KEYS.PATH_2};
+        KEYS[] path_keys = new KEYS[]{KEYS.PATH_0, KEYS.PATH_1, KEYS.PATH_2};
+        KEYS[] rle_keys = new KEYS[]{KEYS.RLE_0, KEYS.RLE_1, KEYS.RLE_2};
         switch(id) {
             case BACKGROUND:
                 layerBuilder = new BackgroundInfoBuilder();
@@ -199,10 +201,14 @@ public final class VTuberLoader {
                 layerBuilder.setUsage(vtuberReader.getBoolean(
                     section, KEYS.USECOLOR
                 ));
-                if(fileFound[0])
+                if(fileFound[0]) {
                     layerBuilder.setPath(vtuberReader.get(
-                        section, paths_key[0]
+                        section, path_keys[0]
                     ));
+                    layerBuilder.setRLE(vtuberReader.get(
+                        section, rle_keys[0]
+                    ));
+                }
                 if(vtuberReader.getBoolean(section, KEYS.USECOLOR))
                     layerBuilder.setColor(vtuberReader.get(
                         section, KEYS.COLOR
@@ -210,10 +216,14 @@ public final class VTuberLoader {
             break;
 
             case BODY:
-                if(fileFound[0])
+                if(fileFound[0]) {
                     layerBuilder.setPath(vtuberReader.get(
-                        section, paths_key[0]
+                        section, path_keys[0]
                     ));
+                    layerBuilder.setRLE(vtuberReader.get(
+                        section, rle_keys[0]
+                    ));
+                }
             break;
 
             case EYES:
@@ -230,10 +240,14 @@ public final class VTuberLoader {
                 ));
 
                 for(int i = 0; i < fileFound.length; i++)
-                    if(fileFound[i])
+                    if(fileFound[i]) {
                         layerBuilder.setPath(vtuberReader.get(
-                            section, paths_key[i]
+                            section, path_keys[0]
                         ));
+                        layerBuilder.setRLE(vtuberReader.get(
+                            section, rle_keys[0]
+                        ));
+                    }
             break;
 
             case MOUTH:
@@ -252,10 +266,14 @@ public final class VTuberLoader {
                     section, KEYS.SENS
                 ));
                 for(int i = 0; i < fileFound.length; i++)
-                    if(fileFound[i])
+                    if(fileFound[i]) {
                         layerBuilder.setPath(vtuberReader.get(
-                            section, paths_key[i]
+                            section, path_keys[0]
                         ));
+                        layerBuilder.setRLE(vtuberReader.get(
+                            section, rle_keys[0]
+                        ));
+                    }
             break;
 
             case HAIR:
@@ -264,10 +282,14 @@ public final class VTuberLoader {
                 layerBuilder.setUsage(vtuberReader.getBoolean(
                     section, KEYS.USE
                 ));
-                if(fileFound[0])
+                if(fileFound[0]) {
                     layerBuilder.setPath(vtuberReader.get(
-                        section, paths_key[0]
+                        section, path_keys[0]
                     ));
+                    layerBuilder.setRLE(vtuberReader.get(
+                        section, rle_keys[0]
+                    ));
+                }
             break;
 
             case KEYBOARD:
@@ -275,10 +297,14 @@ public final class VTuberLoader {
                     section, KEYS.USE
                 ));
                 for(int i = 0; i < fileFound.length; i++)
-                    if(fileFound[i])
+                    if(fileFound[i]) {
                         layerBuilder.setPath(vtuberReader.get(
-                            section, paths_key[i]
+                            section, path_keys[0]
                         ));
+                        layerBuilder.setRLE(vtuberReader.get(
+                            section, rle_keys[0]
+                        ));
+                    }
             break;
 
             case MOUSE:
@@ -321,7 +347,7 @@ public final class VTuberLoader {
         VTuberReader vTuberReader = new VTuberReader();
         try {
             vTuberReader.loadFromFile(file.getPath());
-        } catch (IOException e) {
+        } catch(IOException e) {
             System.out.println(LogMessage.MODEL_LOAD_X.get());
             Constants.printTimeStamp(System.err);
             System.err.println(LogMessage.MODEL_LOAD_X.get());
@@ -334,6 +360,7 @@ public final class VTuberLoader {
             boolean[] fileFound;
             Sections section = id.getEquivalent();
 
+            //sheetController.resetImageHandle();
             switch(id) {
                 case BACKGROUND:
                     fileFound = new boolean[1];

@@ -7,6 +7,7 @@ SET "JAR_DIR=../build"
 SET "JAR=MichiTuber.jar"
 SET "ICO=../build/icon.ico"
 SET "NAME=MichiTuber"
+SET "JAVA_FX=../lib/javafx-17.0.16"
 
 IF NOT EXIST ../build (
     MKDIR ../build
@@ -16,8 +17,8 @@ jar cfm %JAR% ../META-INF/MANIFEST.MF -C ../bin .
 MOVE %JAR% %JAR_DIR%
 
 jlink ^
-  --module-path "%JAVA_HOME%\jmods;..\lib\javafx-17.0.15" ^
-  --add-modules java.base,java.logging,javafx.controls,javafx.fxml,javafx.graphics ^
+  --module-path "%JAVA_HOME%\jmods;%JAVA_FX%" ^
+  --add-modules java.base,java.logging,javafx.controls,javafx.fxml,javafx.graphics,javafx.swing ^
   --output ../build/runtime ^
   --strip-debug ^
   --compress=2 ^
@@ -35,7 +36,7 @@ jpackage ^
   --java-options "-Dfile.encoding=UTF-8" ^
   --runtime-image ../build/runtime ^
   --icon %ICO% ^
-  --app-version 1.0.1
+  --app-version 1.1.0
 
 MOVE %NAME% %JAR_DIR%
 

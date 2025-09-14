@@ -73,7 +73,8 @@ public class SheetController extends AbstractController {
     private MouseComponentArea mouseArea;
 
     private Ids currentLayer = Ids.BACKGROUND, lastLayer;
-    private int currentTweak = 0, lastTweak;
+    private int currentTweak = 0, lastTweak = 0;
+    private Region imageHandle;
 
     public SheetController() {
         LAYERS_MAP.put(Ids.BACKGROUND, LAYER_BACKGROUND);
@@ -85,6 +86,25 @@ public class SheetController extends AbstractController {
         LAYERS_MAP.put(Ids.KEYBOARD, LAYER_KEYBOARD);
         LAYERS_MAP.put(Ids.MOUSE, LAYER_MOUSE);
         LAYERS_MAP.put(Ids.EXTRA, LAYER_EXTRA);
+    }
+
+    public void resetImageHandle() {
+        Platform.runLater(() -> {
+            paneSheet.getChildren().remove(paneSheet.getChildren().size() - 1);
+            paneSheet.getChildren().add(new Pane());
+        });
+    }
+
+    private void setNewImageHandle() {
+        Platform.runLater(() -> {
+            paneSheet.getChildren().remove(paneSheet.getChildren().size() - 1);
+            try {
+                imageHandle = LAYERS_MAP.get(currentLayer)[currentTweak].getHandle();
+                paneSheet.getChildren().add(imageHandle);
+            } catch(NullPointerException e) {
+                paneSheet.getChildren().add(new Pane());
+            }
+        });
     }
 
     public void selectLayer(Ids layerID, int tweakID) {
@@ -103,9 +123,12 @@ public class SheetController extends AbstractController {
         switch(currentLayer) {
             case MOUSE:
                 mouseArea.setFocus(true, currentTweak == 1, currentTweak == 2);
+                resetImageHandle();
             break;
-        default: mouseArea.setFocus(false);
-        break;
+            default:
+                mouseArea.setFocus(false);
+                setNewImageHandle();
+            break;
         }
     }
 
@@ -116,7 +139,15 @@ public class SheetController extends AbstractController {
         }
         if(!imageFile.exists()) return;
 
-        LAYERS_MAP.get(currentLayer)[currentTweak] = new DraggableResizableImageView(imageFile, paneSheet.getWidth(), paneSheet.getHeight());
+        try{
+            LAYERS_MAP.get(currentLayer)[currentTweak] =
+                new DraggableResizableImageView(
+                    imageFile, null, paneSheet.getWidth(), paneSheet.getHeight()
+                );
+        } catch(Exception e) {
+            LAYERS_MAP.get(currentLayer)[currentTweak] = null;
+            return;
+        }
         LAYERS_MAP.get(currentLayer)[currentTweak].setFocus(true);
         Pane image = LAYERS_MAP.get(currentLayer)[currentTweak];
 
@@ -125,25 +156,28 @@ public class SheetController extends AbstractController {
             paneSheet.getChildren().remove(index);
             paneSheet.getChildren().add(index, image);
         });
+        setNewImageHandle();
     }
 
-    private boolean setImage(Ids layer, int tweak, String image, int xPos, int yPos, int width, int height) {
-        File imageFile;
+    private boolean setImage(Ids layer, int tweak, String image, String rleString, int xPos, int yPos, int width, int height) {
         Path basePath = Paths.get(PropertiesM.getAppProperty("default_dir"));
         Path relativePath = Paths.get(image);
         Path fullPath = basePath.resolve(relativePath);
         URI fullUri = fullPath.toUri();
+        File imageFile = new File(fullUri);
 
         try {
-            imageFile = new File(fullUri);
-            if(imageFile == null || !imageFile.exists() || image.length() == 0) return false;
-        } catch(IllegalArgumentException e) {
+            LAYERS_MAP.get(layer)[tweak] =
+                new DraggableResizableImageView(
+                    imageFile, rleString, xPos, yPos, width, height
+                );
+        } catch(Exception e) {
+            LAYERS_MAP.get(currentLayer)[currentTweak] = null;
             return false;
         }
 
-        LAYERS_MAP.get(layer)[tweak] = new DraggableResizableImageView(imageFile, xPos, yPos, width, height);
         if(layer == currentLayer && tweak == currentTweak)
-           LAYERS_MAP.get(layer)[tweak].setFocus(true);
+            LAYERS_MAP.get(layer)[tweak].setFocus(true);
         else LAYERS_MAP.get(layer)[tweak].setFocus(false);
         Pane imagePane = LAYERS_MAP.get(layer)[tweak];
 
@@ -152,6 +186,7 @@ public class SheetController extends AbstractController {
             paneSheet.getChildren().remove(index);
             paneSheet.getChildren().add(index, imagePane);
         });
+        if(layer == currentLayer && tweak == currentTweak) setNewImageHandle();
 
         return true;
     }
@@ -185,6 +220,7 @@ public class SheetController extends AbstractController {
         );
         mouseArea.setFocus(false);
         children.add(mouseArea);
+        children.add(new Pane());
 
         updateLanguage();
     }
@@ -266,6 +302,7 @@ public class SheetController extends AbstractController {
         ObservableList<Node> children = paneSheet.getChildren();
         Platform.runLater(() -> {
             children.remove(mouseArea);
+            children.remove(children.size() -1);
 
             double[] xProperties = {areaInfo.getInt(KEYS.XPOS_A),
                                     areaInfo.getInt(KEYS.XPOS_B),
@@ -281,13 +318,16 @@ public class SheetController extends AbstractController {
                 xProperties, yProperties
             );
             children.add(mouseArea);
+            children.add(new Pane());
 
             switch(currentLayer) {
                 case MOUSE:
                     mouseArea.setFocus(true, currentTweak == 1, currentTweak == 2);
+                    resetImageHandle();
                 break;
                 default:
                     mouseArea.setFocus(false);
+                    setNewImageHandle();
                 break;
             }
         });
@@ -300,7 +340,8 @@ public class SheetController extends AbstractController {
 
     public boolean setInfoImage(Ids layer, int tweak, Info infoImage) {
         return setImage(
-            layer, tweak, infoImage.getString(KEYS.PATH),
+            layer, tweak,
+            infoImage.getString(KEYS.PATH), infoImage.getString(KEYS.RLE),
             infoImage.getInt(KEYS.XPOS), infoImage.getInt(KEYS.YPOS),
             infoImage.getInt(KEYS.WIDTH), infoImage.getInt(KEYS.HEIGHT)
         );

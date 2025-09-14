@@ -27,8 +27,8 @@ public class MouthInfoBuilder extends InfoBuilder {
 
     private boolean usage;
     private int [] intParams = new int[3];
-    private String[] strParams = {"", ""};
-    private int counterI = 0, counterS = 0;
+    private String[] strParams = {"", ""}, rleParams = {"", ""};
+    private int counterI = 0, counterS = 0, counterR= 0;
 
     /**
      * Agrega las rutas de las imágenes de la boca.
@@ -44,6 +44,20 @@ public class MouthInfoBuilder extends InfoBuilder {
     public void setPath(String path) {
         strParams[counterS] = path;
         counterS++;
+    }
+
+    /**
+     * Agrega las imágenes de la boca en formato RLE.
+     * Pueden agregarse hasta dos parámetros.
+     *
+     * -El primero indica la imagen por defecto.
+     * -El segundo indica la imagen cuando se detecta sonido.
+     *
+     * @param rle La imagen.
+     */
+    public void setRLE(String rle) {
+        rleParams[counterR] = rle;
+        counterR++;
     }
 
     /**
@@ -99,6 +113,10 @@ public class MouthInfoBuilder extends InfoBuilder {
      */
     @Override
     public Info getResult() {
-        return new MouthInfo(strParams[0], usage, intParams[0], intParams[1], intParams[2], strParams[1]);
+        return new MouthInfo(
+            strParams[0], rleParams[0], usage,
+            intParams[0], intParams[1], intParams[2],
+            strParams[1], rleParams[1]
+        );
     }
 }

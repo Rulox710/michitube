@@ -101,10 +101,19 @@ public abstract class InfoBuilder {
     }
 
     /**
+     * Establece una imagen en formato RLE para el objeto.
+     *
+     * @param rle Cadena RLE de la imagen.
+     */
+    public void setRLE(String rle) {
+        throw new UnsupportedOperationException("Unimplemented method 'setRLE'");
+    }
+
+    /**
      * Obtiene el resultado final, contruyendo un objeto que extiende a
      * {@link Info}.
      *
-     * @return
+     * @return La información construida.
      */
     public abstract Info getResult();
 }

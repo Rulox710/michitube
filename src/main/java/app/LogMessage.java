@@ -47,7 +47,7 @@ public enum LogMessage {
     GUI_FXML_END      ("   └─ FXML Cargado: %s\n"),
     GUI_FXML_X        ("   └─ FXML Error al cargar: %s\n"),
 
-    PROPERTIES_SAVE   ("=== Guardadndo configuración de la aplicación ==="),
+    PROPERTIES_SAVE   ("=== Guardando configuración de la aplicación ==="),
     GLOBALSCREEN_STOP ("!!! Cerrando detectores globales !!!"),
     GUI_HIDE          ("=== Escondiendo interfaz ==="),
     GUI_SHOW          ("=== Mostrando interfaz ==="),
@@ -62,6 +62,7 @@ public enum LogMessage {
     MODEL_LOAD_O      ("=== Modelo VTuber cargado correctamente ==="),
     MODEL_SAVE_X      ("!!! No se pudo guardar el modelo VTuber !!!"),
     MODEL_LOAD_X      ("!!! No se pudo cargar el modelo VTuber !!!"),
+    IMAGE_SAVE_X      ("!!! No se pudo guardar la imagen !!!"),
 
     PROGRAM_END_O     ("\n"
                       +"     ╔═────────────────────────────────══╗\n"

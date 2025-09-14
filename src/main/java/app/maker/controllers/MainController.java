@@ -176,7 +176,7 @@ public class MainController implements Initializable, Observer {
 
             VTuberReader reader = new VTuberReader();
             reader.loadFromMap(VTuberSaver.getVTuberWriter(
-                layersController, sheetController
+                layersController, sheetController, false
             ).getClone());
 
             vtWin.setMap(reader);
@@ -211,6 +211,7 @@ public class MainController implements Initializable, Observer {
         break;
 
         case 'S':
+        case 'H':
             if(!readyToSave()) {
                 Platform.runLater(() -> {
                     Alert alert = new Alert(AlertType.ERROR);
@@ -221,7 +222,7 @@ public class MainController implements Initializable, Observer {
                 });
                 break;
             }
-            VTuberSaver.saveVTuber((File)data, layersController, sheetController);
+            VTuberSaver.saveVTuber((File)data, layersController, sheetController, event == 'S');
         break;
 
         case 'z': Main.showPrimaryStage();

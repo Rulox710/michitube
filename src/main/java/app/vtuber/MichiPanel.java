@@ -21,6 +21,7 @@ import app.Ids;
 import app.Sections.KEYS;
 import app.engine.DeltaTimeManager;
 import app.engine.Observer;
+import app.fileUtils.ImageConverter;
 import app.files.PropertiesM;
 
 import java.awt.Color;
@@ -30,6 +31,7 @@ import java.awt.Image;
 import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.geom.Path2D;
+import java.awt.image.BufferedImage;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.nio.file.Path;
@@ -59,6 +61,8 @@ public class MichiPanel extends JPanel implements Observer {
                                     LAYER_MOUSE.length + LAYER_EXTRA.length + LAYER_HAIR.length;
     private final Map<Ids, Image[]> LAYERS_MAP =  new HashMap<>(Ids.values().length);
     private final Map<Ids, Map<KEYS, Integer>> PARAMS = new HashMap<>();
+
+    private final ImageConverter CONVERTER = new ImageConverter();
 
     private final RenderingHints HINTS;
 
@@ -95,26 +99,31 @@ public class MichiPanel extends JPanel implements Observer {
         handColor = color;
     }
 
-    public void setImage(Ids layer, int tweak, String imagePath) {
-        try {
+    public void setImage(Ids layer, int tweak, String rle) {
+        // try {
+        //     Path relativePath = Paths.get(imagePath);
+        //     Path fullPath = basePath.resolve(relativePath);
+        //     URI fullUri = fullPath.toUri();
+        //     ImageIcon imageIcon = new ImageIcon(fullUri.toURL());
+        //     LAYERS_MAP.get(layer)[tweak] = imageIcon.getImage();
 
-            Path relativePath = Paths.get(imagePath);
-            Path fullPath = basePath.resolve(relativePath);
-            URI fullUri = fullPath.toUri();
-            ImageIcon imageIcon = new ImageIcon(fullUri.toURL());
+        //     System.out.println(String.format(
+        //         "ID: %s Tweak: %d uri: %s",
+        //         layer.getID(), tweak, fullPath.toUri().toString()
+        //     ));
+        // } catch(MalformedURLException e) {
+        CONVERTER.setRLE(rle, false);
+        BufferedImage bImage = CONVERTER.convertRLEtoImage();
+        if(bImage != null) {
+            ImageIcon imageIcon = new ImageIcon(bImage);
             LAYERS_MAP.get(layer)[tweak] = imageIcon.getImage();
-
-            // System.out.println(String.format(
-            //     "ID: %s Tweak: %d uri: %s",
-            //     layer.getID(), tweak, fullPath.toUri().toString()
-            // ));
-        } catch(MalformedURLException e) {
+        } else {
             Constants.printTimeStamp(System.err);
             System.err.println(String.format(
                 "No se ha encontrado la imagen de la capa: %s, característica: %d",
                 layer, tweak
             ));
-            e.printStackTrace();
+            //e.printStackTrace();
         }
     }
 

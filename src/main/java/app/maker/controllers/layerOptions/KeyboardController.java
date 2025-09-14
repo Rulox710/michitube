@@ -17,17 +17,20 @@
 package app.maker.controllers.layerOptions;
 
 import app.Sections.KEYS;
+import app.fileUtils.ImageConverter;
 import app.files.TranslationM;
 import app.maker.FXFileChooser;
 import app.maker.controllers.objects.Infos.Info;
 import app.maker.controllers.objects.builders.BasicInfoBuilder;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import javafx.css.PseudoClass;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Accordion;
@@ -132,9 +135,10 @@ public class KeyboardController extends OptionLayerController {
             index = 1;
         }
 
-        File img = FXFileChooser.getImageChooser().showOpenDialog(null);
-        if(img != null) {
-            imagePreview.setImage(new Image(img.toURI().toString()));
+        File file = FXFileChooser.getImageChooser().showOpenDialog(null);
+        if(file != null) {
+            Image img = new Image(file.toURI().toString());
+            imagePreview.setImage(img);
             notifyObservers((char) getTweakID(), img);
 
             handleError(index, false, true);
@@ -166,38 +170,74 @@ public class KeyboardController extends OptionLayerController {
         boolean result = true;
         Path relativePath, fullPath;
         URI fullUri;
+        String rle;
+        ImageConverter rleConverter;
+        Image img = null;
 
-        if(info.getString(KEYS.PATH_0).length() != 0) {
+        if(!info.getString(KEYS.PATH_0).isEmpty()) {
             relativePath = Paths.get(info.getString(KEYS.PATH_0));
             fullPath = basePath.resolve(relativePath);
             fullUri = fullPath.toUri();
-            imagePreviewOff.setImage(new Image(fullUri.toString()));
-            notifyObservers('l', new File(fullUri));
+            img = new Image(fullUri.toString());
+        } else if(!info.getString(KEYS.RLE_0).isEmpty()) {
+            rle = info.getString(KEYS.RLE_0);
+            rleConverter = new ImageConverter();
+            rleConverter.setRLE(rle, false);
+            BufferedImage bImage = rleConverter.convertRLEtoImage();
+            if(bImage != null) img = SwingFXUtils.toFXImage(bImage, null);
+        }
+        if(img != null) {
+            imagePreviewOff.setImage(img);
+            notifyObservers('l', img);
         } else {
             result = false;
             imagePreviewOff.setImage(null);
             notifyObservers('l', null);
         }
 
-        if(info.getString(KEYS.PATH_2).length() != 0) {
+        if(!info.getString(KEYS.PATH_2).isEmpty()) {
             relativePath = Paths.get(info.getString(KEYS.PATH_2));
             fullPath = basePath.resolve(relativePath);
             fullUri = fullPath.toUri();
-            imagePreviewKeyboard.setImage(new Image(fullUri.toString()));
+            img = new Image(fullUri.toString());
+        } else if(!info.getString(KEYS.RLE_2).isEmpty()) {
+            rle = info.getString(KEYS.RLE_2);
+            rleConverter = new ImageConverter();
+            rleConverter.setRLE(rle, false);
+            BufferedImage bImage = rleConverter.convertRLEtoImage();
+            if(bImage != null) img = SwingFXUtils.toFXImage(bImage, null);
+        }
+        if(img != null) {
+            imagePreviewKeyboard.setImage(img);
         } else {
             result = false;
             imagePreviewKeyboard.setImage(null);
         }
 
         checkboxKeyboardDetection.selectedProperty().setValue(info.getBoolean(KEYS.USE));
-        if(info.getBoolean(KEYS.USE) && info.getString(KEYS.PATH_1).length() != 0) {
-            relativePath = Paths.get(info.getString(KEYS.PATH_1));
-            fullPath = basePath.resolve(relativePath);
-            fullUri = fullPath.toUri();
-            imagePreviewOn.setImage(new Image(fullUri.toString()));
-        } else {
+        if(!info.getBoolean(KEYS.USE)) {
             result = false;
             imagePreviewOn.setImage(null);
+        } else {
+            img = null;
+            if(!info.getString(KEYS.PATH_1).isEmpty()) {
+                relativePath = Paths.get(info.getString(KEYS.PATH_1));
+                fullPath = basePath.resolve(relativePath);
+                fullUri = fullPath.toUri();
+                img = new Image(fullUri.toString());
+            } else if(!info.getString(KEYS.RLE_1).isEmpty()) {
+                rle = info.getString(KEYS.RLE_1);
+                rleConverter = new ImageConverter();
+                rleConverter.setRLE(rle, false);
+                BufferedImage bImage = rleConverter.convertRLEtoImage();
+                if(bImage != null) img = SwingFXUtils.toFXImage(bImage, null);
+            }
+            if(img != null) {
+                imagePreviewOn.setImage(img);
+            } else {
+                result = false;
+                imagePreviewOn.setImage(null);
+            }
         }
 
         for(int i = 0 ; hasError.length > i; i++) handleError(i, false, false);

@@ -16,6 +16,7 @@ EXEC="app.AppLauncher"
 RES_DIR="../src/main/resources"
 SRC_DIR="../src/main/java"
 JAVA_PRIN="../src/main/java/app/AppLauncher.java"
+JAVA_FX="../lib/javafx-17.0.16"
 FLAG="--verbose"
 # --verbose --log --debug
 
@@ -32,7 +33,7 @@ done
 comp:
 if [[ ! -d ./bin ]]; then mkdir bin; fi
 echo "=== Compilando código fuente ==="
-javac -d ../bin -sourcepath "$SRC_DIR" --module-path "../lib/javafx-17.0.15" --add-modules javafx.graphics,javafx.controls,javafx.fxml -cp "../lib/*:../lib/javafx-17.0.15/*" "$JAVA_PRIN"
+javac -d ../bin -sourcepath "$SRC_DIR" --module-path "$JAVA_FX" --add-modules javafx.controls,javafx.fxml,javafx.graphics,javafx.swing -cp "../lib/*:../lib/javafx-17.0.15/*" "$JAVA_PRIN"
 
 echo "=== Copiando recursos ==="
 cp -r "$RES_DIR"/* ../bin/
@@ -40,7 +41,7 @@ cp -r "$RES_DIR"/* ../bin/
 # Ejecutar el programa compilado
 exe:
 echo "=== Ejecutando el programa ==="
-java -cp "../bin:../lib/*:../lib/javafx-17.0.15/*" --module-path "../lib/javafx-17.0.15" --add-modules javafx.graphics,javafx.controls,javafx.fxml "$EXEC" "$FLAG"
+java -cp "../bin:../lib/*:"$JAVA_FX"/*" --module-path "$JAVA_FX" --add-modules javafx.controls,javafx.fxml,javafx.graphics,javafx.swing "$EXEC" "$FLAG"
 pause
 
 exit

@@ -107,24 +107,27 @@ public class VTuberSaver {
      *                     configuraciones según distintas claves.
      * @param sheetController El controlador del que se recibe la
      *                        información.
+     * @param asSoft Indica si se está guardando como un archivo
+     *                con links relativos (<code>true</code>) o como
+     *                imagen comprimida (<code>false</code>).
      */
     private static void receiveImageInfo(
             VTuberWriter vtuberWriter, SheetController sheetController,
-            Ids id, Sections section, int i
+            Ids id, Sections section, int i, boolean asSoft
         ) {
 
         Info sheetInfo = sheetController.getInfoMap().get(id)[i];
 
         KEYS[] keys = {
-            KEYS.XPOS, KEYS.YPOS, KEYS.WIDTH, KEYS.HEIGHT, KEYS.PATH
+            KEYS.XPOS, KEYS.YPOS, KEYS.WIDTH, KEYS.HEIGHT, (asSoft)?KEYS.PATH: KEYS.RLE
         };
         KEYS[] elementKeys = switch(i) {
             case 0 -> new KEYS[]
-                {KEYS.XPOS_0, KEYS.YPOS_0, KEYS.WIDTH_0, KEYS.HEIGHT_0, KEYS.PATH_0};
+                {KEYS.XPOS_0, KEYS.YPOS_0, KEYS.WIDTH_0, KEYS.HEIGHT_0, (asSoft)?KEYS.PATH_0: KEYS.RLE_0};
             case 1 -> new KEYS[]
-                {KEYS.XPOS_1, KEYS.YPOS_1, KEYS.WIDTH_1, KEYS.HEIGHT_1, KEYS.PATH_1};
+                {KEYS.XPOS_1, KEYS.YPOS_1, KEYS.WIDTH_1, KEYS.HEIGHT_1, (asSoft)?KEYS.PATH_1: KEYS.RLE_1};
             case 2 -> new KEYS[]
-                {KEYS.XPOS_2, KEYS.YPOS_2, KEYS.WIDTH_2, KEYS.HEIGHT_2, KEYS.PATH_2};
+                {KEYS.XPOS_2, KEYS.YPOS_2, KEYS.WIDTH_2, KEYS.HEIGHT_2, (asSoft)?KEYS.PATH_2: KEYS.RLE_2};
             default -> keys;
         };
         for(int k = 0; k < elementKeys.length-1; k++)
@@ -150,7 +153,8 @@ public class VTuberSaver {
     }
 
     public static VTuberWriter getVTuberWriter(
-            LayersController layersController, SheetController sheetController
+            LayersController layersController, SheetController sheetController,
+            boolean asSoft
         ) {
 
         VTuberWriter vtuberWriter = new VTuberWriter();
@@ -170,32 +174,32 @@ public class VTuberSaver {
                     vtuberWriter.put(section, KEYS.IMAGE, optionInfo.getBoolean(KEYS.IMAGE));
                     vtuberWriter.put(section, KEYS.USECOLOR, optionInfo.getBoolean(KEYS.USECOLOR));
                     if(optionInfo.getBoolean(KEYS.IMAGE))
-                        receiveImageInfo(vtuberWriter, sheetController, id, section, 0);
+                        receiveImageInfo(vtuberWriter, sheetController, id, section, 0, asSoft);
                     if(optionInfo.getBoolean(KEYS.USECOLOR))
                         vtuberWriter.put(section, KEYS.COLOR, optionInfo.getString(KEYS.COLOR));
                 break;
 
                 case BODY:
-                    receiveImageInfo(vtuberWriter, sheetController, id, section, 0);
+                    receiveImageInfo(vtuberWriter, sheetController, id, section, 0, asSoft);
                 break;
 
                 case EYES:
-                    receiveImageInfo(vtuberWriter, sheetController, id, section, 0);
+                    receiveImageInfo(vtuberWriter, sheetController, id, section, 0, asSoft);
                     vtuberWriter.put(section, KEYS.USE, optionInfo.getBoolean(KEYS.USE));
                     if(!optionInfo.getBoolean(KEYS.USE)) continue;
                     vtuberWriter.put(section, KEYS.TIMETO, optionInfo.getInt(KEYS.TIMETO));
                     vtuberWriter.put(section, KEYS.TIMEBLINK, optionInfo.getInt(KEYS.TIMEBLINK));
-                    receiveImageInfo(vtuberWriter, sheetController, id, section, 1);
+                    receiveImageInfo(vtuberWriter, sheetController, id, section, 1, asSoft);
                 break;
 
                 case MOUTH:
-                    receiveImageInfo(vtuberWriter, sheetController, id, section, 0);
+                    receiveImageInfo(vtuberWriter, sheetController, id, section, 0, asSoft);
                     vtuberWriter.put(section, KEYS.USE, optionInfo.getBoolean(KEYS.USE));
                     if(!optionInfo.getBoolean(KEYS.USE)) continue;
                     vtuberWriter.put(section, KEYS.CHNLS, optionInfo.getInt(KEYS.CHNLS));
                     vtuberWriter.put(section, KEYS.UPS, optionInfo.getInt(KEYS.UPS));
                     vtuberWriter.put(section, KEYS.SENS, optionInfo.getInt(KEYS.SENS));
-                    receiveImageInfo(vtuberWriter, sheetController, id, section, 1);
+                    receiveImageInfo(vtuberWriter, sheetController, id, section, 1, asSoft);
                 break;
 
                 case HAIR:
@@ -203,15 +207,15 @@ public class VTuberSaver {
                 case EXTRA:
                     vtuberWriter.put(section, KEYS.USE, optionInfo.getBoolean(KEYS.USE));
                     if(!optionInfo.getBoolean(KEYS.USE)) continue;
-                    receiveImageInfo(vtuberWriter, sheetController, id, section, 0);
+                    receiveImageInfo(vtuberWriter, sheetController, id, section, 0, asSoft);
                 break;
 
                 case KEYBOARD:
-                    receiveImageInfo(vtuberWriter, sheetController, id, section, 0);
-                    receiveImageInfo(vtuberWriter, sheetController, id, section, 2);
+                    receiveImageInfo(vtuberWriter, sheetController, id, section, 0, asSoft);
+                    receiveImageInfo(vtuberWriter, sheetController, id, section, 2, asSoft);
                     vtuberWriter.put(section, KEYS.USE, optionInfo.getBoolean(KEYS.USE));
                     if(!optionInfo.getBoolean(KEYS.USE)) continue;
-                    receiveImageInfo(vtuberWriter, sheetController, id, section, 1);
+                    receiveImageInfo(vtuberWriter, sheetController, id, section, 1, asSoft);
                 break;
 
                 case MOUSE:
@@ -235,13 +239,17 @@ public class VTuberSaver {
      * @param sheetController El controlador del que se obtiene la
      *                        información de la hoja y los gráficos
      *                        relativos a las imágenes.
+     * @param saveAsSoft Indica si se está guardando como un archivo
+     *                   con links relativos (<code>true</code>) o como
+     *                   imagen comprimida (<code>false</code>).
      *
      * @return Un booleano que indica si algún dato de la configuración
      *         tiene un error grave que no se puede corregir
      *         automáticamente.
      */
     public static boolean saveVTuber(
-            File file, LayersController layersController, SheetController sheetController
+            File file, LayersController layersController,
+            SheetController sheetController, boolean saveAsSoft
         ) {
 
         if(!file.getName().toLowerCase().endsWith(".sav"))
@@ -256,7 +264,7 @@ public class VTuberSaver {
         }
 
         VTuberWriter vtuberWriter = getVTuberWriter(
-            layersController, sheetController
+            layersController, sheetController, saveAsSoft
         );
 
         try {

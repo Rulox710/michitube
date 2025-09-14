@@ -63,7 +63,7 @@ public class MenubarController extends AbstractController {
         menuFileLoad.setOnAction(e -> selectFile('L'));
 
         menuFileSaves.setOnAction(e -> selectFile('S'));
-        menuFileSaveh.setDisable(true);
+        menuFileSaveh.setOnAction(e -> selectFile('H'));
     }
 
     /**
@@ -77,6 +77,7 @@ public class MenubarController extends AbstractController {
             case 'd' -> FXFileChooser.getDirChooser().showDialog(null);
             case 'L' -> FXFileChooser.getSaveChooser().showOpenDialog(null);
             case 'S' -> FXFileChooser.getSaveChooser().showSaveDialog(null);
+            case 'H' -> FXFileChooser.getSaveChooser().showSaveDialog(null);
             default -> null;
         };
         if(file == null) return;

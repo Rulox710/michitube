@@ -18,11 +18,13 @@ package app.maker.controllers.layerOptions;
 
 import app.Constants;
 import app.Sections.KEYS;
+import app.fileUtils.ImageConverter;
 import app.files.TranslationM;
 import app.maker.FXFileChooser;
 import app.maker.controllers.objects.Infos.Info;
 import app.maker.controllers.objects.builders.MouthInfoBuilder;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.net.URI;
 import java.nio.file.Path;
@@ -36,6 +38,7 @@ import javax.sound.sampled.TargetDataLine;
 
 import javafx.application.Platform;
 import javafx.css.PseudoClass;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Accordion;
@@ -261,9 +264,10 @@ public class MouthController extends OptionLayerController {
         ImageView imagePreview = source == buttonMouth? imagePreviewMouth: imagePreviewTalk;
         int index = source == buttonMouth? 0: 1;
 
-        File img = FXFileChooser.getImageChooser().showOpenDialog(null);
-        if(img != null) {
-            imagePreview.setImage(new Image(img.toURI().toString()));
+        File file = FXFileChooser.getImageChooser().showOpenDialog(null);
+        if(file != null) {
+            Image img = new Image(file.toURI().toString());
+            imagePreview.setImage(img);
             notifyObservers((char) getTweakID(), img);
 
             handleError(index, false, true);
@@ -291,13 +295,25 @@ public class MouthController extends OptionLayerController {
         boolean result = true;
         Path relativePath, fullPath;
         URI fullUri;
+        String rle;
+        ImageConverter rleConverter;
+        Image img = null;
 
-        if(info.getString(KEYS.PATH_0).length() != 0) {
+        if(!info.getString(KEYS.PATH_0).isEmpty()) {
             relativePath = Paths.get(info.getString(KEYS.PATH_0));
             fullPath = basePath.resolve(relativePath);
             fullUri = fullPath.toUri();
-            imagePreviewMouth.setImage(new Image(fullUri.toString()));
-            notifyObservers('l', new File(fullUri));
+            img = new Image(fullUri.toString());
+        } else if(!info.getString(KEYS.RLE_0).isEmpty()) {
+            rle = info.getString(KEYS.RLE_0);
+            rleConverter = new ImageConverter();
+            rleConverter.setRLE(rle, false);
+            BufferedImage bImage = rleConverter.convertRLEtoImage();
+            if(bImage != null) img = SwingFXUtils.toFXImage(bImage, null);
+        }
+        if(img != null) {
+            imagePreviewMouth.setImage(img);
+            notifyObservers('l', img);
         } else {
             result = false;
             imagePreviewMouth.setImage(null);
@@ -308,19 +324,33 @@ public class MouthController extends OptionLayerController {
         spinnerMicrophoneUpdate.getValueFactory().setValue(info.getInt(KEYS.UPS));
         sliderMicrophoneSensitivity.setValue(info.getInt(KEYS.SENS));
         checkboxMicrophone.selectedProperty().setValue(info.getBoolean(KEYS.USE));
-        if(info.getBoolean(KEYS.USE)) {
-            startCapture();
-        } else {
-            stopCapture();
-        }
-        if(info.getBoolean(KEYS.USE) && info.getString(KEYS.PATH_1).length() != 0) {
-            relativePath = Paths.get(info.getString(KEYS.PATH_1));
-            fullPath = basePath.resolve(relativePath);
-            fullUri = fullPath.toUri();
-            imagePreviewTalk.setImage(new Image(fullUri.toString()));
-        } else {
+
+        if(!info.getBoolean(KEYS.USE)) {
             result = false;
             imagePreviewTalk.setImage(null);
+            stopCapture();
+        } else {
+            img = null;
+            if(!info.getString(KEYS.PATH_1).isEmpty()) {
+                relativePath = Paths.get(info.getString(KEYS.PATH_1));
+                fullPath = basePath.resolve(relativePath);
+                fullUri = fullPath.toUri();
+                img = new Image(fullUri.toString());
+            } else if(!info.getString(KEYS.RLE_1).isEmpty()) {
+                rle = info.getString(KEYS.RLE_1);
+                rleConverter = new ImageConverter();
+                rleConverter.setRLE(rle, false);
+                BufferedImage bImage = rleConverter.convertRLEtoImage();
+                if(bImage != null) img = SwingFXUtils.toFXImage(bImage, null);
+            }
+            if(img != null) {
+                imagePreviewTalk.setImage(img);
+                startCapture();
+            } else {
+                result = false;
+                imagePreviewTalk.setImage(null);
+                stopCapture();
+            }
         }
 
         for(int i = 0 ; hasError.length > i; i++) handleError(i, false, false);

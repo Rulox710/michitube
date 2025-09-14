@@ -80,9 +80,9 @@ Este proyecto utiliza:
   [COPYING](legal/jnativehook-2.2.2/COPYING.md)
   [COPYING.LESSER](legal/jnativehook-2.2.2/COPYING.LESSER.md)
 
-- **JavaFX** (https://openjfx.io/)
-  Licencia GPL v2 + OpenJDK Assembly Exception
-  JavaFX.Base [LICENCE](legal/javafx-17.0.15/javafx.base/LICENSE)
-  JavaFX.Controls [LICENCE](legal/javafx-17.0.15/javafx.controls/LICENSE)
-  JavaFX.FXML [LICENCE](legal/javafx-17.0.15/javafx.fxml/LICENSE)
-  JavaFX.Graphics [LICENCE](legal/javafx-17.0.15/javafx.graphics/LICENSE)
+- **JavaFX** (https://openjfx.io/) Licencia GPL v2 + OpenJDK Assembly Exception
+  - JavaFX.Base [LICENCE](legal/javafx-17.0.16/javafx.base/LICENSE)
+  - JavaFX.Controls [LICENCE](legal/javafx-17.0.16/javafx.controls/LICENSE)
+  - JavaFX.FXML [LICENCE](legal/javafx-17.0.16/javafx.fxml/LICENSE)
+  - JavaFX.Graphics [LICENCE](legal/javafx-17.0.16/javafx.graphics/LICENSE)
+  - JavaFX.Swing [LICENCE](legal/javafx-17.0.16/javafx.swing/LICENSE)

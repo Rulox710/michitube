@@ -69,15 +69,16 @@ public final class Infos {
          * @param height Alto de la imagen.
          * @param path Ruta del archivo de la imagen.
          */
-        public ImageInfo(int x, int y, int width, int height, String path) {
+        public ImageInfo(int x, int y, int width, int height, String path, String rle) {
             intParams = new HashMap<>(4);
             intParams.put(KEYS.XPOS, x);
             intParams.put(KEYS.YPOS, y);
             intParams.put(KEYS.WIDTH, width);
             intParams.put(KEYS.HEIGHT, height);
 
-            strParams = new HashMap<>(1);
+            strParams = new HashMap<>(2);
             strParams.put(KEYS.PATH, path);
+            strParams.put(KEYS.RLE, rle);
         }
     }
 
@@ -125,17 +126,20 @@ public final class Infos {
          *               realiza el cambio temporal.
          */
         public BasicInfo(
-                String pathOff, String pathExtra,
-                boolean usage, String pathOn
+                String pathOff, String rleOff, String pathExtra,
+                String rleExtra, boolean usage, String pathOn, String rleOn
             ) {
 
             boolParams = new HashMap<>(1);
             boolParams.put(KEYS.USE, usage);
 
-            strParams = new HashMap<>(2);
+            strParams = new HashMap<>(6);
             strParams.put(KEYS.PATH_0, pathOff);
             strParams.put(KEYS.PATH_1, pathExtra);
             strParams.put(KEYS.PATH_2, pathOn);
+            strParams.put(KEYS.RLE_0, rleOff);
+            strParams.put(KEYS.RLE_1, rleExtra);
+            strParams.put(KEYS.RLE_2, rleOn);
         }
     }
 
@@ -157,7 +161,7 @@ public final class Infos {
          * @param color Color del fondo en formato hexadecimal.
          */
         public BackgroundInfo(
-                boolean useImage, String path,
+                boolean useImage, String path, String rle,
                 boolean useColor, String color
             ) {
 
@@ -165,8 +169,9 @@ public final class Infos {
             boolParams.put(KEYS.IMAGE, useImage);
             boolParams.put(KEYS.USECOLOR, useColor);
 
-            strParams = new HashMap<>(2);
+            strParams = new HashMap<>(3);
             strParams.put(KEYS.PATH, path);
+            strParams.put(KEYS.RLE, rle);
             strParams.put(KEYS.COLOR, color);
         }
     }
@@ -192,8 +197,8 @@ public final class Infos {
          *               realiza el parpadeo.
          */
         public EyesInfo(
-                String pathOff, boolean usage,
-                int timeToBlink, int timeBlinking, String pathOn
+                String pathOff, String rleOff, boolean usage,
+                int timeToBlink, int timeBlinking, String pathOn, String rleOn
             ) {
 
             boolParams = new HashMap<>(1);
@@ -203,9 +208,11 @@ public final class Infos {
             intParams.put(KEYS.TIMETO, timeToBlink);
             intParams.put(KEYS.TIMEBLINK, timeBlinking);
 
-            strParams = new HashMap<>(2);
+            strParams = new HashMap<>(4);
             strParams.put(KEYS.PATH_0, pathOff);
             strParams.put(KEYS.PATH_1, pathOn);
+            strParams.put(KEYS.RLE_0, rleOff);
+            strParams.put(KEYS.RLE_1, rleOn);
         }
     }
 
@@ -232,9 +239,9 @@ public final class Infos {
          *               detecta sonido con el micrófono.
          */
         public MouthInfo(
-                String pathOff, boolean usage,
+                String pathOff, String rleOff, boolean usage,
                 int channels, int updates, int sensitivity,
-                String pathOn
+                String pathOn, String rleOn
             ) {
 
             boolParams = new HashMap<>(1);
@@ -245,9 +252,11 @@ public final class Infos {
             intParams.put(KEYS.UPS, updates);
             intParams.put(KEYS.SENS, sensitivity);
 
-            strParams = new HashMap<>(2);
+            strParams = new HashMap<>(4);
             strParams.put(KEYS.PATH_0, pathOff);
             strParams.put(KEYS.PATH_1, pathOn);
+            strParams.put(KEYS.RLE_0, rleOff);
+            strParams.put(KEYS.RLE_1, rleOn);
         }
     }
 
