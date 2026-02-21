@@ -72,7 +72,7 @@ public class SheetController extends AbstractController {
 
     private MouseComponentArea mouseArea;
 
-    private Ids currentLayer = Ids.BACKGROUND, lastLayer;
+    private Ids currentLayer = Ids.BACKGROUND, lastLayer = null;
     private int currentTweak = 0, lastTweak = 0;
     private Region imageHandle;
 
@@ -101,7 +101,7 @@ public class SheetController extends AbstractController {
             try {
                 imageHandle = LAYERS_MAP.get(currentLayer)[currentTweak].getHandle();
                 paneSheet.getChildren().add(imageHandle);
-            } catch(NullPointerException e) {
+            } catch(NullPointerException | ArrayIndexOutOfBoundsException e) {
                 paneSheet.getChildren().add(new Pane());
             }
         });
