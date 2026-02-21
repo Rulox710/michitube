@@ -73,7 +73,7 @@ public class DraggableResizableImageView extends Pane {
             PATH = fimg.toURI().toString();
             image = new Image(PATH);
         }
-        if(!rle.isEmpty()) {
+        if(rle != null && !rle.isEmpty()) {
             RLE = rle;
             CONVERTER.setRLE(rle, false);
             BufferedImage bImage = CONVERTER.convertRLEtoImage();

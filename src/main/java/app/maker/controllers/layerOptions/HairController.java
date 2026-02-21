@@ -107,7 +107,7 @@ public class HairController extends OptionLayerController {
         if(file != null) {
             Image img = new Image(file.toURI().toString());
             imagePreview.setImage(img);
-            notifyObservers((char) getTweakID(), img);
+            notifyObservers((char) getTweakID(), file);
 
             handleError(0, false, true);
         }
@@ -118,7 +118,6 @@ public class HairController extends OptionLayerController {
         if(checkboxImage.selectedProperty().getValue() && imagePreview.getImage() == null)
             handleError(0, true, true);
         return !hasError[0];
-
     }
 
     @Override

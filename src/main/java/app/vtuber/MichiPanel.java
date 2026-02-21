@@ -374,7 +374,8 @@ public class MichiPanel extends JPanel implements Observer {
             break;
 
             case 'u':
-                if(drawPrimaryEyes && time >= PARAMS.get(Ids.EYES).get(KEYS.TIMETO)) {
+                int toBlink = PARAMS.get(Ids.EYES).get(KEYS.TIMETO);
+                if(drawPrimaryEyes && toBlink != 0 && time >= toBlink) {
                     drawPrimaryEyes = false;
                     time = 0f;
                 } else if(!drawPrimaryEyes && time >= PARAMS.get(Ids.EYES).get(KEYS.TIMEBLINK)) {

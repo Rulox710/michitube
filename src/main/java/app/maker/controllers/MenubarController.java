@@ -26,6 +26,8 @@ import java.util.Locale;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioMenuItem;
@@ -62,7 +64,16 @@ public class MenubarController extends AbstractController {
         menuFileDir.setOnAction(e -> selectFile('d'));
         menuFileLoad.setOnAction(e -> selectFile('L'));
 
-        menuFileSaves.setOnAction(e -> selectFile('S'));
+        menuFileSaves.setOnAction(e -> {
+            Platform.runLater(() -> {
+                Alert alert = new Alert(AlertType.WARNING);
+                alert.setTitle(TranslationM.getTranslatedLabel("title_warning_soft"));
+                alert.setHeaderText(TranslationM.getTranslatedLabel("header_warning_soft"));
+                alert.setContentText(TranslationM.getTranslatedLabel("content_warning_soft"));
+                alert.showAndWait();
+            });
+            selectFile('S');
+        });
         menuFileSaveh.setOnAction(e -> selectFile('H'));
     }
 

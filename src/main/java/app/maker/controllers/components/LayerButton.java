@@ -16,6 +16,8 @@
 
 package app.maker.controllers.components;
 
+import java.io.File;
+
 import app.files.TranslationM;
 import app.maker.controllers.AbstractController;
 
@@ -71,6 +73,19 @@ public class LayerButton extends AbstractController {
     private void setImage(Image fimg) {
         if(fimg != null) {
             imagePreview.setImage(fimg);
+        } else {
+            imagePreview.setImage(null);
+        }
+    }
+
+    /**
+     * Asigna una imagen para ser mostrada en el componente.
+     *
+     * @param fimg El archivo con la imagen.
+     */
+    private void setImage(File fimg) {
+        if(fimg != null) {
+            imagePreview.setImage(new Image(fimg.toURI().toString()));
         } else {
             imagePreview.setImage(null);
         }
@@ -140,7 +155,7 @@ public class LayerButton extends AbstractController {
     @Override
     public void update(char event, Object data) {
         switch(event) {
-            case (char)0: setImage((Image) data);
+            case (char)0: setImage((File) data);
             break;
 
             case 'c': toggleSelect(false);

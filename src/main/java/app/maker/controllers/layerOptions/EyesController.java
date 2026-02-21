@@ -135,7 +135,7 @@ public class EyesController extends OptionLayerController {
         if(file != null) {
             Image img = new Image(file.toURI().toString());
             imagePreview.setImage(img);
-            notifyObservers((char) getTweakID(), img);
+            notifyObservers((char) getTweakID(), file);
 
             handleError(index, false, true);
         }
